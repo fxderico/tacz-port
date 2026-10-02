@@ -1,0 +1,10 @@
+accessWidener v2 named
+
+# gun display files embed vanilla item transforms, reuse vanilla's deserializers
+accessible class net/minecraft/client/renderer/block/model/ItemTransforms$Deserializer
+accessible method net/minecraft/client/renderer/block/model/ItemTransforms$Deserializer <init> ()V
+accessible class net/minecraft/client/renderer/block/model/ItemTransform$Deserializer
+accessible method net/minecraft/client/renderer/block/model/ItemTransform$Deserializer <init> ()V
+
+# old Forge access transformer entries
+accessible method net/minecraft/client/multiplayer/MultiPlayerGameMode ensureHasSentCarriedItem ()V

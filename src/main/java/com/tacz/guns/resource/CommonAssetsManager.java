@@ -1,0 +1,301 @@
+package com.tacz.guns.resource;
+
+import com.tacz.guns.crafting.TaczRecipes;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.tacz.guns.api.vmlib.LuaGunLogicConstant;
+import com.tacz.guns.api.vmlib.LuaLibrary;
+import com.tacz.guns.crafting.GunSmithTableIngredient;
+import com.tacz.guns.crafting.GunSmithTableRecipe;
+import com.tacz.guns.crafting.result.GunSmithTableResult;
+import com.tacz.guns.init.ModRecipe;
+import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.message.ServerMessageSyncGunPack;
+import com.tacz.guns.resource.filter.RecipeFilter;
+import com.tacz.guns.resource.index.CommonAmmoIndex;
+import com.tacz.guns.resource.index.CommonAttachmentIndex;
+import com.tacz.guns.resource.index.CommonBlockIndex;
+import com.tacz.guns.resource.index.CommonGunIndex;
+import com.tacz.guns.resource.manager.*;
+import com.tacz.guns.resource.network.CommonNetworkCache;
+import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
+import com.tacz.guns.resource.pojo.data.block.BlockData;
+import com.tacz.guns.resource.pojo.data.block.TabConfig;
+import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
+import com.tacz.guns.resource.pojo.data.gun.Ignite;
+import com.tacz.guns.resource.pojo.data.loot.LootTableInjection;
+import com.tacz.guns.resource.serialize.*;
+import com.tacz.guns.util.AllowAttachmentTagMatcher;
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.phys.Vec3;
+import com.tacz.guns.platform.forge.event.OnDatapackSyncEvent;
+import com.tacz.guns.platform.forge.event.TagsUpdatedEvent;
+import com.tacz.guns.platform.forge.event.server.ServerStoppedEvent;
+import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
+import com.tacz.guns.platform.forge.fml.common.Mod;
+import com.tacz.guns.platform.forge.server.ServerLifecycleHooks;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
+
+import java.util.*;
+import java.util.function.Consumer;
+
+@Mod.EventBusSubscriber
+public class CommonAssetsManager implements ICommonResourceProvider {
+    private static CommonAssetsManager INSTANCE;
+    public static final Gson GSON = new GsonBuilder().setStrictness(com.google.gson.Strictness.LENIENT)
+            .registerTypeAdapter(Identifier.class, new com.tacz.guns.util.IdentifierTypeAdapter())
+            .registerTypeAdapter(Pair.class, new PairSerializer())
+            .registerTypeAdapter(GunSmithTableIngredient.class, new GunSmithTableIngredientSerializer())
+            .registerTypeAdapter(GunSmithTableResult.class, new GunSmithTableResultSerializer())
+            .registerTypeAdapter(ExtraDamage.DistanceDamagePair.class, new DistanceDamagePairSerializer())
+            .registerTypeAdapter(Vec3.class, new Vec3Serializer())
+            .registerTypeAdapter(Ignite.class, new IgniteSerializer())
+            .registerTypeAdapter(RecipeFilter.class, new RecipeFilter.Deserializer())
+            .registerTypeAdapter(CommonGunIndex.class, new CommonGunIndexSerializer())
+            .registerTypeAdapter(CommonAmmoIndex.class, new CommonAmmoIndexSerializer())
+            .registerTypeAdapter(CommonAttachmentIndex.class, new CommonAttachmentIndexSerializer())
+            .registerTypeAdapter(CommonBlockIndex.class, new CommonBlockIndexSerializer())
+            .registerTypeAdapter(TabConfig.class, new TabConfig.Deserializer())
+            .create();
+
+    private final List<INetworkCacheReloadListener> listeners = new ArrayList<>();
+    private CommonDataManager<GunData> gunData;
+    private CommonDataManager<AttachmentData> attachmentData;
+    private CommonDataManager<BlockData> blockData;
+    private CommonDataManager<CommonAmmoIndex> ammoIndex;
+    private CommonDataManager<CommonGunIndex> gunIndex;
+    private CommonDataManager<CommonAttachmentIndex> attachmentIndex;
+    private CommonDataManager<CommonBlockIndex> blockIndex;
+    private RecipeFilterManager recipeFilterManager;
+    private LootInjectionManager lootInjectionManager;
+
+    private AttachmentsTagManager attachmentsTagManager;
+    List<LuaLibrary> libList = List.of(new LuaGunLogicConstant());
+    private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts", ".lua"), libList);
+
+    public void reloadAndRegister(Consumer<PreparableReloadListener> register) {
+        // 这里会顺序重载，所以需要把index这种依赖data的放在后面
+        gunData = register(new CommonDataManager<>(DataType.GUN_DATA, GunData.class, GSON, "data/guns", "GunDataLoader"));
+        attachmentData = register(new AttachmentDataManager());
+        attachmentsTagManager = register(new AttachmentsTagManager());
+        recipeFilterManager = register(new RecipeFilterManager());
+        lootInjectionManager = new LootInjectionManager();
+        register.accept(lootInjectionManager);
+        blockData = register(new CommonDataManager<>(DataType.BLOCK_DATA, BlockData.class, GSON, "data/blocks", "BlockDataLoader"));
+        register.accept(scriptManager);
+
+        ammoIndex = register(new CommonDataManager<>(DataType.AMMO_INDEX, CommonAmmoIndex.class, GSON, "index/ammo", "AmmoIndexLoader"));
+        gunIndex = register(new CommonDataManager<>(DataType.GUN_INDEX, CommonGunIndex.class, GSON, "index/guns", "GunIndexLoader"));
+        attachmentIndex = register(new CommonDataManager<>(DataType.ATTACHMENT_INDEX, CommonAttachmentIndex.class, GSON, "index/attachments", "AttachmentIndexLoader"));
+        blockIndex = register(new CommonDataManager<>(DataType.BLOCK_INDEX, CommonBlockIndex.class, GSON, "index/blocks", "BlockIndexLoader"));
+
+        listeners.forEach(register);
+        register.accept((net.minecraft.server.packs.resources.ResourceManagerReloadListener) resourceManager -> AllowAttachmentTagMatcher.resetCache());
+    }
+
+    private <T extends INetworkCacheReloadListener> T register(T listener) {
+        listeners.add(listener);
+        return listener;
+    }
+
+    public Map<DataType, Map<Identifier, String>> getNetworkCache() {
+        ImmutableMap.Builder<DataType, Map<Identifier, String>> builder = ImmutableMap.builder();
+        for (INetworkCacheReloadListener listener : listeners) {
+            builder.put(listener.getType(), listener.getNetworkCache());
+        }
+        return builder.build();
+    }
+
+    @Nullable
+    @Override
+    public GunData getGunData(Identifier id) {
+        return gunData.getData(id);
+    }
+
+    @Nullable
+    @Override
+    public AttachmentData getAttachmentData(Identifier id) {
+        return attachmentData.getData(id);
+    }
+
+    @Nullable
+    @Override
+    public BlockData getBlockData(Identifier id) {
+        return blockData.getData(id);
+    }
+
+    @Override
+    @Nullable
+    public RecipeFilter getRecipeFilter(Identifier id) {
+        return recipeFilterManager.getFilter(id);
+    }
+
+    public List<LootTableInjection> getLootTableInjections(Identifier lootTable) {
+        if (lootInjectionManager == null) {
+            return List.of();
+        }
+        return lootInjectionManager.getInjections(lootTable);
+    }
+
+    @Nullable
+    @Override
+    public CommonGunIndex getGunIndex(Identifier gunId) {
+        return gunIndex.getData(gunId);
+    }
+
+    @Override
+    public Set<Map.Entry<Identifier, CommonGunIndex>> getAllGuns() {
+        return gunIndex.getAllData().entrySet();
+    }
+
+    @Nullable
+    @Override
+    public CommonAmmoIndex getAmmoIndex(Identifier ammoId) {
+        return ammoIndex.getData(ammoId);
+    }
+
+    @Override
+    public Set<Map.Entry<Identifier, CommonAmmoIndex>> getAllAmmos() {
+        return ammoIndex.getAllData().entrySet();
+    }
+
+    @Nullable
+    @Override
+    public CommonAttachmentIndex getAttachmentIndex(Identifier attachmentId) {
+        return attachmentIndex.getData(attachmentId);
+    }
+
+    @Override
+    public Set<Map.Entry<Identifier, CommonAttachmentIndex>> getAllAttachments() {
+        return attachmentIndex.getAllData().entrySet();
+    }
+
+    @Override
+    public LuaTable getScript(Identifier scriptId) {
+        return scriptManager.getScript(scriptId);
+    }
+
+    @Nullable
+    @Override
+    public CommonBlockIndex getBlockIndex(Identifier blockId) {
+        return blockIndex.getData(blockId);
+    }
+
+    @Override
+    public Set<Map.Entry<Identifier, CommonBlockIndex>> getAllBlocks() {
+        return blockIndex.getAllData().entrySet();
+    }
+
+    @Override
+    public Set<String> getAttachmentTags(Identifier registryName) {
+        return attachmentsTagManager.getAttachmentTags(registryName);
+    }
+
+    @Override
+    public Set<String> getAllowAttachmentTags(Identifier registryName) {
+        return attachmentsTagManager.getAllowAttachmentTags(registryName);
+    }
+
+    /**
+     * 获取实例<br/>
+     * 实例仅当内置服务器/专用服务器启动时才会被创建<br/>
+     * 当客户端正连接到多人游戏时，该方法将返回 null
+     * @return CommonAssetsManger实例
+     */
+    @Nullable
+    public static CommonAssetsManager getInstance() {
+        return INSTANCE;
+    }
+
+    public static void clearInstance() {
+        INSTANCE = null;
+    }
+
+    /**
+     * 根据当前环境选择合适的缓存<br/>
+     * 当前环境为单人游戏或多人游戏的服务端时，返回CommonAssetsManger实例<br/>
+     * 当前环境为多人游戏的客户端时，返回CommonNetworkCache实例
+     * @return ICommonResourceProvider实例
+     */
+    public static ICommonResourceProvider get() {
+        return INSTANCE == null ? CommonNetworkCache.INSTANCE : INSTANCE;
+    }
+
+    /**
+     * Forge's AddReloadListenerEvent made a new manager with fresh listeners on every data pack reload.
+     * Fabric registers a fixed listener, so this one builds the manager and runs its listeners the way vanilla
+     * would: each prepares, all of them meet at the shared barrier, then they apply in order.
+     */
+    public static final PreparableReloadListener RELOAD_LISTENER = new com.tacz.guns.platform.SequentialReloadListener("TaczCommonAssets", () -> {
+        var commonAssetsManager = new CommonAssetsManager();
+        List<PreparableReloadListener> listeners = new ArrayList<>();
+        commonAssetsManager.reloadAndRegister(listeners::add);
+        INSTANCE = commonAssetsManager;
+        return listeners;
+    });
+
+    /**
+     * 这个事件理论上会在server resource已经完成重载和传输到客户端之前触发<br/>
+     * 尝试根据common data初始化延迟加载的配方
+     * @param event
+     */
+    @SubscribeEvent
+    public static void onReload(TagsUpdatedEvent event) {
+        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD){
+            var server = ServerLifecycleHooks.getCurrentServer();
+            if (getInstance() != null && server != null) {
+                for (GunSmithTableRecipe recipe : TaczRecipes.getAll(server.overworld())) {
+                    recipe.init();
+                }
+            }
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onServerStopped(ServerStoppedEvent event) {
+        clearInstance();
+    }
+
+    @SubscribeEvent
+    public static void OnDatapackSync(OnDatapackSyncEvent event) {
+        if (getInstance() == null) {
+            return;
+        }
+        ServerMessageSyncGunPack message = new ServerMessageSyncGunPack(getInstance().getNetworkCache());
+        if (event.getPlayer() != null) {
+            NetworkHandler.sendToClientPlayer(message, event.getPlayer());
+        } else {
+            event.getPlayerList().getPlayers().forEach(player -> NetworkHandler.sendToClientPlayer(message, player));
+        }
+    }
+
+    public static void reloadAllPack() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return;
+        }
+        PackRepository packrepository = server.getPackRepository();
+        packrepository.reload();
+
+        Collection<String> collection = packrepository.getSelectedIds();
+        server.reloadResources(collection);
+    }
+}
+
+

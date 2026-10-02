@@ -1,0 +1,51 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.tacz.guns.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "common.BlockPropertiesMixin",
+    "common.BuiltInPackSourceAccessor",
+    "common.AmmoStackSizeMixin",
+    "common.CustomDataAccessor",
+    "common.EntityDataHolderMixin",
+    "common.GunSwingMixin",
+    "common.ItemPropertiesMixin",
+    "common.LivingEntityAccessor",
+    "common.LivingEntityMixin",
+    "common.PackRepositoryMixin",
+    "common.PlayerForcedPoseMixin",
+    "common.ServerGamePacketListenerImplMixin",
+    "common.ServerPlayerMixin",
+    "common.ServerPlayNetHandlerMixin",
+    "forge.EntityTravelMixin",
+    "forge.LivingEntityEventsMixin",
+    "forge.PlayerTickMixin"
+  ],
+  "client": [
+    "client.AbstractButtonMixin",
+    "client.GameRendererMixin",
+    "client.HumanoidModelMixin",
+    "client.ItemInHandLayerMixin",
+    "client.ItemInHandRendererMixin",
+    "client.LanguageMixin",
+    "client.LivingEntityRendererMixin",
+    "client.LivingEntityRenderStateMixin",
+    "client.LocalPlayerMixin",
+    "client.MinecraftAccessor",
+    "client.MouseHandlerMixin",
+    "client.SoundManagerPreparationsMixin",
+    "client.forge.AbstractClientPlayerFovMixin",
+    "client.forge.CameraAccessor",
+    "client.forge.ClientPacketListenerEventMixin",
+    "client.forge.GameRendererEventMixin",
+    "client.forge.GuiEventMixin",
+    "client.forge.ItemInHandRendererEventMixin",
+    "client.forge.KeyboardHandlerEventMixin",
+    "client.forge.MinecraftInputMixin",
+    "client.forge.MouseHandlerEventMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

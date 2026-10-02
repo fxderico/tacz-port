@@ -1,0 +1,223 @@
+package com.tacz.guns.client.gui.components;
+
+import com.tacz.guns.platform.client.GuiCompat;
+
+import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.tacz.guns.client.gui.GunSmithTableScreen;
+import com.tacz.guns.client.resource.ClientAssetsManager;
+import com.tacz.guns.client.resource.pojo.PackInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarratedElementType;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+
+import java.util.*;
+
+public class GunPackList extends ContainerObjectSelectionList<GunPackList.Entry> {
+    private final GunSmithTableScreen parent;
+    private final List<Checkbox> gunPackList = new ArrayList<>();
+    private final Set<String> selectedNamespaces = new HashSet<>();
+    private final Checkbox byHandCheckbox;
+    private final EditBox byName;
+
+    public GunPackList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight,
+                       Map<Identifier, List<Identifier>> recipes, GunSmithTableScreen parent) {
+        super(pMinecraft, pWidth, pHeight, pY0, pItemHeight);
+        this.parent = parent;
+        Set<String> namespaces = new HashSet<>();
+        for (List<Identifier> entry : recipes.values()) {
+            entry.forEach((resourceLocation) -> namespaces.add(resourceLocation.getNamespace()));
+        }
+
+        this.byName = new EditBox(pMinecraft.font, 3, 0, 94, 10, Component.empty());
+        this.byName.setHint(Component.translatable("gui.tacz.gun_smith_table.filter.search"));
+        this.byName.setResponder((pText) -> {
+            parent.init();
+            parent.setIndexPage(0);
+        });
+        this.addEntry(new GunPackList.Entry(byName));
+
+        this.byHandCheckbox = new Checkbox(0, 0, 10, 10, Component.translatable("gui.tacz.gun_smith_table.filter.handgun"), false) {
+            @Override
+            public void onPress(net.minecraft.client.input.InputWithModifiers input) {
+                super.onPress(input);
+                parent.init();
+                parent.setIndexPage(0);
+            }
+        };
+        this.addEntry(new GunPackList.Entry(byHandCheckbox));
+
+        Checkbox checkbox1 = new Checkbox(0, 0, 10, 10, Component.translatable("gui.tacz.gun_smith_table.filter.all"), true) {
+            @Override
+            public void onPress(net.minecraft.client.input.InputWithModifiers input) {
+                super.onPress(input);
+                gunPackList.forEach((checkbox) -> checkbox.selected = this.selected);
+                updateSelectedNamespaces();
+            }
+        };
+        this.addEntry(new GunPackList.Entry(checkbox1));
+
+        for (String namespace : namespaces) {
+            PackInfo packInfo = ClientAssetsManager.INSTANCE.getPackInfo(namespace);
+            Component name = packInfo == null ? Component.literal(namespace) : Component.translatable(packInfo.getName());
+
+            Checkbox checkbox = new Checkbox(0, 0, 10, 10, name, namespace, true) {
+                @Override
+                public void onPress(net.minecraft.client.input.InputWithModifiers input) {
+                    super.onPress(input);
+                    checkbox1.selected = gunPackList.stream().allMatch(Checkbox::selected);
+                    updateSelectedNamespaces();
+                }
+            };
+            gunPackList.add(checkbox);
+            selectedNamespaces.add(namespace);
+            this.addEntry(new GunPackList.Entry(checkbox));
+        }
+    }
+
+    public String getSearchText() {
+        return byName.getValue();
+    }
+
+    public boolean isByHandSelected() {
+        return byHandCheckbox.selected;
+    }
+
+    public void setByHandSelected(boolean selected) {
+        byHandCheckbox.selected = selected;
+    }
+
+    public Set<String> namespaceList() {
+        return selectedNamespaces;
+    }
+
+    public void updateSelectedNamespaces() {
+        selectedNamespaces.clear();
+        gunPackList.forEach((checkbox) -> {
+            if (checkbox.selected) {
+                selectedNamespaces.add(checkbox.getId());
+            }
+        });
+        parent.init();
+        parent.setIndexPage(0);
+    }
+
+    @Override
+    protected int scrollBarX() {
+        return this.getRight() - 6;
+    }
+
+    @Override
+    protected void renderListBackground(GuiGraphics guiGraphics) {
+        guiGraphics.fill(this.getX(), this.getY(), this.getRight(), this.getBottom(), 0x80000000);
+    }
+
+    @Override
+    protected void renderListSeparators(GuiGraphics guiGraphics) {
+    }
+
+    @Override
+    public int getRowLeft() {
+        return this.getX() + 4;
+    }
+
+    @Override
+    public int getRowWidth() {
+        return this.width;
+    }
+
+    public static class Entry extends ContainerObjectSelectionList.Entry<GunPackList.Entry> {
+        private final AbstractWidget widget;
+
+        public Entry(AbstractWidget widget) {
+            this.widget = widget;
+        }
+
+        @Override
+        public List<? extends NarratableEntry> narratables() {
+             return ImmutableList.of(widget);
+        }
+
+        @Override
+        public void renderContent(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, boolean pHovering, float pPartialTick) {
+            this.widget.setX(this.getContentX());
+            this.widget.setY(this.getContentY());
+            this.widget.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        }
+
+        @Override
+        public List<? extends GuiEventListener> children() {
+            return ImmutableList.of(widget);
+        }
+    }
+
+    public static class Checkbox extends AbstractButton {
+        private static final Identifier TEXTURE = Identifier.parse("textures/gui/checkbox.png");
+        protected boolean selected;
+        protected final boolean showLabel;
+        private String id;
+
+        public Checkbox(int pX, int pY, int pWidth, int pHeight, Component pMessage, String id, boolean pSelected) {
+            this(pX, pY, pWidth, pHeight, pMessage, pSelected, true);
+            this.id = id;
+        }
+
+        public Checkbox(int pX, int pY, int pWidth, int pHeight, Component pMessage, boolean pSelected) {
+            this(pX, pY, pWidth, pHeight, pMessage, pSelected, true);
+        }
+
+        public Checkbox(int pX, int pY, int pWidth, int pHeight, Component pMessage, boolean pSelected, boolean pShowLabel) {
+            super(pX, pY, pWidth, pHeight, pMessage);
+            this.selected = pSelected;
+            this.showLabel = pShowLabel;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void onPress(net.minecraft.client.input.InputWithModifiers input) {
+            this.selected = !this.selected;
+        }
+
+        public boolean selected() {
+            return this.selected;
+        }
+
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+            pNarrationElementOutput.add(NarratedElementType.TITLE, this.createNarrationMessage());
+            if (this.active) {
+                if (this.isFocused()) {
+                    pNarrationElementOutput.add(NarratedElementType.USAGE, Component.translatable("narration.checkbox.usage.focused"));
+                } else {
+                    pNarrationElementOutput.add(NarratedElementType.USAGE, Component.translatable("narration.checkbox.usage.hovered"));
+                }
+            }
+
+        }
+
+        @Override
+    protected void renderContents(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+            Minecraft minecraft = Minecraft.getInstance();
+            Font font = minecraft.font;
+            GuiCompat.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+            GuiCompat.blit(pGuiGraphics, TEXTURE, this.getX(), this.getY(), this.isFocused() ? 10.0F : 0.0F, this.selected ? 10.0F : 0.0F, 10, 10, 32, 32);
+            GuiCompat.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            if (this.showLabel) {
+                GuiCompat.drawString(pGuiGraphics, font, this.getMessage(), this.getX() + 24, this.getY() + (this.height - 8) / 2, 14737632 | Mth.ceil(this.alpha * 255.0F) << 24);
+            }
+
+        }
+    }
+}
