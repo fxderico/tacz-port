@@ -9,5 +9,6 @@ import net.minecraft.resources.Identifier;
 @Environment(EnvType.CLIENT)
 public final class TaczKeyCategory {
     // shows up as key.category.tacz.tacz in the lang files
-    public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, GunMod.MOD_ID));
+    // NeoForge adds it in RegisterKeyMappingsEvent#registerCategory instead
+    public static final KeyMapping.Category CATEGORY = /*? if neoforge {*//*new KeyMapping.Category*//*?} else {*/KeyMapping.Category.register/*?}*/(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, GunMod.MOD_ID));
 }

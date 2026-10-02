@@ -1,7 +1,5 @@
 package com.tacz.guns.init;
 
-import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
-
 import com.tacz.guns.GunMod;
 import com.tacz.guns.particles.BulletHoleOption;
 import net.minecraft.core.particles.ParticleType;
@@ -13,5 +11,15 @@ public class ModParticles {
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, GunMod.MOD_ID);
 
     public static final RegistryObject<ParticleType<BulletHoleOption>> BULLET_HOLE = PARTICLE_TYPES.register("bullet_hole",
-            () -> FabricParticleTypes.complex(false, BulletHoleOption.CODEC, BulletHoleOption.STREAM_CODEC));
+            () -> new ParticleType<BulletHoleOption>(false) {
+                @Override
+                public com.mojang.serialization.MapCodec<BulletHoleOption> codec() {
+                    return BulletHoleOption.CODEC;
+                }
+
+                @Override
+                public net.minecraft.network.codec.StreamCodec<? super net.minecraft.network.RegistryFriendlyByteBuf, BulletHoleOption> streamCodec() {
+                    return BulletHoleOption.STREAM_CODEC;
+                }
+            });
 }

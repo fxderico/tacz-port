@@ -24,13 +24,18 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import com.tacz.guns.platform.forge.items.ItemHandlers;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class GunSmithTableMenu extends AbstractContainerMenu {
-    public static final MenuType<GunSmithTableMenu> TYPE = new ExtendedScreenHandlerType<>(GunSmithTableMenu::new, Identifier.STREAM_CODEC);
+    // the block id travels with the open screen packet
+    //? if neoforge {
+    /*public static final MenuType<GunSmithTableMenu> TYPE = net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(
+            (id, inventory, buf) -> new GunSmithTableMenu(id, inventory, Identifier.STREAM_CODEC.decode(buf)));
+    *///?} else {
+    public static final MenuType<GunSmithTableMenu> TYPE = new net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType<>(GunSmithTableMenu::new, Identifier.STREAM_CODEC);
+    //?}
 
     private final Identifier blockId;
     private final RecipeFilter filter;

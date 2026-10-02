@@ -1,6 +1,6 @@
 package com.tacz.guns.block.entity;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import com.tacz.guns.platform.BlockEntityTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -38,7 +38,7 @@ import static com.tacz.guns.block.TargetBlock.OUTPUT_POWER;
 import static com.tacz.guns.block.TargetBlock.STAND;
 
 public class TargetBlockEntity extends BlockEntity implements Nameable {
-    public static final BlockEntityType<TargetBlockEntity> TYPE = FabricBlockEntityTypeBuilder.create(TargetBlockEntity::new, ModBlocks.TARGET.get()).build();
+    public static final BlockEntityType<TargetBlockEntity> TYPE = BlockEntityTypes.create(TargetBlockEntity::new, ModBlocks.TARGET.get());
     /**
      * 标靶复位时间，暂定为 5 秒
      */

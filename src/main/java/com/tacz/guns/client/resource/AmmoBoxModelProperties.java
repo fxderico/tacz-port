@@ -26,9 +26,15 @@ public final class AmmoBoxModelProperties {
     private AmmoBoxModelProperties() {
     }
 
+    public static final Identifier STATUE_ID = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ammo_statue");
+    public static final Identifier TINT_ID = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ammo_box_color");
+
+    // NeoForge registers both in its RegisterRangeSelectItemModelPropertyEvent / RegisterColorHandlersEvent.ItemTintSources
     public static void register() {
-        RangeSelectItemModelProperties.ID_MAPPER.put(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ammo_statue"), Statue.MAP_CODEC);
-        ItemTintSources.ID_MAPPER.put(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ammo_box_color"), Tint.MAP_CODEC);
+        //? if fabric {
+        RangeSelectItemModelProperties.ID_MAPPER.put(STATUE_ID, Statue.MAP_CODEC);
+        ItemTintSources.ID_MAPPER.put(TINT_ID, Tint.MAP_CODEC);
+        //?}
     }
 
     public record Statue() implements RangeSelectItemModelProperty {

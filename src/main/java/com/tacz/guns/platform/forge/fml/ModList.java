@@ -1,6 +1,6 @@
 package com.tacz.guns.platform.forge.fml;
 
-import net.fabricmc.loader.api.FabricLoader;
+import com.tacz.guns.platform.Loader;
 
 public final class ModList {
     private static final ModList INSTANCE = new ModList();
@@ -10,6 +10,6 @@ public final class ModList {
     }
 
     public boolean isLoaded(String modId) {
-        return FabricLoader.getInstance().isModLoaded(modId);
+        return Loader.isModLoaded(modId);
     }
 }

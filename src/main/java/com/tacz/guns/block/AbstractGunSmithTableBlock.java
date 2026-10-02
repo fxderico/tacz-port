@@ -52,7 +52,11 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
         } else {
             BlockEntity blockEntity = level.getBlockEntity(getRootPos(pos, pState));
             if (blockEntity instanceof GunSmithTableBlockEntity gunSmithTable && player instanceof ServerPlayer serverPlayer) {
+                //? if neoforge {
+                /*serverPlayer.openMenu(gunSmithTable, buf -> net.minecraft.resources.Identifier.STREAM_CODEC.encode(buf, gunSmithTable.getScreenOpeningData(serverPlayer)));
+                *///?} else {
                 serverPlayer.openMenu(gunSmithTable);
+                //?}
             }
             return InteractionResult.CONSUME;
         }

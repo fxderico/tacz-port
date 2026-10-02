@@ -1,13 +1,13 @@
 package com.tacz.guns.platform.forge.fml.loading;
 
-import net.fabricmc.loader.api.FabricLoader;
+import com.tacz.guns.platform.Loader;
 
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
 public enum FMLPaths {
-    GAMEDIR(() -> FabricLoader.getInstance().getGameDir()),
-    CONFIGDIR(() -> FabricLoader.getInstance().getConfigDir());
+    GAMEDIR(Loader::gameDir),
+    CONFIGDIR(Loader::configDir);
 
     private final Supplier<Path> path;
 

@@ -141,7 +141,7 @@ public class GunHudOverlay implements IGuiOverlay {
 
         // 模组版本信息
         String minecraftVersion = SharedConstants.getCurrentVersion().name();
-        String modVersion = net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(GunMod.MOD_ID).map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("?");
+        String modVersion = com.tacz.guns.platform.Loader.modVersion(GunMod.MOD_ID).orElse("?");
         String debugInfo = String.format("%s-%s", minecraftVersion, modVersion);
         // 文本
         poseStack.pushMatrix();

@@ -3,7 +3,6 @@ package com.tacz.guns.entity;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ServerMessageBulletSpawnData;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -619,7 +618,7 @@ public class EntityKineticBullet extends Projectile {
         this.writeSpawnData(buffer);
         byte[] data = new byte[buffer.readableBytes()];
         buffer.readBytes(data);
-        Packet<?> spawnData = ServerPlayNetworking.createS2CPacket(NetworkHandler.CHANNEL.wrap(new ServerMessageBulletSpawnData(this.getId(), data)));
+        Packet<?> spawnData = NetworkHandler.CHANNEL.toClientPacket(new ServerMessageBulletSpawnData(this.getId(), data));
         return new ClientboundBundlePacket(List.of(addPacket, (Packet<? super ClientGamePacketListener>) spawnData));
     }
 

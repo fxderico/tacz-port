@@ -6,10 +6,7 @@ import com.tacz.guns.GunMod;
 import com.tacz.guns.api.resource.ResourceManager;
 import com.tacz.guns.config.PreLoadConfig;
 import com.tacz.guns.util.GetJarResources;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.api.SemanticVersion;
-import net.fabricmc.loader.api.Version;
+import com.tacz.guns.platform.Loader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -62,7 +59,7 @@ public enum GunPackLoader {
 
     @Nullable
     public synchronized Pack discoverExtensions(PackType type) {
-        Path resourcePacksPath = FabricLoader.getInstance().getGameDir().resolve("tacz");
+        Path resourcePacksPath = Loader.gameDir().resolve("tacz");
         File folder = resourcePacksPath.toFile();
         if (!folder.isDirectory()) {
             try {
@@ -144,10 +141,7 @@ public enum GunPackLoader {
     }
 
     public static @Nullable Path getModIcon(String modId) {
-        return FabricLoader.getInstance().getModContainer(modId)
-                .flatMap(container -> container.findPath("icon.png"))
-                .filter(Files::exists)
-                .orElse(null);
+        return Loader.modFile(modId, "icon.png");
     }
 
     private static GunPack fromDirPath(Path path) throws IOException {
@@ -244,14 +238,9 @@ public enum GunPackLoader {
             return true;
         }
         VersionRange versionRange = VersionRange.createFromVersionSpec(version);
-        Optional<ModContainer> container = FabricLoader.getInstance().getModContainer(modId);
-        return container.map(mod -> {
-            Version modVersion = mod.getMetadata().getVersion();
-            String friendly = modVersion instanceof SemanticVersion semver
-                    ? semver.getVersionComponent(0) + "." + semver.getVersionComponent(1) + "." + semver.getVersionComponent(2)
-                    : modVersion.getFriendlyString();
-            return versionRange.containsVersion(new DefaultArtifactVersion(friendly));
-        }).orElse(false);
+        return Loader.modSemanticVersion(modId)
+                .map(friendly -> versionRange.containsVersion(new DefaultArtifactVersion(friendly)))
+                .orElse(false);
     }
 
     public record GunPack(Path path, String name) {

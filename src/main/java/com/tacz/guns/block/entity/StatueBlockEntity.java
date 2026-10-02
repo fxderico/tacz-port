@@ -1,6 +1,6 @@
 package com.tacz.guns.block.entity;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import com.tacz.guns.platform.BlockEntityTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -26,7 +26,7 @@ import net.minecraft.world.phys.AABB;
 import static com.tacz.guns.block.StatueBlock.FACING;
 
 public class StatueBlockEntity extends BlockEntity {
-    public static final BlockEntityType<StatueBlockEntity> TYPE = FabricBlockEntityTypeBuilder.create(StatueBlockEntity::new, ModBlocks.STATUE.get()).build();
+    public static final BlockEntityType<StatueBlockEntity> TYPE = BlockEntityTypes.create(StatueBlockEntity::new, ModBlocks.STATUE.get());
     private static final String ITEM_TAG = "Item";
     private ItemStack gunItem = ItemStack.EMPTY;
 

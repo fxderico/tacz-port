@@ -1,0 +1,143 @@
+plugins {
+    id("net.neoforged.moddev")
+}
+
+val mcVersion = sc.current.version
+version = "${property("mod.version")}".replace("-fabric", "-neoforge")
+group = property("mod.group") as String
+base.archivesName = "tacz-neoforge-$mcVersion"
+
+val requiredJava: JavaVersion = if (sc.current.parsed >= "26.1") JavaVersion.VERSION_25 else JavaVersion.VERSION_21
+
+repositories {
+    maven("https://jitpack.io")
+    mavenCentral()
+}
+
+// the access widener stays the source of truth, NeoForge reads access transformers
+val accessTransformer = layout.buildDirectory.file("generated/accesstransformer.cfg")
+// things Fabric API widens for everyone (transitive access wideners) that NeoForge leaves closed
+val extraAccess = buildList {
+    if (sc.current.parsed < "26.1") add("public net.minecraft.client.gui.GuiGraphics guiRenderState")
+}
+val generateAccessTransformer = tasks.register("generateAccessTransformer") {
+    val widener = sc.process(rootProject.file("src/main/resources/tacz.accesswidener"), "build/processed.accesswidener")
+    inputs.file(widener)
+    outputs.file(accessTransformer)
+    doLast {
+        val lines = widener.readLines().mapNotNull { line ->
+            val parts = line.substringBefore('#').trim().split(Regex("\\s+"))
+            if (parts.size < 3 || parts[0] != "accessible") return@mapNotNull null
+            val owner = parts[2].replace('/', '.')
+            when (parts[1]) {
+                "class" -> "public $owner"
+                "method" -> "public $owner ${parts[3]}${parts[4]}"
+                "field" -> "public $owner ${parts[3]}"
+                else -> null
+            }
+        }
+        val extra = extraAccess
+        accessTransformer.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText((lines + extra).joinToString("\n", postfix = "\n"))
+        }
+    }
+}
+
+neoForge {
+    version = property("deps.neoforge") as String
+    accessTransformers.from(accessTransformer)
+
+    runs {
+        register("client") {
+            client()
+            jvmArguments.add("-Xmx3G")
+            gameDirectory = layout.projectDirectory.dir("run/client")
+        }
+        register("server") {
+            server()
+            gameDirectory = layout.projectDirectory.dir("run/server")
+            programArgument("--nogui")
+        }
+    }
+
+    mods {
+        register("tacz") {
+            sourceSet(sourceSets.main.get())
+        }
+    }
+}
+
+// libraries TACZ ships inside its jar
+val bundled = listOf(
+    "org.apache.commons:commons-math3:3.6.1",
+    "com.github.FiguraMC.luaj:luaj-core:3.0.8-figura",
+    "com.github.FiguraMC.luaj:luaj-jse:3.0.8-figura",
+    "org.apache.bcel:bcel:6.6.1",
+    "com.maydaymemory:mae:1.1.2",
+    "org.apache.maven:maven-artifact:3.9.6",
+)
+
+dependencies {
+    for (lib in bundled) {
+        implementation(lib) {
+            exclude(group = "org.apache.commons", module = "commons-lang3")
+            exclude(group = "com.google.code.findbugs", module = "jsr305")
+            exclude(group = "it.unimi.dsi", module = "fastutil")
+            exclude(group = "org.joml", module = "joml")
+        }
+        jarJar(lib) {
+            isTransitive = false
+        }
+    }
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+}
+
+java {
+    sourceCompatibility = requiredJava
+    targetCompatibility = requiredJava
+    toolchain.languageVersion = JavaLanguageVersion.of(requiredJava.majorVersion)
+}
+
+tasks {
+    named("createMinecraftArtifacts") { dependsOn(generateAccessTransformer) }
+
+    withType<JavaCompile>().configureEach {
+        options.release = requiredJava.majorVersion.toInt()
+        options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-Xmaxerrs", "100000"))
+    }
+
+    processResources {
+        val props = mapOf(
+            "version" to project.version.toString(),
+            "minecraft" to project.property("mod.mc_compat").toString(),
+            "mc_version" to mcVersion,
+            "neoforge" to project.property("deps.neoforge").toString(),
+        )
+        inputs.properties(props)
+        filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
+        val mixinJava = mapOf("java" to "JAVA_${requiredJava.majorVersion}")
+        inputs.properties(mixinJava)
+        filesMatching("*.mixins.json") { expand(mixinJava) }
+        // Fabric only
+        exclude("fabric.mod.json", "tacz.accesswidener")
+    }
+
+    val shaderVariant = when {
+        sc.current.parsed >= "26.3" -> "26.3"
+        sc.current.parsed >= "26.2" -> "26.2"
+        else -> null
+    }
+    if (shaderVariant != null) {
+        processResources {
+            from(rootProject.file("src/main/shaders/$shaderVariant")) { into("assets/tacz/shaders") }
+        }
+    }
+
+    jar {
+        from(rootProject.file("LICENSE")) { rename { "${it}_tacz" } }
+        from(accessTransformer) { into("META-INF") }
+        dependsOn(generateAccessTransformer)
+    }
+}

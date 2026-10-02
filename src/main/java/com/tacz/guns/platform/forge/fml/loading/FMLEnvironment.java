@@ -1,10 +1,9 @@
 package com.tacz.guns.platform.forge.fml.loading;
 
+import com.tacz.guns.platform.Loader;
 import com.tacz.guns.platform.forge.api.distmarker.Dist;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
 
 public final class FMLEnvironment {
-    public static final Dist dist = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT ? Dist.CLIENT : Dist.DEDICATED_SERVER;
-    public static final boolean production = !FabricLoader.getInstance().isDevelopmentEnvironment();
+    public static final Dist dist = Loader.isClient() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
+    public static final boolean production = Loader.isProduction();
 }

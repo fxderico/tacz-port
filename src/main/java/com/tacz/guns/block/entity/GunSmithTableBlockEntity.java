@@ -1,7 +1,6 @@
 package com.tacz.guns.block.entity;
 
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import com.tacz.guns.platform.BlockEntityTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.ValueInput;
@@ -31,13 +30,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 
-public class GunSmithTableBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<Identifier> {
-    public static final BlockEntityType<GunSmithTableBlockEntity> TYPE = FabricBlockEntityTypeBuilder.create(GunSmithTableBlockEntity::new,
+public class GunSmithTableBlockEntity extends BlockEntity implements /*? if neoforge {*//*net.minecraft.world.MenuProvider*//*?} else {*/net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory<Identifier>/*?}*/ {
+    public static final BlockEntityType<GunSmithTableBlockEntity> TYPE = BlockEntityTypes.create(GunSmithTableBlockEntity::new,
             ModBlocks.GUN_SMITH_TABLE.get(),
             ModBlocks.WORKBENCH_111.get(),
             ModBlocks.WORKBENCH_121.get(),
             ModBlocks.WORKBENCH_211.get()
-    ).build();
+    );
 
     private static final String ID_TAG = "BlockId";
 
@@ -66,7 +65,9 @@ public class GunSmithTableBlockEntity extends BlockEntity implements ExtendedScr
     /**
      * Sent to the client when the menu opens (Forge did this with NetworkHooks.openScreen).
      */
+    //? if fabric {
     @Override
+    //?}
     public Identifier getScreenOpeningData(ServerPlayer player) {
         return getId() == null ? DefaultAssets.DEFAULT_BLOCK_ID : getId();
     }

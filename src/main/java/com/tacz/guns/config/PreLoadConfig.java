@@ -1,36 +1,48 @@
 package com.tacz.guns.config;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.nio.file.Path;
 
 /**
  * Read before the normal configs, straight from .minecraft/tacz/tacz-pre.toml, because the gun pack scan needs it.
+ * Plain night-config: the config specs only take files their loader opened.
  */
 public class PreLoadConfig {
-    private static final ForgeConfigSpec spec;
-    public static ForgeConfigSpec.BooleanValue override;
+    private static final String KEY = "gunpack.DefaultPackDebug";
+    private static final String COMMENT = "When enabled, the mod will not try to overwrite the default pack under .minecraft/tacz\n" +
+            "Since 1.0.4, the overwriting will only run when you start client or a dedicated server";
+    private static CommentedFileConfig config;
 
-    static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-        builder.push("gunpack");
-        builder.comment("When enabled, the mod will not try to overwrite the default pack under .minecraft/tacz\n" +
-                "Since 1.0.4, the overwriting will only run when you start client or a dedicated server");
-        override = builder.define("DefaultPackDebug", false);
-        builder.pop();
-        spec = builder.build();
-    }
+    public static final Setting override = new Setting();
 
-    public static void load(Path configBasePath) {
-        if (spec.isLoaded()) return;
+    public static synchronized void load(Path configBasePath) {
+        if (config != null) {
+            return;
+        }
         CommentedFileConfig configData = CommentedFileConfig.builder(configBasePath.resolve("tacz-pre.toml")).sync().preserveInsertionOrder().build();
         configData.load();
-        if (!spec.isCorrect(configData)) {
-            spec.correct(configData);
+        if (!(configData.get(KEY) instanceof Boolean)) {
+            configData.set(KEY, false);
         }
-        spec.acceptConfig(configData);
+        configData.setComment(KEY, COMMENT);
         configData.save();
-        configData.close();
+        config = configData;
+    }
+
+    public static final class Setting {
+        private Setting() {
+        }
+
+        public boolean get() {
+            return config != null && config.<Boolean>getOrElse(KEY, false);
+        }
+
+        public synchronized void set(boolean value) {
+            if (config != null) {
+                config.set(KEY, value);
+                config.save();
+            }
+        }
     }
 }

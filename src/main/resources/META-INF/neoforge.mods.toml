@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "GPL-3.0 (code) / CC BY-NC-ND 4.0 (assets)"
+issueTrackerURL = "https://github.com/MCModderAnchor/TACZ/issues"
+
+[[mods]]
+modId = "tacz"
+version = "${version}"
+displayName = "Timeless & Classics Guns: Zero (NeoForge port)"
+logoFile = "icon.png"
+authors = "Serene Wave Studio | Timeless Squad"
+description = '''Unofficial NeoForge ${mc_version} port of Timeless & Classics Guns: Zero.'''
+
+[[mixins]]
+config = "tacz.mixins.json"
+
+[[mixins]]
+config = "tacz.sbm.mixins.json"
+
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
+
+[[dependencies.tacz]]
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.tacz]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "BOTH"

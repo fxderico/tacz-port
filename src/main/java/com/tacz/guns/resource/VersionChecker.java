@@ -107,13 +107,9 @@ public final class VersionChecker {
         if ("forge".equals(modId) || "neoforge".equals(modId)) {
             return true;
         }
-        return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(modId).map(mod -> {
-            var modVersion = mod.getMetadata().getVersion();
-            String friendly = modVersion instanceof net.fabricmc.loader.api.SemanticVersion semver
-                    ? semver.getVersionComponent(0) + "." + semver.getVersionComponent(1) + "." + semver.getVersionComponent(2)
-                    : modVersion.getFriendlyString();
-            return versionRange.containsVersion(new org.apache.maven.artifact.versioning.DefaultArtifactVersion(friendly));
-        }).orElse(false);
+        return com.tacz.guns.platform.Loader.modSemanticVersion(modId)
+                .map(friendly -> versionRange.containsVersion(new org.apache.maven.artifact.versioning.DefaultArtifactVersion(friendly)))
+                .orElse(false);
     }
 
     private static class Info {

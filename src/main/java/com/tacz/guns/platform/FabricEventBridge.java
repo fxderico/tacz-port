@@ -1,5 +1,7 @@
 package com.tacz.guns.platform;
 
+//? if fabric {
+
 import com.tacz.guns.platform.forge.common.MinecraftForge;
 import com.tacz.guns.platform.forge.event.OnDatapackSyncEvent;
 import com.tacz.guns.platform.forge.event.TagsUpdatedEvent;
@@ -59,3 +61,4 @@ public final class FabricEventBridge {
                 MinecraftForge.EVENT_BUS.post(new OnDatapackSyncEvent(player.level().getServer().getPlayerList(), player)));
     }
 }
+//?}

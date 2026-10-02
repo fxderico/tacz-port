@@ -1,5 +1,7 @@
 package com.tacz.guns.platform;
 
+//? if fabric {
+
 import com.tacz.guns.platform.forge.client.event.ClientPlayerNetworkEvent;
 import com.tacz.guns.platform.forge.common.MinecraftForge;
 import com.tacz.guns.platform.forge.event.TickEvent;
@@ -32,3 +34,4 @@ public final class FabricClientEventBridge {
                 MinecraftForge.EVENT_BUS.post(new ItemTooltipEvent(stack, Minecraft.getInstance().player, lines, flag)));
     }
 }
+//?}

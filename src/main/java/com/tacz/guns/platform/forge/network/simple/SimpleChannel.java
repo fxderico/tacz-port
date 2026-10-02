@@ -3,8 +3,6 @@ package com.tacz.guns.platform.forge.network.simple;
 import com.tacz.guns.platform.forge.network.NetworkDirection;
 import com.tacz.guns.platform.forge.network.NetworkEvent;
 import com.tacz.guns.platform.forge.network.PacketDistributor;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,13 +15,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Forge SimpleChannel look-alike. Every message class becomes its own Fabric payload type,
+ * Forge SimpleChannel look-alike. Every message class becomes its own payload type,
  * {@code <channel>_<index>}, wrapping the original encode/decode/handle functions.
+ * Fabric registers them right away, NeoForge in RegisterPayloadHandlersEvent ({@link #registerPayloads}).
  */
 public final class SimpleChannel {
     private final Identifier name;
     private final Map<Class<?>, Entry<?>> byClass = new HashMap<>();
     private final List<Entry<?>> clientBound = new ArrayList<>();
+    private final List<Entry<?>> serverBound = new ArrayList<>();
 
     public SimpleChannel(Identifier name) {
         this.name = name;
@@ -59,14 +59,40 @@ public final class SimpleChannel {
         byClass.put(messageType, entry);
         NetworkDirection dir = direction.orElseThrow(() -> new IllegalArgumentException("Messages need a direction: " + messageType));
         if (dir == NetworkDirection.PLAY_TO_SERVER) {
-            PayloadTypeRegistry.playC2S().register(entry.type, entry.codec);
-            ServerPlayNetworking.registerGlobalReceiver(entry.type, (payload, ctx) ->
+            serverBound.add(entry);
+            //? if fabric {
+            net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playC2S().register(entry.type, entry.codec);
+            net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.registerGlobalReceiver(entry.type, (payload, ctx) ->
                     entry.handle(payload, new NetworkEvent.Context(NetworkDirection.PLAY_TO_SERVER, ctx.player())));
+            //?}
         } else {
-            PayloadTypeRegistry.playS2C().register(entry.type, entry.codec);
             clientBound.add(entry);
+            //? if fabric {
+            net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(entry.type, entry.codec);
+            //?}
         }
     }
+
+    //? if neoforge {
+    /*public void registerPayloads(net.neoforged.neoforge.network.registration.PayloadRegistrar registrar) {
+        for (Entry<?> entry : serverBound) {
+            registerServerBound(registrar, entry);
+        }
+        for (Entry<?> entry : clientBound) {
+            registerClientBound(registrar, entry);
+        }
+    }
+
+    private static <M> void registerServerBound(net.neoforged.neoforge.network.registration.PayloadRegistrar registrar, Entry<M> entry) {
+        registrar.playToServer(entry.type, entry.codec, (payload, ctx) -> entry.handle(payload,
+                new NetworkEvent.Context(NetworkDirection.PLAY_TO_SERVER, (net.minecraft.server.level.ServerPlayer) ctx.player())));
+    }
+
+    private static <M> void registerClientBound(net.neoforged.neoforge.network.registration.PayloadRegistrar registrar, Entry<M> entry) {
+        registrar.playToClient(entry.type, entry.codec, (payload, ctx) -> entry.handle(payload,
+                new NetworkEvent.Context(NetworkDirection.PLAY_TO_CLIENT, null)));
+    }
+    *///?}
 
     /**
      * Client bound entries, the client entrypoint registers their receivers.
@@ -84,8 +110,19 @@ public final class SimpleChannel {
         return new Payload<>(entry, message);
     }
 
+    /**
+     * The packet carrying a message to clients, also usable inside bundles.
+     */
+    public <M> net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ClientCommonPacketListener> toClientPacket(M message) {
+        //? if neoforge {
+        /*return new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(wrap(message));
+        *///?} else {
+        return net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.createS2CPacket(wrap(message));
+        //?}
+    }
+
     public <M> void send(PacketDistributor.PacketTarget target, M message) {
-        target.send(ServerPlayNetworking.createS2CPacket(wrap(message)));
+        target.send(toClientPacket(message));
     }
 
     public <M> void sendToServer(M message) {
@@ -94,7 +131,7 @@ public final class SimpleChannel {
 
     public <M> void reply(M message, NetworkEvent.Context context) {
         if (context.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-            ServerPlayNetworking.send(context.getSender(), wrap(message));
+            context.getSender().connection.send(toClientPacket(message));
         } else {
             sendToServer(message);
         }

@@ -97,6 +97,8 @@ tasks {
         val mixinJava = mapOf("java" to "JAVA_${requiredJava.majorVersion}")
         inputs.properties(mixinJava)
         filesMatching("*.mixins.json") { expand(mixinJava) }
+        // NeoForge only
+        exclude("META-INF/neoforge.mods.toml")
     }
 
     // shaders follow the GLSL dialect of each version, older shader managers choke on the newer ones

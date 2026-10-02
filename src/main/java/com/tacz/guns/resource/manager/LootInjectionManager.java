@@ -1,6 +1,5 @@
 package com.tacz.guns.resource.manager;
 
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.core.HolderLookup;
 
 import com.google.common.collect.Maps;
@@ -32,10 +31,22 @@ public class LootInjectionManager extends SimplePreparableReloadListener<Map<Ide
 
     private HolderLookup.Provider registries;
 
+    /**
+     * NeoForge has no registry lookup in the reload state, its AddServerReloadListenersEvent hands it over here instead.
+     */
+    public static HolderLookup.Provider reloadRegistries;
+
+    //? if fabric {
     @Override
     public void prepareSharedState(SharedState sharedState) {
-        this.registries = sharedState.get(ResourceLoader.RELOADER_REGISTRY_LOOKUP_KEY);
+        this.registries = sharedState.get(net.fabricmc.fabric.api.resource.v1.ResourceLoader.RELOADER_REGISTRY_LOOKUP_KEY);
     }
+    //?} else {
+    /*@Override
+    public void prepareSharedState(SharedState sharedState) {
+        this.registries = reloadRegistries;
+    }
+    *///?}
 
     @Override
     protected @NotNull Map<Identifier, List<JsonElement>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {

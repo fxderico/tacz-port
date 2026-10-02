@@ -5,7 +5,22 @@ plugins {
 stonecutter active "1.21.11"
 
 stonecutter parameters {
+    // "1.21.11" is Fabric, "1.21.11-neoforge" NeoForge: `//? if fabric {`, `//? if neoforge {`
+    val loader = current.project.substringAfter('-', "fabric")
+    constants.match(loader, "fabric", "neoforge", "forge")
+
     replacements {
+        // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
+        string(loader == "neoforge") {
+            // on demand import: TACZ's own Dist shim (single type imports) wins where both are imported
+            replace("import net.fabricmc.api.EnvType;", "import net.neoforged.api.distmarker.*;")
+            replace("import net.fabricmc.api.Environment;", "import net.neoforged.api.distmarker.OnlyIn;")
+            replace("@Environment(EnvType.CLIENT)", "@OnlyIn(net.neoforged.api.distmarker.Dist.CLIENT)")
+            replace("@net.fabricmc.api.Environment(net.fabricmc.api.EnvType.CLIENT)", "@net.neoforged.api.distmarker.OnlyIn(net.neoforged.api.distmarker.Dist.CLIENT)")
+            replace("import net.minecraftforge.common.ForgeConfigSpec;", "import net.neoforged.neoforge.common.ModConfigSpec;")
+            replace("ForgeConfigSpec", "ModConfigSpec")
+        }
+
         // 26.1+ ships without obfuscation, access wideners name things in the official namespace
         string(current.parsed >= "26.1") {
             replace("accessWidener v2 named", "accessWidener v2 official")

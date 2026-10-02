@@ -1,7 +1,6 @@
 package com.tacz.guns.crafting;
 
 import com.tacz.guns.init.ModRecipe;
-import net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -16,10 +15,31 @@ import java.util.Optional;
 
 /**
  * Gun smith table recipe lookups for both sides. Since 1.21.2 the client only knows recipes that are
- * explicitly synced, TACZ's serializer is registered with Fabric's recipe synchronization for that.
+ * explicitly synced: Fabric's recipe synchronization on Fabric, OnDatapackSyncEvent#sendRecipes on NeoForge.
  */
 public final class TaczRecipes {
+    /**
+     * Recipes the server sent, NeoForge hands them over in RecipesReceivedEvent.
+     */
+    public static net.minecraft.world.item.crafting.RecipeMap clientRecipes = net.minecraft.world.item.crafting.RecipeMap.EMPTY;
+
     private TaczRecipes() {
+    }
+
+    private static Collection<RecipeHolder<GunSmithTableRecipe>> syncedRecipes(Level level) {
+        //? if neoforge {
+        /*return clientRecipes.byType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
+        *///?} else {
+        return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().getAllOfType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
+        //?}
+    }
+
+    private static RecipeHolder<?> syncedRecipe(Level level, ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> key) {
+        //? if neoforge {
+        /*return clientRecipes.byKey(key);
+        *///?} else {
+        return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().get(key);
+        //?}
     }
 
     @SuppressWarnings("unchecked")
@@ -33,7 +53,7 @@ public final class TaczRecipes {
                 }
             }
         } else {
-            holders = ((FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().getAllOfType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
+            holders = syncedRecipes(level);
         }
         List<GunSmithTableRecipe> recipes = new ArrayList<>(holders.size());
         for (RecipeHolder<GunSmithTableRecipe> holder : holders) {
@@ -50,7 +70,7 @@ public final class TaczRecipes {
         if (level instanceof ServerLevel serverLevel) {
             holder = serverLevel.recipeAccess().byKey(key).orElse(null);
         } else {
-            holder = ((FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().get(key);
+            holder = syncedRecipe(level, key);
         }
         if (holder != null && holder.value() instanceof GunSmithTableRecipe recipe) {
             recipe.setId(id);

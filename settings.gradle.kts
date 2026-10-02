@@ -6,6 +6,10 @@ pluginManagement {
         maven("https://maven.kikugie.dev/releases") { name = "KikuGie Releases" }
         maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
     }
+    plugins {
+        // NeoForge builds
+        id("net.neoforged.moddev") version "2.0.148"
+    }
 }
 
 plugins {
@@ -18,6 +22,8 @@ stonecutter {
     create(rootProject) {
         // every Minecraft version range gets its own jar, see stonecutter.properties.toml
         versions("1.21.11", "26.1.2", "26.2", "26.3")
+        // NeoForge builds share the sources, `//? if neoforge` marks what differs
+        version("1.21.11-neoforge", "1.21.11").buildscript("build.neoforge.gradle.kts")
         // the version the code in src/ is written for when committed
         vcsVersion = "1.21.11"
     }
