@@ -1,9 +1,7 @@
 name: Release
 
-# Publish a release (or push a tag like v1.1.8-fabric.1) to build the mod and attach the jar to it
+# Publish a release on GitHub and this builds the mod and attaches the jar to it
 on:
-  push:
-    tags: ['v*']
   release:
     types: [published]
 
