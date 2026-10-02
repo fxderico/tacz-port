@@ -19,12 +19,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ItemInHandRenderer.class)
 public abstract class ItemInHandRendererEventMixin {
-    @Inject(method = "renderArmWithItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = /*? if >=26.2 {*//*"submitArmWithItem"*//*?} else {*/"renderArmWithItem"/*?}*/, at = @At("HEAD"), cancellable = true)
     private void tacz$renderHand(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress,
                                  ItemStack stack, float equipProgress, PoseStack poseStack, SubmitNodeCollector collector, int light, CallbackInfo ci) {
         RenderHandEvent event = new RenderHandEvent(hand, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), light,
                 partialTick, pitch, swingProgress, equipProgress, stack);
-        if (MinecraftForge.EVENT_BUS.post(event)) {
+        boolean[] cancelled = new boolean[1];
+        com.tacz.guns.platform.client.SubmitScope.run(collector, () -> cancelled[0] = MinecraftForge.EVENT_BUS.post(event));
+        if (cancelled[0]) {
             ci.cancel();
         }
     }

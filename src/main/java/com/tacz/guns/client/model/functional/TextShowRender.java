@@ -61,9 +61,15 @@ public class TextShowRender implements IFunctionalRenderer {
             poseStack2.last().pose().mul(pose);
             poseStack2.scale(2 / 300f * scale, -2 / 300f * scale, -2 / 300f);
 
+            //? if >=26.2 {
+            /*com.tacz.guns.platform.client.SubmitScope.current().submitText(poseStack2, -xOffset, -font.lineHeight / 2f,
+                    net.minecraft.util.FormattedCharSequence.forward(text, net.minecraft.network.chat.Style.EMPTY), shadow,
+                    Font.DisplayMode.NORMAL, packLight, color, 0, 0);
+            *///?} else {
             MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
             font.drawInBatch(text, -xOffset, -font.lineHeight / 2f, color, shadow, poseStack2.last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, packLight);
             bufferSource.endBatch();
+            //?}
         });
     }
 }

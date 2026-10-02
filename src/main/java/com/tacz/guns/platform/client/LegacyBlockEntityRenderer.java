@@ -44,7 +44,7 @@ public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implement
     @Override
     public void submit(State<T> state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.blockEntity != null) {
-            render(state.blockEntity, state.partialTick, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), state.lightCoords, OverlayTexture.NO_OVERLAY);
+            SubmitScope.run(collector, () -> render(state.blockEntity, state.partialTick, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), state.lightCoords, OverlayTexture.NO_OVERLAY));
         }
     }
 }

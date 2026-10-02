@@ -63,6 +63,7 @@ public class BedrockGunModel extends BedrockAnimatedModel {
 
     private boolean renderHand = true;
     private boolean stencilUsed = false;
+    private @Nullable Identifier firstPersonTexture;
     private boolean renderMount;
     private ItemStack currentGunItem;
     private int currentExtendMagLevel = 0;
@@ -296,6 +297,12 @@ public class BedrockGunModel extends BedrockAnimatedModel {
             // 开启模板测试，因为镜内不渲染枪体
             if (iAttachment != null && transformType.firstPerson()) {
                 Optional<ClientAttachmentIndex> attachmentIndex = TimelessAPI.getClientAttachmentIndex(iAttachment.getAttachmentId(attachmentItem));
+                //? if >=26.2 {
+                /*// no stencil: the gun body discards what falls inside the eyepiece, see ScopeMask
+                if (this.firstPersonTexture != null && attachmentIndex.map(ClientAttachmentIndex::isScope).orElse(false)) {
+                    renderType = com.tacz.guns.client.renderer.ScopeMask.outsideLens(this.firstPersonTexture);
+                }
+                *///?} else {
                 attachmentIndex.ifPresent(index -> {
                     if (index.isScope() && index.isSight()) { // 组合镜
                         RenderHelper.enableItemEntityStencilTest();
@@ -307,8 +314,10 @@ public class BedrockGunModel extends BedrockAnimatedModel {
                         stencilUsed = true;
                     }
                 });
+                //?}
             }
         }
+        //? if <26.2
         RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
         super.render(matrixStack, transformType, renderType, light, overlay);
         if (stencilUsed) {
@@ -316,6 +325,13 @@ public class BedrockGunModel extends BedrockAnimatedModel {
             RenderHelper.disableItemEntityStencilTest();
             RenderHelper.clearStencil();
         }
+    }
+
+    /**
+     * Texture of the gun in the first person render, lets the body use the scope mask render type on 26.2+.
+     */
+    public void setFirstPersonTexture(@Nullable Identifier texture) {
+        this.firstPersonTexture = texture;
     }
 
     @Nullable

@@ -20,14 +20,11 @@ public abstract class GameRendererMixin {
     @Unique
     private boolean sbm$useFovSetting;
 
-    @Shadow
-    public abstract Minecraft getMinecraft();
-
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
     //? if >=26.1 {
-    /*public void onBobHurt(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, PoseStack pMatrixStack, CallbackInfo ci) {
-        float pPartialTicks = this.getMinecraft().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+    /*public void onBobHurt(net.minecraft.client.renderer.state.CameraRenderState cameraState, PoseStack pMatrixStack, CallbackInfo ci) {
+        float pPartialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
     *///?} else {
     public void onBobHurt(PoseStack pMatrixStack, float pPartialTicks, CallbackInfo ci) {
     //?}
@@ -44,7 +41,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
     //? if >=26.1 {
-    /*public void onBobView(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, PoseStack pMatrixStack, CallbackInfo ci) {
+    /*public void onBobView(net.minecraft.client.renderer.state.CameraRenderState cameraState, PoseStack pMatrixStack, CallbackInfo ci) {
     *///?} else {
     public void onBobView(PoseStack pMatrixStack, float pPartialTicks, CallbackInfo ci) {
     //?}
@@ -67,7 +64,7 @@ public abstract class GameRendererMixin {
     }
 
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
-    private void sbm$handPass(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, float deltaPartialTick, org.joml.Matrix4fc modelViewMatrix, CallbackInfo ci) {
+    private void sbm$handPass(net.minecraft.client.renderer.state.CameraRenderState cameraState, float deltaPartialTick, org.joml.Matrix4fc modelViewMatrix, CallbackInfo ci) {
         this.sbm$useFovSetting = false;
     }
     *///?} else {

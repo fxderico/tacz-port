@@ -4,7 +4,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class SecondOrderDynamics {
-    public static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(15, Thread::new);
+    // daemon threads: the game has to be able to exit while these are idle (26.2 waits for every other thread)
+    public static final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(15, runnable -> {
+        Thread thread = new Thread(runnable, "tacz-second-order-dynamics");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     static {
         for (int i = 0; i < 15; i++) {

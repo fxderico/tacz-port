@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * The two overlay hooks TACZ needs: the crosshair, and the whole HUD (hidden while its screens are open).
  */
-@Mixin(Gui.class)
+// 26.2 moved the HUD into its own class
+@Mixin(/*? if >=26.2 {*//*net.minecraft.client.gui.Hud.class*//*?} else {*/Gui.class/*?}*/)
 public abstract class GuiEventMixin {
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
     private void tacz$crosshair(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {

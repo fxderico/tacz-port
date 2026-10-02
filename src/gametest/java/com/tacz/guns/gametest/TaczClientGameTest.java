@@ -40,7 +40,11 @@ public class TaczClientGameTest implements FabricClientGameTest {
 
         try (TestSingleplayerContext singleplayer = context.worldBuilder().create()) {
             TestServerContext server = singleplayer.getServer();
+            //? if >=26.2 {
+            /*singleplayer.getConnection().waitForChunksRender();
+            *///?} else {
             singleplayer.getClientWorld().waitForChunksRender();
+            //?}
 
             server.runCommand("difficulty easy");
             server.runCommand("gamemode survival @a");
@@ -150,13 +154,13 @@ public class TaczClientGameTest implements FabricClientGameTest {
     }
 
     private static float huskHealth(MinecraftServer server) {
-        List<? extends Husk> husks = server.overworld().getEntities(EntityType.HUSK, husk -> true);
+        List<? extends Husk> husks = server.overworld().getEntities(/*? if >=26.2 {*//*net.minecraft.world.entity.EntityTypes*//*?} else {*/EntityType/*?}*/.HUSK, husk -> true);
         return husks.isEmpty() ? 0 : husks.getFirst().getHealth();
     }
 
     private static String describePositions(MinecraftServer server) {
         ServerPlayer player = player(server);
-        List<? extends Husk> husks = server.overworld().getEntities(EntityType.HUSK, husk -> true);
+        List<? extends Husk> husks = server.overworld().getEntities(/*? if >=26.2 {*//*net.minecraft.world.entity.EntityTypes*//*?} else {*/EntityType/*?}*/.HUSK, husk -> true);
         return "player at " + player.position() + " looking " + player.getXRot() + "/" + player.getYRot()
                 + ", husks " + husks.stream().map(husk -> husk.position().toString()).toList();
     }

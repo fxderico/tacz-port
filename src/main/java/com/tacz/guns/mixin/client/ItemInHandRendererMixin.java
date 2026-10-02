@@ -31,7 +31,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
     @Unique
     private long tacz$KeepTimestamp;
 
-    @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
+    @Inject(method = /*? if >=26.2 {*//*"submitHandsWithItems"*//*?} else {*/"renderHandsWithItems"/*?}*/, at = @At("HEAD"))
     public void beforeHandRender(float pPartialTicks, PoseStack pMatrixStack, net.minecraft.client.renderer.SubmitNodeCollector collector, LocalPlayer pPlayerEntity, int pCombinedLight, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new BeforeRenderHandEvent(pMatrixStack));
     }

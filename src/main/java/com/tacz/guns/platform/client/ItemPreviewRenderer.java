@@ -18,9 +18,14 @@ import com.mojang.blaze3d.platform.Lighting;
  */
 @Environment(EnvType.CLIENT)
 public class ItemPreviewRenderer extends PictureInPictureRenderer<ItemPreviewRenderState> {
+    //? if >=26.2 {
+    /*public ItemPreviewRenderer() {
+    }
+    *///?} else {
     public ItemPreviewRenderer(MultiBufferSource.BufferSource bufferSource) {
         super(bufferSource);
     }
+    //?}
 
     @Override
     public Class<ItemPreviewRenderState> getRenderStateClass() {
@@ -28,13 +33,23 @@ public class ItemPreviewRenderer extends PictureInPictureRenderer<ItemPreviewRen
     }
 
     @Override
+    //? if >=26.2 {
+    /*protected void renderToTexture(ItemPreviewRenderState state, PoseStack poseStack, net.minecraft.client.renderer.SubmitNodeCollector collector) {
+        SubmitScope.run(collector, () -> this.renderItem(state, poseStack, MultiBufferSource.immediate()));
+    }
+    *///?} else {
     protected void renderToTexture(ItemPreviewRenderState state, PoseStack poseStack) {
+        this.renderItem(state, poseStack, this.bufferSource);
+    }
+    //?}
+
+    private void renderItem(ItemPreviewRenderState state, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource) {
         Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_FLAT);
         poseStack.scale(1.0F, -1.0F, 1.0F);
         poseStack.mulPose(Axis.XP.rotationDegrees(state.pitch()));
         poseStack.mulPose(Axis.YP.rotationDegrees(state.yaw()));
         ItemRenderHelper.renderStatic(state.stack(), ItemDisplayContext.FIXED, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
-                poseStack, this.bufferSource, null, 0);
+                poseStack, bufferSource, null, 0);
     }
 
     @Override

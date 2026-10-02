@@ -38,6 +38,6 @@ public final class ItemRenderHelper {
         Minecraft mc = Minecraft.getInstance();
         ItemStackRenderState state = new ItemStackRenderState();
         mc.getItemModelResolver().updateForTopItem(state, stack, context, level, null, seed);
-        state.submit(poseStack, mc.gameRenderer.getSubmitNodeStorage(), light, overlay, 0);
+        state.submit(poseStack, SubmitScope.current(), light, overlay, 0);
     }
 }

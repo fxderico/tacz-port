@@ -134,7 +134,11 @@ public class GunModClient implements ClientModInitializer {
         // the internal default models/animations have to be there before the gun packs reference them
         clientResources.addReloaderOrdering(id("internal_assets"), id("client_assets"));
 
+        //? if >=26.2 {
+        /*SpecialGuiElementRegistry.register(ctx -> new com.tacz.guns.platform.client.ItemPreviewRenderer());
+        *///?} else {
         SpecialGuiElementRegistry.register(ctx -> new com.tacz.guns.platform.client.ItemPreviewRenderer(ctx.vertexConsumers()));
+        //?}
 
         SimpleChannelClient.registerReceivers(NetworkHandler.CHANNEL);
         TaczRegistries.setClientRegistries(() -> Minecraft.getInstance().level != null ? Minecraft.getInstance().level.registryAccess() : null);

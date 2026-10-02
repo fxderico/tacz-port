@@ -21,6 +21,18 @@ public abstract class LivingEntityEventsMixin {
         original.call(level, source, event.getAmount());
     }
 
+    //? if >=26.2 {
+    /*// 26.2 passes the damage along, the five argument overload delegates here
+    @WrapMethod(method = "knockback(DDDLnet/minecraft/world/damagesource/DamageSource;FZ)V")
+    private void tacz$knockback(double strength, double x, double z, net.minecraft.world.damagesource.DamageSource source, float damage,
+                                boolean comesFromEffect, Operation<Void> original) {
+        LivingKnockBackEvent event = new LivingKnockBackEvent((LivingEntity) (Object) this, (float) strength, x, z);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            return;
+        }
+        original.call((double) event.getStrength(), event.getRatioX(), event.getRatioZ(), source, damage, comesFromEffect);
+    }
+    *///?} else {
     @WrapMethod(method = "knockback")
     private void tacz$knockback(double strength, double x, double z, Operation<Void> original) {
         LivingKnockBackEvent event = new LivingKnockBackEvent((LivingEntity) (Object) this, (float) strength, x, z);
@@ -29,4 +41,5 @@ public abstract class LivingEntityEventsMixin {
         }
         original.call((double) event.getStrength(), event.getRatioX(), event.getRatioZ());
     }
+    //?}
 }

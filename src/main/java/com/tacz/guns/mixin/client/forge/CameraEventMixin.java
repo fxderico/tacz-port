@@ -39,6 +39,7 @@ public abstract class CameraEventMixin {
     @Inject(method = "calculateHudFov", at = @At("RETURN"), cancellable = true)
     private void tacz$computeHandFov(float partialTicks, CallbackInfoReturnable<Float> cir) {
         tacz$postFov(partialTicks, false, cir);
+        com.tacz.guns.client.renderer.HandProjection.hudFov = cir.getReturnValueF();
     }
 
     @org.spongepowered.asm.mixin.Unique

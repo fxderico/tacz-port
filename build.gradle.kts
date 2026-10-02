@@ -99,6 +99,17 @@ tasks {
         filesMatching("*.mixins.json") { expand(mixinJava) }
     }
 
+    // shaders follow the GLSL dialect of each version, older shader managers choke on the newer ones
+    val shaderVariant = when {
+        sc.current.parsed >= "26.2" -> "26.2"
+        else -> null
+    }
+    if (shaderVariant != null) {
+        processResources {
+            from(rootProject.file("src/main/shaders/$shaderVariant")) { into("assets/tacz/shaders") }
+        }
+    }
+
     jar {
         from(rootProject.file("LICENSE")) { rename { "${it}_tacz" } }
     }

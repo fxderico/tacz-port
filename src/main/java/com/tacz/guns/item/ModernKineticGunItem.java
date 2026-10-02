@@ -515,12 +515,13 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         if (target.equals(user)) {
             return;
         }
+        var source = user instanceof Player player ? user.damageSources().playerAttack(player) : user.damageSources().mobAttack(user);
+        //? if >=26.2 {
+        /*target.knockback(knockback, (float) Math.sin(Math.toRadians(user.getYRot())), (float) -Math.cos(Math.toRadians(user.getYRot())), source, damage);
+        *///?} else {
         target.knockback(knockback, (float) Math.sin(Math.toRadians(user.getYRot())), (float) -Math.cos(Math.toRadians(user.getYRot())));
-        if (user instanceof Player player) {
-            target.hurt(user.damageSources().playerAttack(player), damage);
-        } else {
-            target.hurt(user.damageSources().mobAttack(user), damage);
-        }
+        //?}
+        target.hurt(source, damage);
         // 修复近战枪械不触发神化词条/宝石的bug
         if (user.level() instanceof ServerLevel enchantLevel) {
             EnchantmentHelper.doPostAttackEffects(enchantLevel, target, user.damageSources().mobAttack(user));

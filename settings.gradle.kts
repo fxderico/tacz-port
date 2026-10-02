@@ -17,7 +17,7 @@ plugins {
 stonecutter {
     create(rootProject) {
         // every Minecraft version range gets its own jar, see stonecutter.properties.toml
-        versions("1.21.11", "26.1.2")
+        versions("1.21.11", "26.1.2", "26.2")
         // the version the code in src/ is written for when committed
         vcsVersion = "1.21.11"
     }

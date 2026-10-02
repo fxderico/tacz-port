@@ -26,7 +26,7 @@ stonecutter parameters {
             replace("TooltipComponentCallback", "ClientTooltipComponentCallback")
             replace("registerReloader(", "registerReloadListener(")
             replace("addReloaderOrdering(", "addListenerOrdering(")
-            replace("RELOADER_REGISTRY_LOOKUP_KEY", "REGISTRY_LOOKUP_KEY")
+            replace("ResourceLoader.RELOADER_REGISTRY_LOOKUP_KEY", "ResourceLoader.REGISTRY_LOOKUP_KEY")
             replace("createS2CPacket(", "createClientboundPacket(")
             replace("playS2C()", "clientboundPlay()")
             replace("playC2S()", "serverboundPlay()")
@@ -73,6 +73,30 @@ stonecutter parameters {
                 replace("${receiver}renderItem(", "${receiver}item(")
                 replace("${receiver}renderFakeItem(", "${receiver}fakeItem(")
             }
+        }
+
+        // 26.2 moved screens and HUD state into Gui / Hud, render targets and lighting into GameRenderer
+        string(current.parsed >= "26.2") {
+            replace("Minecraft.getInstance().screen", "Minecraft.getInstance().gui.screen()")
+            replace("minecraft.screen", "minecraft.gui.screen()")
+            replace("mc.screen", "mc.gui.screen()")
+            replace("minecraft.setScreen(", "minecraft.gui.setScreen(")
+            replace("Minecraft.getInstance().setScreen(", "Minecraft.getInstance().gui.setScreen(")
+            replace("mc.getOverlay()", "mc.gui.overlay()")
+            replace("gui.getGuiTicks()", "gui.hud.getGuiTicks()")
+            replace("options.hideGui", "net.minecraft.client.Minecraft.getInstance().gui.hud.isHidden()")
+            replace("Minecraft.getInstance().getMainRenderTarget()", "Minecraft.getInstance().gameRenderer.mainRenderTarget()")
+            replace("gameRenderer.getLighting()", "gameRenderer.lighting()")
+            replace("gameRenderer.getMainCamera()", "gameRenderer.mainCamera()")
+            for (color in listOf("DARK_GRAY", "YELLOW", "WHITE", "GRAY")) {
+                replace("ChatFormatting.$color.getColor()", "net.minecraft.network.chat.TextColor.fromLegacyFormat(ChatFormatting.$color).getValue()")
+            }
+        }
+
+        // 26.2 removed MultiBufferSource, TACZ uses a stand-in that submits its batches as custom geometry
+        string(current.parsed >= "26.2") {
+            replace("import net.minecraft.client.renderer.MultiBufferSource;", "import com.tacz.guns.platform.client.compat.MultiBufferSource;")
+            replace("Minecraft.getInstance().renderBuffers().bufferSource()", "com.tacz.guns.platform.client.compat.MultiBufferSource.immediate()")
         }
     }
 }

@@ -10,6 +10,7 @@ Code is GPL-3.0 like upstream. Assets are CC BY-NC-ND 4.0 and belong to the orig
 |---|---|---|
 | 1.21.11 | `tacz-fabric-1.21.11-*.jar` | works, client gametest passes |
 | 26.1 - 26.1.2 | `tacz-fabric-26.1.2-*.jar` | works, client gametest passes |
+| 26.2 | `tacz-fabric-26.2-*.jar` | works on OpenGL, client gametest passes; Vulkan not tested yet |
 
 Quilt loads the Fabric jars (with Fabric API installed).
 
@@ -39,6 +40,7 @@ Versions and dependency versions are in `stonecutter.properties.toml`. Gradle ne
 - Gun packs are served as one built-in pack (`resource/GunPackResources`), old 1.20 folder names (`recipes`, `loot_tables`, `tags/items`...) are remapped, Forge tags map to `c:` tags (`util/LegacyJson`).
 - Config uses Forge Config API Port (`forgeconfigapiport`, required at runtime).
 - Scopes mask their eyepiece with the stencil buffer like on Forge. 1.21.5+ render targets have no stencil, so depth textures are allocated as depth + stencil (`mixin/client/GlDeviceStencilMixin`, `DirectStateAccessStencilMixin`) and the stencil state is set with raw GL calls around the scope draws (`util/RenderHelper`, `client/renderer/ScopeRenderTypes`).
+- 26.2 removed `MultiBufferSource` and can run on Vulkan. TACZ's renderers keep writing to a stand-in (`platform/client/compat/MultiBufferSource`) that records vertices and submits them as custom geometry to the collector of the current render (`platform/client/SubmitScope`). Scopes drop the stencil: every scope part discards its own fragments against screen circles in the `tacz:core/scope_entity` shader (`client/renderer/ScopeMask`). Shaders differ per version and live in `src/main/shaders/<version>`.
 
 ## Testing
 
@@ -46,8 +48,8 @@ Versions and dependency versions are in `stonecutter.properties.toml`. Gradle ne
 
 ## Next steps
 
-- More Minecraft versions: 26.2, 26.3, then back down 1.21.10 to 1.21. Loaders: NeoForge and Forge builds.
-- 26.2 can run on Vulkan, the scope stencil uses raw OpenGL calls and needs a Vulkan path or a fallback there.
+- More Minecraft versions: 26.3, then back down 1.21.10 to 1.21. Loaders: NeoForge and Forge builds.
+- Test 26.2 with the Vulkan backend.
 - Join a dedicated server with the client (`TestDedicatedServerContext` in the gametest can do it) to check the networking side.
 - Gun smith table crafting and the refit screen (attachment install/remove over the network).
 - Run through the rest of the default pack: shotguns, RPG/M320 explosions, minigun, burst fire, heat.

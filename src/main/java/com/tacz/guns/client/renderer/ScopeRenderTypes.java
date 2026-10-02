@@ -28,6 +28,8 @@ import java.util.function.Function;
  */
 @Environment(EnvType.CLIENT)
 public final class ScopeRenderTypes {
+    // OpenGL stencil, replaced by shader masks in 26.2 (Vulkan has no stencil here), see ScopeMask
+    //? if <26.2 {
     /**
      * Ocular drawn only into the stencil buffer: no color, no depth write, still depth tested and alpha cut.
      */
@@ -100,4 +102,5 @@ public final class ScopeRenderTypes {
     private static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(GunMod.MOD_ID, path);
     }
+    //?}
 }

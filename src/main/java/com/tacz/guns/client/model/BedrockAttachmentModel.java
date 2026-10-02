@@ -169,6 +169,11 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
         this.currentGunItem = currentGunItem;
         this.attachmentItem = attachmentItem;
         if (transformType.firstPerson() && texture != null) {
+            //? if >=26.2 {
+            /*if (isScope || isSight) {
+                renderMasked(matrixStack, transformType, renderType, light, overlay);
+            }
+            *///?} else {
             if (isScope && isSight) {
                 renderBoth(matrixStack, transformType, renderType, light, overlay);
             } else if (isScope) {
@@ -176,6 +181,7 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
             } else if (isSight) {
                 renderSight(matrixStack, transformType, renderType, light, overlay);
             }
+            //?}
         } else {
             if (scopeBodyPath != null) {
                 renderTempPart(matrixStack, transformType, renderType, light, overlay, scopeBodyPath);
@@ -223,6 +229,46 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
         poseStack.popPose();
     }
 
+    //? if >=26.2 {
+    /*/^*
+     * 26.2+: no stencil, every part discards its own fragments in the scope shader (see ScopeMask).
+     *^/
+    private void renderMasked(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
+        List<List<BedrockPart>> scopeOculars = new ArrayList<>();
+        List<List<BedrockPart>> sightOculars = new ArrayList<>();
+        for (int i = 0; i < ocularNodePaths.size(); i++) {
+            boolean scopeOcular = isScope && (!isSight || isScopeOcular.get(i));
+            (scopeOcular ? scopeOculars : sightOculars).add(ocularNodePaths.get(i));
+        }
+        List<BedrockPart> primary = !scopeOculars.isEmpty() ? scopeOculars.getFirst() : sightOculars.isEmpty() ? null : sightOculars.getFirst();
+        List<BedrockPart> secondary = !scopeOculars.isEmpty() && !sightOculars.isEmpty() ? sightOculars.getFirst() : null;
+        if (primary != null) {
+            // 80是一个随便找的大小合适的数值。
+            float rad = 80 * scopeViewRadiusModifier;
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                rad *= IClientPlayerGunOperator.fromLocalPlayer(player).getClientAimingProgress(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            }
+            com.tacz.guns.client.renderer.ScopeMask.setLenses(matrixStack, transformType, primary, !scopeOculars.isEmpty(), secondary, rad);
+        }
+        if (ocularRingPath != null) {
+            renderTempPart(matrixStack, transformType, renderType, light, overlay, ocularRingPath);
+        }
+        if (scopeBodyPath != null) {
+            renderTempPart(matrixStack, transformType, isScope ? com.tacz.guns.client.renderer.ScopeMask.outsideLens(texture) : renderType, light, overlay, scopeBodyPath);
+        }
+        // black eyepiece of the scope, opened by the aim circle
+        for (List<BedrockPart> ocular : scopeOculars) {
+            renderTempPart(matrixStack, transformType, com.tacz.guns.client.renderer.ScopeMask.ocularMask(texture), light, overlay, ocular);
+        }
+        // red dot sights draw their reticle over everything in the eyepiece, like the Forge version
+        RenderType reticle = com.tacz.guns.client.renderer.ScopeMask.reticle(texture, isScope);
+        for (List<BedrockPart> division : divisionNodePaths) {
+            renderTempPart(matrixStack, transformType, reticle, light, overlay, division);
+        }
+        super.render(matrixStack, transformType, renderType, light, overlay);
+    }
+    *///?} else {
     private void renderOcularStencil(PoseStack matrixStack, ItemDisplayContext transformType, int light, int overlay, boolean isScope) {
         if (!ocularNodePaths.isEmpty()) {
             // color and depth writes are off in this render type
@@ -381,6 +427,7 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
         // 渲染其他部分
         super.render(matrixStack, transformType, renderType, light, overlay);
     }
+    //?}
 
     private static class OcularWrapper{
         public ModelRendererWrapper renderer;

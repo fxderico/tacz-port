@@ -15,8 +15,11 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
         "com.mojang.blaze3d.opengl.GlCommandEncoder"
 })
 public abstract class DirectStateAccessStencilMixin {
+    // OpenGL stencil, replaced by shader masks in 26.2 (Vulkan has no stencil here), see ScopeMask
+    //? if <26.2 {
     @ModifyConstant(method = {"bindFrameBufferTextures", "clearDepthTexture"}, constant = @Constant(intValue = GL30.GL_DEPTH_ATTACHMENT))
     private int tacz$depthStencilAttachment(int attachment) {
         return GL30.GL_DEPTH_STENCIL_ATTACHMENT;
     }
+    //?}
 }

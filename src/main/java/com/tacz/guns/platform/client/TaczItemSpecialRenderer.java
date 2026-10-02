@@ -52,7 +52,7 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
         }
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         // the old ItemRenderer translated by -0.5 before handing over to a BEWLR, ItemTransform#apply does that now
-        renderer.renderByItem(stack, displayContext, poseStack, bufferSource, light, overlay);
+        SubmitScope.run(collector, () -> renderer.renderByItem(stack, displayContext, poseStack, bufferSource, light, overlay));
     }
 
     @Override

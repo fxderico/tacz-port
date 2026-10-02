@@ -78,7 +78,7 @@ public final class RenderHelper {
         Minecraft mc = Minecraft.getInstance();
         AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer> renderer = mc.getEntityRenderDispatcher().getPlayerRenderer(player);
         // queued on the game renderer, ItemInHandRenderer flushes the queue right after the hands are done
-        SubmitNodeCollector collector = mc.gameRenderer.getSubmitNodeStorage();
+        SubmitNodeCollector collector = com.tacz.guns.platform.client.SubmitScope.current();
         Identifier skin = player.getSkin().body().texturePath();
         if (hand == HumanoidArm.RIGHT) {
             renderer.renderRightHand(matrixStack, collector, combinedLight, skin, player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE));

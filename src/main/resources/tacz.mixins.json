@@ -36,6 +36,7 @@
     "client.LocalPlayerMixin",
     "client.MinecraftAccessor",
     "client.MouseHandlerMixin",
+    "client.PreparedRenderTypeScopeMixin",
     "client.SoundManagerPreparationsMixin",
     "client.forge.AbstractClientPlayerFovMixin",
     "client.forge.CameraEventMixin",

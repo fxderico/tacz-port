@@ -48,7 +48,7 @@ public abstract class LegacyEntityRenderer<T extends Entity> extends EntityRende
     public void submit(State<T> state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         super.submit(state, poseStack, collector, camera);
         if (state.entity != null) {
-            render(state.entity, state.yaw, state.partialTick, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), state.lightCoords);
+            SubmitScope.run(collector, () -> render(state.entity, state.yaw, state.partialTick, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), state.lightCoords));
         }
     }
 }
