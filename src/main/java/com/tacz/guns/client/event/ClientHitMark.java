@@ -1,5 +1,6 @@
 package com.tacz.guns.client.event;
 
+import com.tacz.guns.util.PlayerMessages;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
 import com.tacz.guns.api.event.common.EntityKillByGunEvent;
@@ -48,7 +49,7 @@ public class ClientHitMark {
                     damageAmount = event.getAmount();
                 }
                 float distance = player.distanceTo(event.getHurtEntity());
-                player.displayClientMessage(Component.translatable("message.tacz.target_minecart.hit", String.format("%.1f", damageAmount), String.format("%.2f", distance)), true);
+                PlayerMessages.send(player, Component.translatable("message.tacz.target_minecart.hit", String.format("%.1f", damageAmount), String.format("%.2f", distance)), true);
 
                 lastHitTimestamp = System.currentTimeMillis();
             }

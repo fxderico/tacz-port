@@ -25,7 +25,7 @@ public abstract class GuiEventMixin {
         }
     }
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    @Inject(method = /*? if >=26.1 {*//*"extractRenderState"*//*?} else {*/"render"/*?}*/, at = @At("HEAD"), cancellable = true)
     private void tacz$hud(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new RenderGuiOverlayEvent.Pre(Minecraft.getInstance().getWindow(), graphics,
                 deltaTracker.getGameTimeDeltaPartialTick(false), VanillaGuiOverlay.HOTBAR.type()))) {

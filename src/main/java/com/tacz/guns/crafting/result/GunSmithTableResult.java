@@ -17,6 +17,11 @@ public class GunSmithTableResult {
 
     @Nullable
     private RawGunTableResult raw = null;
+    /**
+     * Custom results are plain item stacks, built in {@link #init()} since stacks can't exist while data packs load.
+     */
+    @Nullable
+    private java.util.function.Supplier<ItemStack> customResult = null;
 
     public GunSmithTableResult(ItemStack result, @Nullable Identifier group) {
         this.result = result;
@@ -28,12 +33,21 @@ public class GunSmithTableResult {
         this.raw = raw;
     }
 
+    public GunSmithTableResult(@NotNull java.util.function.Supplier<ItemStack> customResult, @Nullable Identifier group) {
+        this.customResult = customResult;
+        this.group = group==null ? TabConfig.TAB_EMPTY : group;
+    }
+
     public GunSmithTableResult(@NotNull RawGunTableResult raw, @Nullable Identifier group) {
         this.raw = raw;
         this.group = group==null ? TabConfig.TAB_EMPTY : group;
     }
 
     public void init() {
+        if (customResult != null) {
+            this.result = customResult.get();
+            this.customResult = null;
+        }
         if (raw != null) {
             GunSmithTableResult result = RawGunTableResult.init(raw);
             this.result = result.getResult();

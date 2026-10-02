@@ -43,7 +43,7 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font pFont, int pX, int pY, int tooltipWidth, int tooltipHeight, GuiGraphics pGuiGraphics) {
-        pGuiGraphics.renderItem(ammo, pX, pY + 5);
+    public void renderImage(Font pFont, int pX, int pY, int tooltipWidth, int tooltipHeight, GuiGraphics pGraphics) {
+        pGraphics.renderItem(ammo, pX, pY + 5);
     }
 }

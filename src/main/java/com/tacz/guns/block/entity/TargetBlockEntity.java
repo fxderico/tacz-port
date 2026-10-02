@@ -137,7 +137,7 @@ public class TargetBlockEntity extends BlockEntity implements Nameable {
             // 当声音大于 1 时，距离为 = 16 * volume
             float volume = OtherConfig.TARGET_SOUND_DISTANCE.get() / 16.0f;
             volume = Math.max(volume, 0);
-            level.playSound(null, blockPos, ModSounds.TARGET_HIT.get(), SoundSource.BLOCKS, volume, this.level.random.nextFloat() * 0.1F + 0.9F);
+            level.playSound(null, blockPos, ModSounds.TARGET_HIT.get(), SoundSource.BLOCKS, volume, this.level.getRandom().nextFloat() * 0.1F + 0.9F);
         }
     }
 }

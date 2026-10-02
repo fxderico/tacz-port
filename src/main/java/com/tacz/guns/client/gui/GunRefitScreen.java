@@ -1,5 +1,6 @@
 package com.tacz.guns.client.gui;
 
+import com.tacz.guns.util.PlayerMessages;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
@@ -245,7 +246,7 @@ public class GunRefitScreen extends Screen {
                             ClientMessageUnloadAttachment message = new ClientMessageUnloadAttachment(inventory.getSelectedSlot(), RefitTransform.getCurrentTransformType());
                             NetworkHandler.CHANNEL.sendToServer(message);
                         } else {
-                            player.displayClientMessage(Component.translatable("gui.tacz.gun_refit.unload.no_space"), false);
+                            PlayerMessages.send(player, Component.translatable("gui.tacz.gun_refit.unload.no_space"), false);
                         }
                     }
                 });

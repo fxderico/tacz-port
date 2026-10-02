@@ -39,7 +39,7 @@ public class GunLevelUpToast implements Toast {
     }
 
     @Override
-    public void render(GuiGraphics gui, Font font, long timeSinceLastVisible) {
+    public void /*? if >=26.1 {*//*extractRenderState*//*?} else {*/render/*?}*/(GuiGraphics gui, Font font, long timeSinceLastVisible) {
         // todo 这个类没有实际使用，先不管了
         gui.drawString(font, this.title, 30, 7, 0xFFFFFF00, false);
         if (this.subTitle != null) {

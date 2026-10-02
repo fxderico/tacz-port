@@ -1,6 +1,6 @@
 name: Release
 
-# Publish a release on GitHub and this builds the mod and attaches the jar to it
+# Publish a release on GitHub and this builds every Minecraft version and attaches the jars to it
 on:
   release:
     types: [published]
@@ -16,10 +16,13 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 25
+          # 21 for the 1.21.x toolchains, 25 last so it runs Gradle and the 26.x builds
+          java-version: |
+            21
+            25
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew && ./gradlew build --no-daemon
       - uses: softprops/action-gh-release@v2
         with:
-          files: build/libs/tacz-fabric-*.jar
+          files: versions/*/build/libs/tacz-fabric-*.jar
           generate_release_notes: true

@@ -38,8 +38,16 @@ public class GunSmithTableRecipe implements Recipe<RecipeInput> {
 
     @Override
     @Deprecated
+    //? if >=26.1 {
+    /*public ItemStack assemble(RecipeInput input) {
+    *///?} else {
     public ItemStack assemble(RecipeInput input, HolderLookup.Provider registries) {
+    //?}
         return ItemStack.EMPTY;
+    }
+
+    public String group() {
+        return "";
     }
 
     @Override

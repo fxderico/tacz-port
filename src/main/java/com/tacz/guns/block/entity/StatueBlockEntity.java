@@ -41,9 +41,9 @@ public class StatueBlockEntity extends BlockEntity {
             double x = blockPos.getX() + direction.getStepX() * 0.75 + 0.5;
             double z = blockPos.getZ() + direction.getStepZ() * 0.75 + 0.5;
 
-            double dx = -0.02 + level.random.nextDouble() * 0.04;
-            double dz = -0.02 + level.random.nextDouble() * 0.04;
-            double dy = -0.02 + level.random.nextDouble() * 0.04;
+            double dx = -0.02 + level.getRandom().nextDouble() * 0.04;
+            double dz = -0.02 + level.getRandom().nextDouble() * 0.04;
+            double dy = -0.02 + level.getRandom().nextDouble() * 0.04;
 
             level.addParticle(ParticleTypes.END_ROD, x, blockPos.getY() + 2.25, z, dx, dy, dz);
         }

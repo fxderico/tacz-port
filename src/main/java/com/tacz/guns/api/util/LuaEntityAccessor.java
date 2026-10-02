@@ -1,5 +1,6 @@
 package com.tacz.guns.api.util;
 
+import com.tacz.guns.util.PlayerMessages;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -8,13 +9,13 @@ import net.minecraft.world.entity.player.Player;
 public record LuaEntityAccessor(LivingEntity entity) {
     public void sendSystemMessage(Component message) {
         if (entity instanceof net.minecraft.world.entity.player.Player player) {
-            player.displayClientMessage(message, false);
+            PlayerMessages.send(player, message, false);
         }
     }
 
     public void sendActionBar(Component message) {
         if (entity instanceof Player player) {
-            player.displayClientMessage(message, true);
+            PlayerMessages.send(player, message, true);
         }
     }
 

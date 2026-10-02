@@ -1,7 +1,14 @@
 package com.tacz.guns.client.renderer;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+//? if >=26.1 {
+/*import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.platform.CompareOp;
+import java.util.Optional;
+*///?} else {
 import com.mojang.blaze3d.platform.DepthTestFunction;
+//?}
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.tacz.guns.GunMod;
@@ -28,8 +35,13 @@ public final class ScopeRenderTypes {
             .withLocation(id("pipeline/ocular_stencil"))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
             .withSampler("Sampler1")
+            //? if >=26.1 {
+            /*.withColorTargetState(new ColorTargetState(Optional.empty(), ColorTargetState.WRITE_NONE))
+            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+            *///?} else {
             .withColorWrite(false)
             .withDepthWrite(false)
+            //?}
             .build();
 
     /**
@@ -39,8 +51,12 @@ public final class ScopeRenderTypes {
             .withLocation(id("pipeline/division_no_depth"))
             .withShaderDefine("ALPHA_CUTOUT", 0.1F)
             .withSampler("Sampler1")
+            //? if >=26.1 {
+            /*.withDepthStencilState(Optional.empty())
+            *///?} else {
             .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
             .withDepthWrite(false)
+            //?}
             .build();
 
     /**
@@ -52,8 +68,13 @@ public final class ScopeRenderTypes {
             .withFragmentShader("core/position_color")
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN)
             .withCull(false)
+            //? if >=26.1 {
+            /*.withColorTargetState(new ColorTargetState(Optional.empty(), ColorTargetState.WRITE_NONE))
+            .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false))
+            *///?} else {
             .withColorWrite(false)
             .withDepthWrite(false)
+            //?}
             .build();
 
     private static final Function<Identifier, RenderType> OCULAR_STENCIL = Util.memoize(texture -> RenderType.create("tacz_ocular_stencil",

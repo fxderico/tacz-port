@@ -3,7 +3,6 @@ package com.tacz.guns.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.opengl.GlConst;
-import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.textures.TextureFormat;
 import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
  * Every depth texture is allocated as depth + stencil instead, so blits between render targets still see
  * matching formats. Framebuffers attach them through {@link DirectStateAccessStencilMixin}.
  */
-@Mixin(GlDevice.class)
+// GlDevice is package private since 26.1
+@Mixin(targets = "com.mojang.blaze3d.opengl.GlDevice")
 public abstract class GlDeviceStencilMixin {
     @WrapOperation(method = "createTexture(Ljava/lang/String;ILcom/mojang/blaze3d/textures/TextureFormat;IIII)Lcom/mojang/blaze3d/textures/GpuTexture;",
             at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/opengl/GlConst;toGlInternalId(Lcom/mojang/blaze3d/textures/TextureFormat;)I"))

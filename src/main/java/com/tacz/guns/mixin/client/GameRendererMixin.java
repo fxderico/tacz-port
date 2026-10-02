@@ -27,7 +27,12 @@ public abstract class GameRendererMixin {
 
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
+    //? if >=26.1 {
+    /*public void onBobHurt(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, PoseStack pMatrixStack, CallbackInfo ci) {
+        float pPartialTicks = this.getMinecraft().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+    *///?} else {
     public void onBobHurt(PoseStack pMatrixStack, float pPartialTicks, CallbackInfo ci) {
+    //?}
         // 取消受伤导致的视角摇晃
         if (this.getMinecraft().getCameraEntity() instanceof LocalPlayer player && !player.isDeadOrDying()) {
             if (GunHurtBobTweak.onHurtBobTweak(player, pMatrixStack, pPartialTicks)) {
@@ -48,7 +53,11 @@ public abstract class GameRendererMixin {
     }
 
     @Inject(method = "bobView", at = @At("HEAD"), cancellable = true)
+    //? if >=26.1 {
+    /*public void onBobView(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, PoseStack pMatrixStack, CallbackInfo ci) {
+    *///?} else {
     public void onBobView(PoseStack pMatrixStack, float pPartialTicks, CallbackInfo ci) {
+    //?}
         boolean cancel;
         if (!tacz$useFovSetting) {
             cancel = MinecraftForge.EVENT_BUS.post(new RenderItemInHandBobEvent.BobView());
@@ -60,6 +69,18 @@ public abstract class GameRendererMixin {
         }
     }
 
+    //? if >=26.1 {
+    /*// 26.1 computes both fovs up front in Camera#update, so mark the pass from the two methods that call the bobs
+    @Inject(method = "renderLevel", at = @At("HEAD"))
+    private void tacz$levelPass(net.minecraft.client.DeltaTracker deltaTracker, CallbackInfo ci) {
+        this.tacz$useFovSetting = true;
+    }
+
+    @Inject(method = "renderItemInHand", at = @At("HEAD"))
+    private void tacz$handPass(net.minecraft.client.renderer.state.level.CameraRenderState cameraState, float deltaPartialTick, org.joml.Matrix4fc modelViewMatrix, CallbackInfo ci) {
+        this.tacz$useFovSetting = false;
+    }
+    *///?} else {
     /**
      * 是一个 hack 实现。因为 getFov 这个方法只有在构建 投影矩阵 的时候调用。
      * 因此可以根据 getFov 中的 pUseFovSetting 来判断当前准备渲染 Level 还是渲染 HandWithItem 。
@@ -69,4 +90,5 @@ public abstract class GameRendererMixin {
     public void switchRenderType(Camera pActiveRenderInfo, float pPartialTicks, boolean pUseFOVSetting, CallbackInfoReturnable<Float> cir) {
         this.tacz$useFovSetting = pUseFOVSetting;
     }
+    //?}
 }

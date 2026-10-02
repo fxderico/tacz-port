@@ -25,11 +25,24 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemStack> {
-    public static final TaczItemSpecialRenderer INSTANCE = new TaczItemSpecialRenderer();
+    /**
+     * The item JSONs select on minecraft:display_context and bake one renderer per context, 26.1 stopped passing it.
+     */
+    private final ItemDisplayContext bakedContext;
+
+    private TaczItemSpecialRenderer(ItemDisplayContext bakedContext) {
+        this.bakedContext = bakedContext;
+    }
 
     @Override
+    //? if >=26.1 {
+    /*public void submit(@Nullable ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector,
+                       int light, int overlay, boolean foil, int outlineColor) {
+        ItemDisplayContext displayContext = this.bakedContext;
+    *///?} else {
     public void submit(@Nullable ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector,
                        int light, int overlay, boolean foil, int outlineColor) {
+    //?}
         if (stack == null || stack.isEmpty()) {
             return;
         }
@@ -53,16 +66,18 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
         return stack;
     }
 
-    public record Unbaked() implements SpecialModelRenderer.Unbaked {
-        public static final MapCodec<Unbaked> MAP_CODEC = MapCodec.unit(new Unbaked());
+    public record Unbaked(ItemDisplayContext displayContext) implements SpecialModelRenderer.Unbaked/*? if >=26.1 {*//*<ItemStack>*//*?}*/ {
+        public static final MapCodec<Unbaked> MAP_CODEC = ItemDisplayContext.CODEC
+                .optionalFieldOf("display_context", ItemDisplayContext.NONE)
+                .xmap(Unbaked::new, Unbaked::displayContext);
 
         @Override
-        public SpecialModelRenderer<?> bake(SpecialModelRenderer.BakingContext context) {
-            return INSTANCE;
+        public SpecialModelRenderer<ItemStack> bake(SpecialModelRenderer.BakingContext context) {
+            return new TaczItemSpecialRenderer(this.displayContext);
         }
 
         @Override
-        public MapCodec<? extends SpecialModelRenderer.Unbaked> type() {
+        public MapCodec<Unbaked> type() {
             return MAP_CODEC;
         }
     }

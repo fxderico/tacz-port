@@ -1,5 +1,6 @@
 package com.tacz.guns.client.event;
 
+import com.tacz.guns.util.PlayerMessages;
 import com.tacz.guns.resource.PackConvertor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -24,17 +25,17 @@ public class PlayerEnterWorld {
     public static void onPlayerEnterWorld(PlayerEvent.PlayerLoggedInEvent event) {
         File[] files = PackConvertor.FOLDER.toFile().listFiles();
         if (files != null && files.length > 0){
-            event.getEntity().displayClientMessage(pre(Component.translatable("message.tacz.convert_from_legacy.intro")), false);
-            event.getEntity().displayClientMessage(pre(Component.translatable("message.tacz.convert_from_legacy.intro2")), false);
+            PlayerMessages.send(event.getEntity(), pre(Component.translatable("message.tacz.convert_from_legacy.intro")), false);
+            PlayerMessages.send(event.getEntity(), pre(Component.translatable("message.tacz.convert_from_legacy.intro2")), false);
             Component component = Component.translatable("message.tacz.convert_from_legacy")
                     .append(Component.translatable("message.tacz.convert_from_legacy.button")
                             .withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)
                             .withClickEvent(new ClickEvent.RunCommand("/tacz convert"))
                             .withHoverEvent(new HoverEvent.ShowText(Component.translatable("message.tacz.convert_from_legacy.hover"))
             )));
-            event.getEntity().displayClientMessage(pre(component), false);
-            event.getEntity().displayClientMessage(pre(Component.translatable("message.tacz.convert_from_legacy.hint")), false);
-            event.getEntity().displayClientMessage(pre(Component.translatable("message.tacz.convert_from_legacy.hide")), false);
+            PlayerMessages.send(event.getEntity(), pre(component), false);
+            PlayerMessages.send(event.getEntity(), pre(Component.translatable("message.tacz.convert_from_legacy.hint")), false);
+            PlayerMessages.send(event.getEntity(), pre(Component.translatable("message.tacz.convert_from_legacy.hide")), false);
         }
     }
 

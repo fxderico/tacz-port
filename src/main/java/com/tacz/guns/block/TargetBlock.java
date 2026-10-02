@@ -1,5 +1,6 @@
 package com.tacz.guns.block;
 
+import com.tacz.guns.util.PlayerMessages;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -139,7 +140,7 @@ public class TargetBlock extends BaseEntityBlock {
                 if (projectile instanceof EntityKineticBullet bullet) {
                     String formattedDamage = String.format("%.1f", bullet.getDamage(hit.getLocation()));
                     String formattedDistance = String.format("%.2f", hit.getLocation().distanceTo(player.position()));
-                    player.displayClientMessage(Component.translatable("message.tacz.target_minecart.hit", formattedDamage, formattedDistance), true);
+                    PlayerMessages.send(player, Component.translatable("message.tacz.target_minecart.hit", formattedDamage, formattedDistance), true);
                 }
 
             }

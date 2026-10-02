@@ -60,9 +60,9 @@ public class InteractKeyTextOverlay implements IGuiOverlay {
             boolean hasGunSmithTableFilterItem = hasGunSmithTableFilterItem(block, player);
             boolean willFilterByHand = RenderConfig.AUTO_SELECT_GUN_SMITH_TABLE_FILTER.get() && hasGunSmithTableFilterItem;
             if (mainHandHoldGun) {
-                renderText(graphics, width, height, mc.font, InteractKey.INTERACT_KEY.getTranslatedKeyMessage().getString(), willFilterByHand);
+                drawKeyText(graphics, width, height, mc.font, InteractKey.INTERACT_KEY.getTranslatedKeyMessage().getString(), willFilterByHand);
             } else if (hasGunSmithTableFilterItem) {
-                renderText(graphics, width, height, mc.font, mc.options.keyUse.getTranslatedKeyMessage().getString(), willFilterByHand);
+                drawKeyText(graphics, width, height, mc.font, mc.options.keyUse.getTranslatedKeyMessage().getString(), willFilterByHand);
             }
         }
     }
@@ -73,7 +73,7 @@ public class InteractKeyTextOverlay implements IGuiOverlay {
         }
         Entity entity = entityHitResult.getEntity();
         if (InteractKeyConfigRead.canInteractEntity(entity)) {
-            renderText(graphics, width, height, mc.font, InteractKey.INTERACT_KEY.getTranslatedKeyMessage().getString(), false);
+            drawKeyText(graphics, width, height, mc.font, InteractKey.INTERACT_KEY.getTranslatedKeyMessage().getString(), false);
         }
     }
 
@@ -86,7 +86,7 @@ public class InteractKeyTextOverlay implements IGuiOverlay {
         return item instanceof IGun || item instanceof IAttachment || item instanceof IAmmo;
     }
 
-    private static void renderText(GuiGraphics graphics, int width, int height, Font font, String keyName, boolean willFilterByHand) {
+    private static void drawKeyText(GuiGraphics graphics, int width, int height, Font font, String keyName, boolean willFilterByHand) {
         Component title = Component.translatable("gui.tacz.interact_key.text.desc", StringUtils.capitalize(keyName));
         GuiCompat.drawString(graphics, font, title, (int) ((width - font.width(title)) / 2.0f), (int) (height / 2.0f - 25), ChatFormatting.YELLOW.getColor(), false);
         if (willFilterByHand) {

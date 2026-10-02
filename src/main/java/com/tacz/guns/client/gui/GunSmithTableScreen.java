@@ -90,9 +90,13 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     private boolean autoByHandFilterApplied = false;
 
     public GunSmithTableScreen(GunSmithTableMenu menu, Inventory inventory, Component title) {
+        //? if >=26.1 {
+        /*super(menu, inventory, title, 344, 186);
+        *///?} else {
         super(menu, inventory, title);
         this.imageWidth = 344;
         this.imageHeight = 186;
+        //?}
         this.classifyRecipes();
         this.typePage = 0;
         this.indexPage = 0;
@@ -118,7 +122,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         TimelessAPI.getCommonBlockIndex(blockId).ifPresent(blockIndex -> {
             var tabs = blockIndex.getData().getTabs();
             if (DefaultAssets.DEFAULT_BLOCK_ID.equals(blockId) && !SyncConfig.ENABLE_TABLE_FILTER.get()) {
-                tabs = TabConfig.DEFAULT_TABS;
+                tabs = TabConfig.defaultTabs();
             }
             for (TabConfig tab : tabs) {
                 recipes.put(tab.id(), Lists.newArrayList());
@@ -660,7 +664,12 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
     }
 
     @Override
+    //? if >=26.1 {
+    /*public void extractBackground(@NotNull GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(gui, mouseX, mouseY, partialTick);
+    *///?} else {
     protected void renderBg(@NotNull GuiGraphics gui, float partialTick, int mouseX, int mouseY) {
+    //?}
         GuiCompat.blit(gui, SIDE, leftPos, topPos, 0, 0, 134, 187);
         GuiCompat.blit(gui, TEXTURE, leftPos + 136, topPos + 27, 0, 0, 208, 160);
     }

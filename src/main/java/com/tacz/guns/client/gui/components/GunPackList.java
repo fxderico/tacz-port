@@ -150,10 +150,10 @@ public class GunPackList extends ContainerObjectSelectionList<GunPackList.Entry>
         }
 
         @Override
-        public void renderContent(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, boolean pHovering, float pPartialTick) {
+        public void renderContent(GuiGraphics pGraphics, int pMouseX, int pMouseY, boolean pHovering, float pPartialTick) {
             this.widget.setX(this.getContentX());
             this.widget.setY(this.getContentY());
-            this.widget.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+            this.widget.render(pGraphics, pMouseX, pMouseY, pPartialTick);
         }
 
         @Override
@@ -208,14 +208,14 @@ public class GunPackList extends ContainerObjectSelectionList<GunPackList.Entry>
         }
 
         @Override
-    protected void renderContents(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderContents(GuiGraphics pGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;
             GuiCompat.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            GuiCompat.blit(pGuiGraphics, TEXTURE, this.getX(), this.getY(), this.isFocused() ? 10.0F : 0.0F, this.selected ? 10.0F : 0.0F, 10, 10, 32, 32);
+            GuiCompat.blit(pGraphics, TEXTURE, this.getX(), this.getY(), this.isFocused() ? 10.0F : 0.0F, this.selected ? 10.0F : 0.0F, 10, 10, 32, 32);
             GuiCompat.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             if (this.showLabel) {
-                GuiCompat.drawString(pGuiGraphics, font, this.getMessage(), this.getX() + 24, this.getY() + (this.height - 8) / 2, 14737632 | Mth.ceil(this.alpha * 255.0F) << 24);
+                GuiCompat.drawString(pGraphics, font, this.getMessage(), this.getX() + 24, this.getY() + (this.height - 8) / 2, 14737632 | Mth.ceil(this.alpha * 255.0F) << 24);
             }
 
         }

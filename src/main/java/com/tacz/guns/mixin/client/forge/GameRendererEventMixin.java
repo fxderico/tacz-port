@@ -31,6 +31,8 @@ public abstract class GameRendererEventMixin {
         MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, deltaTracker.getGameTimeDeltaPartialTick(true)));
     }
 
+    // 26.1 moved these into Camera, see CameraEventMixin
+    //? if <26.1 {
     @Inject(method = "updateCamera", at = @At("TAIL"))
     private void tacz$computeCameraAngles(DeltaTracker deltaTracker, CallbackInfo ci) {
         if (!this.mainCamera.isInitialized()) {
@@ -50,4 +52,5 @@ public abstract class GameRendererEventMixin {
         MinecraftForge.EVENT_BUS.post(event);
         cir.setReturnValue((float) event.getFOV());
     }
+    //?}
 }

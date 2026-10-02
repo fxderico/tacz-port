@@ -1,9 +1,7 @@
 package com.tacz.guns.util;
 
-import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -44,22 +42,36 @@ public final class RenderHelper {
         GL11.glStencilOp(sfail, dpfail, dppass);
     }
 
+    private static int stencilClearFbo = -1;
+    private static int stencilClearDepthTexture = -1;
+
     /**
      * Clears the stencil of the main render target, the Forge version did this on the bound framebuffer.
+     * Uses a framebuffer of its own holding only the main depth-stencil texture, so it needs nothing from the
+     * GPU device internals (package private since 26.1).
      */
     public static void clearStencil() {
         RenderSystem.assertOnRenderThread();
-        RenderTarget target = Minecraft.getInstance().getMainRenderTarget();
-        GpuTexture colorTexture = target.getColorTexture();
-        if (colorTexture == null) {
+        GpuTexture depthTexture = Minecraft.getInstance().getMainRenderTarget().getDepthTexture();
+        if (!(depthTexture instanceof GlTexture glDepthTexture)) {
             return;
         }
-        int fbo = ((GlTexture) colorTexture).getFbo(((GlDevice) RenderSystem.getDevice()).directStateAccess(), target.getDepthTexture());
-        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, fbo);
+        if (stencilClearFbo == -1) {
+            stencilClearFbo = GL30.glGenFramebuffers();
+        }
+        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, stencilClearFbo);
+        if (stencilClearDepthTexture != glDepthTexture.glId()) {
+            // the main target was resized or recreated
+            stencilClearDepthTexture = glDepthTexture.glId();
+            GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_STENCIL_ATTACHMENT, GL11.GL_TEXTURE_2D, stencilClearDepthTexture, 0);
+            GL11.glDrawBuffer(GL11.GL_NONE);
+            GL11.glReadBuffer(GL11.GL_NONE);
+        }
         GlStateManager._disableScissorTest();
         GL11.glStencilMask(0xFF);
         GL11.glClearStencil(0);
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+        GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {

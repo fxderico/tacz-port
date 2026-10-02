@@ -1,0 +1,78 @@
+plugins {
+    id("dev.kikugie.stonecutter")
+}
+
+stonecutter active "1.21.11"
+
+stonecutter parameters {
+    replacements {
+        // 26.1+ ships without obfuscation, access wideners name things in the official namespace
+        string(current.parsed >= "26.1") {
+            replace("accessWidener v2 named", "accessWidener v2 official")
+        }
+
+        // Fabric API 26.1 renamed its Yarn flavoured names to Mojang's
+        string(current.parsed >= "26.1") {
+            replace("api.client.keybinding.v1", "api.client.keymapping.v1")
+            replace("KeyBindingHelper", "KeyMappingHelper")
+            replace("registerKeyBinding", "registerKeyMapping")
+            replace("api.itemgroup.v1", "api.creativetab.v1")
+            replace("FabricItemGroup", "FabricCreativeModeTab")
+            replace("api.screenhandler.v1", "api.menu.v1")
+            replace("ExtendedScreenHandlerFactory", "ExtendedMenuProvider")
+            replace("ExtendedScreenHandlerType", "ExtendedMenuType")
+            replace("ParticleFactoryRegistry", "ParticleProviderRegistry")
+            replace("SpecialGuiElementRegistry", "PictureInPictureRendererRegistry")
+            replace("TooltipComponentCallback", "ClientTooltipComponentCallback")
+            replace("registerReloader(", "registerReloadListener(")
+            replace("addReloaderOrdering(", "addListenerOrdering(")
+            replace("RELOADER_REGISTRY_LOOKUP_KEY", "REGISTRY_LOOKUP_KEY")
+            replace("createS2CPacket(", "createClientboundPacket(")
+            replace("playS2C()", "clientboundPlay()")
+            replace("playC2S()", "serverboundPlay()")
+            replace("getClientWorld()", "getClientLevel()")
+            replace("@Inject(method = \"pickBlock\"", "@Inject(method = \"pickBlockOrEntity\"")
+            replace("@Inject(method = \"renderCrosshair\"", "@Inject(method = \"extractCrosshair\"")
+        }
+
+        // 26.1 moved or renamed these vanilla classes
+        string(current.parsed >= "26.1") {
+            replace("net.minecraft.client.renderer.block.model.ItemTransform", "net.minecraft.client.resources.model.cuboid.ItemTransform")
+            replace("net/minecraft/client/renderer/block/model/ItemTransform", "net/minecraft/client/resources/model/cuboid/ItemTransform")
+            replace("net.minecraft.client.renderer.state.CameraRenderState", "net.minecraft.client.renderer.state.level.CameraRenderState")
+            replace("net.minecraft.client.renderer.LightTexture", "net.minecraft.util.LightCoordsUtil")
+            replace("LightTexture.", "LightCoordsUtil.")
+            replace("new ChunkPos(pos)", "ChunkPos.containing(pos)")
+            replace("net.minecraft.client.gui.render.state.pip", "net.minecraft.client.renderer.state.gui.pip")
+            replace("guiRenderState.submitPicturesInPictureState(", "guiRenderState.addPicturesInPictureState(")
+            replace("ctx.vertexConsumers()", "ctx.bufferSource()")
+            replace("net.minecraft.client.renderer.state.QuadParticleRenderState", "net.minecraft.client.renderer.state.level.QuadParticleRenderState")
+            replace("Layer.TERRAIN", "Layer.TRANSLUCENT_TERRAIN")
+            replace("getBlockRenderer().getBlockModelShaper().getParticleIcon(state)", "getModelManager().getBlockStateModelSet().getParticleMaterial(state).sprite()")
+            replace("this.mainCamera.getPartialTickTime()", "this.mainCamera.getCameraEntityPartialTicks(deltaTracker)")
+        }
+
+        // 26.1 GUI: GuiGraphics became GuiGraphicsExtractor, render* methods became extract*
+        string(current.parsed >= "26.1") {
+            replace("GuiGraphics", "GuiGraphicsExtractor")
+            replace("void renderContents(", "void extractContents(")
+            replace("void renderText(", "void extractText(")
+            replace("void renderImage(", "void extractImage(")
+            replace("void renderLabels(", "void extractLabels(")
+            replace("void renderContent(", "void extractContent(")
+            replace("void renderListSeparators(", "void extractListSeparators(")
+            replace("void renderListBackground(", "void extractListBackground(")
+            replace("void render(@NotNull ", "void extractRenderState(@NotNull ")
+            replace("super.render(graphics,", "super.extractRenderState(graphics,")
+            replace("super.render(gui,", "super.extractRenderState(gui,")
+            replace("widget.render(", "widget.extractRenderState(")
+            for (receiver in listOf("graphics.", "Graphics.", "gui.")) {
+                replace("${receiver}drawString(", "${receiver}text(")
+                replace("${receiver}drawCenteredString(", "${receiver}centeredText(")
+                replace("${receiver}drawWordWrap(", "${receiver}textWithWordWrap(")
+                replace("${receiver}renderItem(", "${receiver}item(")
+                replace("${receiver}renderFakeItem(", "${receiver}fakeItem(")
+            }
+        }
+    }
+}

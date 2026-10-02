@@ -1,5 +1,8 @@
 package com.tacz.guns.resource.pojo.data.block;
 
+import com.google.common.base.Suppliers;
+import java.util.function.Supplier;
+
 import com.google.gson.*;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.DefaultAssets;
@@ -17,7 +20,24 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public record TabConfig(Identifier id, String name, ItemStack icon) {
+/**
+ * The icon is built on first use, item stacks can't be created while data packs load (26.1 enforces it).
+ */
+public record TabConfig(Identifier id, String name, Supplier<ItemStack> iconFactory) {
+    public TabConfig(Identifier id, String name, Supplier<ItemStack> iconFactory) {
+        this.id = id;
+        this.name = name;
+        this.iconFactory = Suppliers.memoize(iconFactory::get);
+    }
+
+    public TabConfig(Identifier id, String name, ItemStack icon) {
+        this(id, name, () -> icon);
+    }
+
+    public ItemStack icon() {
+        return iconFactory.get();
+    }
+
     public static final Identifier TAB_AMMO = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ammo");
 
     public static final Identifier TAB_PISTOL = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "pistol");
@@ -38,7 +58,21 @@ public record TabConfig(Identifier id, String name, ItemStack icon) {
     public static final Identifier TAB_MISC = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "misc");
     public static final Identifier TAB_EMPTY = Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "empty");
 
-    public static final List<TabConfig> DEFAULT_TABS = List.of(
+    /**
+     * Built on first use: the icons are item stacks, which can only exist once item components are bound
+     * (26.1 enforces it), but this class is already loaded while recipes are parsed.
+     */
+    private static List<TabConfig> defaultTabs;
+
+    public static synchronized List<TabConfig> defaultTabs() {
+        if (defaultTabs == null) {
+            defaultTabs = createDefaultTabs();
+        }
+        return defaultTabs;
+    }
+
+    private static List<TabConfig> createDefaultTabs() {
+        return List.of(
             new TabConfig(TabConfig.TAB_AMMO, "tacz.type.ammo.name", AmmoItemBuilder.create().setId(DefaultAssets.DEFAULT_AMMO_ID).build()),
             new TabConfig(TabConfig.TAB_PISTOL, "tacz.type.pistol.name", GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "glock_17")).forceBuild()),
             new TabConfig(TabConfig.TAB_SNIPER, "tacz.type.sniper.name", GunItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "ai_awp")).forceBuild()),
@@ -54,7 +88,8 @@ public record TabConfig(Identifier id, String name, ItemStack icon) {
             new TabConfig(TabConfig.TAB_EXTENDED_MAG, "tacz.type.extended_mag.name", AttachmentItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "extended_mag_3")).build()),
             new TabConfig(TabConfig.TAB_LASER, "tacz.type.laser.name", AttachmentItemBuilder.create().setId(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "laser_compact")).build()),
             new TabConfig(TabConfig.TAB_MISC, "tacz.type.misc.name", ModItems.GUN_SMITH_TABLE.get().getDefaultInstance())
-    );
+        );
+    }
 
     public static class Deserializer implements JsonDeserializer<TabConfig> {
         @Override
@@ -67,9 +102,9 @@ public record TabConfig(Identifier id, String name, ItemStack icon) {
                 throw new JsonParseException("TabConfig must have an id");
             }
             Identifier id = context.deserialize(object.get("id"), Identifier.class);
-            ItemStack icon = LegacyJson.itemStack(GsonHelper.getAsJsonObject(object, "icon"));
+            JsonObject icon = GsonHelper.getAsJsonObject(object, "icon");
             String name = GsonHelper.getAsString(object, "name", "tacz.type.unknown.name");
-            return new TabConfig(id, name, icon);
+            return new TabConfig(id, name, () -> LegacyJson.itemStack(icon));
         }
     }
 

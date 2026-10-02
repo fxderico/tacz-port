@@ -26,7 +26,7 @@ import java.util.List;
  * Gun pack recipes stay in TACZ's own JSON format (parsed with Gson as before). The codec hands the whole
  * recipe object to Gson, with the reload's item lookup so tags resolve.
  */
-public class GunSmithTableSerializer implements RecipeSerializer<GunSmithTableRecipe> {
+public final class GunSmithTableSerializer {
     private static final Identifier UNKNOWN_ID = Identifier.fromNamespaceAndPath("tacz", "unknown");
 
     private static final MapCodec<GunSmithTableRecipe> CODEC = MapCodec.assumeMapUnsafe(Codec.PASSTHROUGH.flatXmap(dynamic -> {
@@ -71,13 +71,24 @@ public class GunSmithTableSerializer implements RecipeSerializer<GunSmithTableRe
                 return new GunSmithTableRecipe(UNKNOWN_ID, new GunSmithTableResult(resultItem, group), ingredients);
             });
 
-    @Override
-    public MapCodec<GunSmithTableRecipe> codec() {
-        return CODEC;
+    private GunSmithTableSerializer() {
     }
 
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, GunSmithTableRecipe> streamCodec() {
-        return STREAM_CODEC;
+    public static RecipeSerializer<GunSmithTableRecipe> create() {
+        //? if >=26.1 {
+        /*return new RecipeSerializer<>(CODEC, STREAM_CODEC);
+        *///?} else {
+        return new RecipeSerializer<>() {
+            @Override
+            public MapCodec<GunSmithTableRecipe> codec() {
+                return CODEC;
+            }
+
+            @Override
+            public StreamCodec<RegistryFriendlyByteBuf, GunSmithTableRecipe> streamCodec() {
+                return STREAM_CODEC;
+            }
+        };
+        //?}
     }
 }

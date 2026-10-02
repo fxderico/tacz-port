@@ -23,6 +23,6 @@ public class BlockData {
 
     @NotNull
     public List<TabConfig> getTabs() {
-        return tabs.isEmpty() ? TabConfig.DEFAULT_TABS : tabs;
+        return tabs.isEmpty() ? TabConfig.defaultTabs() : tabs;
     }
 }
