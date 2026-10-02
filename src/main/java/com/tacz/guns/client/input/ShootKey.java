@@ -19,7 +19,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.event.TickEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -28,7 +27,7 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class ShootKey {
     public static final KeyMapping SHOOT_KEY = new KeyMapping("key.tacz.shoot.desc",
             InputConstants.Type.MOUSE,
-            GLFW.GLFW_MOUSE_BUTTON_LEFT,
+            InputConstants.MOUSE_BUTTON_LEFT,
             TaczKeyCategory.CATEGORY);
     private static boolean lastTimeShootSuccess = false;
     private static boolean controllerShootDown = false;

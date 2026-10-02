@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -21,12 +20,12 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class RefitKey {
     public static final KeyMapping REFIT_KEY = new KeyMapping("key.tacz.refit.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_Z,
+            InputConstants.KEY_Z,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
     public static void onRefitPress(InputEvent.Key event) {
-        if (event.getAction() == GLFW.GLFW_PRESS && REFIT_KEY.matches(event.getKeyEvent())) {
+        if (event.getAction() == InputConstants.PRESS && REFIT_KEY.matches(event.getKeyEvent())) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null || player.isSpectator()) {
                 return;

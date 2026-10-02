@@ -15,7 +15,6 @@ import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.event.TickEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -24,7 +23,7 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class AimKey {
     public static final KeyMapping AIM_KEY = new KeyMapping("key.tacz.aim.desc",
             InputConstants.Type.MOUSE,
-            GLFW.GLFW_MOUSE_BUTTON_RIGHT,
+            InputConstants.MOUSE_BUTTON_RIGHT,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
@@ -42,10 +41,10 @@ public class AimKey {
                 if (!KeyConfig.HOLD_TO_AIM.get()) {
                     action = !operator.isAim();
                 }
-                if (event.getAction() == GLFW.GLFW_PRESS) {
+                if (event.getAction() == InputConstants.PRESS) {
                     IClientPlayerGunOperator.fromLocalPlayer(player).aim(action);
                 }
-                if (KeyConfig.HOLD_TO_AIM.get() && event.getAction() == GLFW.GLFW_RELEASE) {
+                if (KeyConfig.HOLD_TO_AIM.get() && event.getAction() == InputConstants.RELEASE) {
                     IClientPlayerGunOperator.fromLocalPlayer(player).aim(false);
                 }
             }

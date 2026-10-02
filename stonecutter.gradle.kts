@@ -98,5 +98,15 @@ stonecutter parameters {
             replace("import net.minecraft.client.renderer.MultiBufferSource;", "import com.tacz.guns.platform.client.compat.MultiBufferSource;")
             replace("Minecraft.getInstance().renderBuffers().bufferSource()", "com.tacz.guns.platform.client.compat.MultiBufferSource.immediate()")
         }
+
+        // 26.3: SDL instead of GLFW, Renderpearl instead of Blaze3D for the render API, PoseStack#mulPose(Quaternionf) is rotate
+        string(current.parsed >= "26.3") {
+            replace("InputConstants.Type.KEYSYM", "InputConstants.Type.KEYBOARD")
+            // only the quaternion overload was renamed; the qualified Axis keeps the new text unique (Matrix4f#rotate(Axis...) exists too)
+            replace(".mulPose(Axis.", ".rotate(com.mojang.math.Axis.")
+            replace(".mulPose(rotation)", ".rotate(rotation)")
+            replace(".mulPose(quaternion)", ".rotate(quaternion)")
+            replace(".mulPose(additionalQuaternion)", ".rotate(additionalQuaternion)")
+        }
     }
 }

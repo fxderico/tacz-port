@@ -22,3 +22,9 @@ mod.mc_compat = ">=26.2 <26.3"
 mod.mc_releases = ["26.2"]
 deps.fabric_api = "0.161.0+26.2"
 deps.forge_config_api_port = "26.2.1"
+
+["26.3"]
+mod.mc_compat = ">=26.3 <26.4"
+mod.mc_releases = ["26.3"]
+deps.fabric_api = "0.161.0+26.3"
+deps.forge_config_api_port = "26.3.1"

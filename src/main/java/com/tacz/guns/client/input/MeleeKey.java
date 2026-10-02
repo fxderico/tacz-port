@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -20,19 +19,19 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class MeleeKey {
     public static final KeyMapping MELEE_KEY = new KeyMapping("key.tacz.melee.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
+            InputConstants.KEY_V,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
     public static void onMeleeKeyPress(InputEvent.Key event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && MELEE_KEY.matches(event.getKeyEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && MELEE_KEY.matches(event.getKeyEvent())) {
             doMeleeLogic();
         }
     }
 
     @SubscribeEvent
     public static void onMeleeMousePress(InputEvent.MouseButton.Post event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && MELEE_KEY.matchesMouse(event.getMouseButtonEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && MELEE_KEY.matchesMouse(event.getMouseButtonEvent())) {
             doMeleeLogic();
         }
     }

@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -20,12 +19,12 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class InspectKey {
     public static final KeyMapping INSPECT_KEY = new KeyMapping("key.tacz.inspect.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_H,
+            InputConstants.KEY_H,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
     public static void onInspectPress(InputEvent.Key event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && INSPECT_KEY.matches(event.getKeyEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && INSPECT_KEY.matches(event.getKeyEvent())) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player == null || player.isSpectator()) {
                 return;

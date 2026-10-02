@@ -10,7 +10,7 @@ Code is GPL-3.0 like upstream. Assets are CC BY-NC-ND 4.0 and belong to the orig
 |---|---|---|
 | 1.21.11 | `tacz-fabric-1.21.11-*.jar` | works, client gametest passes |
 | 26.1 - 26.1.2 | `tacz-fabric-26.1.2-*.jar` | works, client gametest passes |
-| 26.2 | `tacz-fabric-26.2-*.jar` | works on OpenGL, client gametest passes; Vulkan not tested yet |
+| 26.2 | `tacz-fabric-26.2-*.jar` | works, client gametest passes on OpenGL and Vulkan |
 
 Quilt loads the Fabric jars (with Fabric API installed).
 
@@ -49,7 +49,6 @@ Versions and dependency versions are in `stonecutter.properties.toml`. Gradle ne
 ## Next steps
 
 - More Minecraft versions: 26.3, then back down 1.21.10 to 1.21. Loaders: NeoForge and Forge builds.
-- Test 26.2 with the Vulkan backend.
 - Join a dedicated server with the client (`TestDedicatedServerContext` in the gametest can do it) to check the networking side.
 - Gun smith table crafting and the refit screen (attachment install/remove over the network).
 - Run through the rest of the default pack: shotguns, RPG/M320 explosions, minigun, burst fire, heat.

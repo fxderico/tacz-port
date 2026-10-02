@@ -18,7 +18,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -27,19 +26,19 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class InteractKey {
     public static final KeyMapping INTERACT_KEY = new KeyMapping("key.tacz.interact.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_O,
+            InputConstants.KEY_O,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
     public static void onInteractKeyPress(InputEvent.Key event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && INTERACT_KEY.matches(event.getKeyEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && INTERACT_KEY.matches(event.getKeyEvent())) {
             doInteractLogic();
         }
     }
 
     @SubscribeEvent
     public static void onInteractMousePress(InputEvent.MouseButton.Post event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && INTERACT_KEY.matchesMouse(event.getMouseButtonEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && INTERACT_KEY.matchesMouse(event.getMouseButtonEvent())) {
             doInteractLogic();
         }
     }

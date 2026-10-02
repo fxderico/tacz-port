@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -21,19 +20,19 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class FireSelectKey {
     public static final KeyMapping FIRE_SELECT_KEY = new KeyMapping("key.tacz.fire_select.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_G,
+            InputConstants.KEY_G,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
     public static void onFireSelectKeyPress(InputEvent.Key event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && FIRE_SELECT_KEY.matches(event.getKeyEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && FIRE_SELECT_KEY.matches(event.getKeyEvent())) {
             doFireSelectLogic();
         }
     }
 
     @SubscribeEvent
     public static void onFireSelectMousePress(InputEvent.MouseButton.Post event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && FIRE_SELECT_KEY.matchesMouse(event.getMouseButtonEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && FIRE_SELECT_KEY.matchesMouse(event.getMouseButtonEvent())) {
             doFireSelectLogic();
         }
     }

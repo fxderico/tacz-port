@@ -13,7 +13,6 @@ import net.fabricmc.api.Environment;
 import com.tacz.guns.platform.forge.client.event.InputEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
-import org.lwjgl.glfw.GLFW;
 
 import static com.tacz.guns.util.InputExtraCheck.isInGame;
 
@@ -22,19 +21,19 @@ import static com.tacz.guns.util.InputExtraCheck.isInGame;
 public class ZoomKey {
     public static final KeyMapping ZOOM_KEY = new KeyMapping("key.tacz.zoom.desc",
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
+            InputConstants.KEY_V,
             TaczKeyCategory.CATEGORY);
 
     @SubscribeEvent
     public static void onZoomKeyPress(InputEvent.Key event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && ZOOM_KEY.matches(event.getKeyEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && ZOOM_KEY.matches(event.getKeyEvent())) {
             doZoomLogic();
         }
     }
 
     @SubscribeEvent
     public static void onZoomMousePress(InputEvent.MouseButton.Post event) {
-        if (isInGame() && event.getAction() == GLFW.GLFW_PRESS && ZOOM_KEY.matchesMouse(event.getMouseButtonEvent())) {
+        if (isInGame() && event.getAction() == InputConstants.PRESS && ZOOM_KEY.matchesMouse(event.getMouseButtonEvent())) {
             doZoomLogic();
         }
     }
