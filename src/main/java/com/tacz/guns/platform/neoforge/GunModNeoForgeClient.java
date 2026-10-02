@@ -71,6 +71,11 @@ public final class GunModNeoForgeClient {
         GunModClient.commonClientInit();
 
         modBus.addListener(FMLClientSetupEvent.class, event -> GunModClient.collectItemExtensions());
+        //? if <26.2 {
+        // scopes mask their eyepiece with the stencil buffer (26.2+ uses shader masks instead)
+        modBus.addListener(net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent.class,
+                net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent::enableStencil);
+        //?}
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
             event.registerCategory(TaczKeyCategory.CATEGORY);
             for (KeyMapping key : GunModClient.keyMappings()) {

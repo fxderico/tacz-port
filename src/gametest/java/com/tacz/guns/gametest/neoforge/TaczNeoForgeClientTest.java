@@ -70,7 +70,16 @@ public final class TaczNeoForgeClientTest {
     private void script() {
         Minecraft mc = Minecraft.getInstance();
         // wait for the title screen, the first resource reload is done then
-        steps.add(() -> mc.screen instanceof TitleScreen && mc.getOverlay() == null ? 20 : -1);
+        // resources loaded; a fresh profile opens the accessibility onboarding screen first, skip it like Fabric's gametest
+        steps.add(() -> mc.screen != null && mc.getOverlay() == null ? 20 : -1);
+        steps.add(() -> {
+            if (!(mc.screen instanceof TitleScreen)) {
+                mc.options.onboardAccessibility = false;
+                mc.options.save();
+                mc.setScreen(new TitleScreen());
+            }
+            return 20;
+        });
         steps.add(() -> shot("tacz_title"));
         steps.add(() -> {
             mc.createWorldOpenFlows().createFreshLevel("tacz_test",
@@ -147,6 +156,8 @@ public final class TaczNeoForgeClientTest {
             return 20;
         });
         steps.add(() -> shot("tacz_scope_aiming"));
+        steps.add(() -> 30);
+        steps.add(() -> shot("tacz_scope_aiming_late"));
         steps.add(() -> {
             mouse(InputConstants.MOUSE_BUTTON_RIGHT, InputConstants.RELEASE);
             return 10;

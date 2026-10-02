@@ -72,6 +72,13 @@ public final class GetJarResources {
     public static void copyModDirectory(Class<?> resourceClass, String srcPath, Path root, String path) {
         URL url = resourceClass.getResource(srcPath);
         try {
+            if (url == null) {
+                // module class loaders (NeoForge) do not hand out directories, look the folder up in the mod files instead
+                Path folder = com.tacz.guns.platform.Loader.findInMods(srcPath.startsWith("/") ? srcPath.substring(1) : srcPath);
+                if (folder != null) {
+                    url = folder.toUri().toURL();
+                }
+            }
             if (url != null) {
                 exportFolderIfChanged(resourceClass, srcPath, url, root, path);
             }

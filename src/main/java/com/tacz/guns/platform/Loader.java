@@ -101,4 +101,25 @@ public final class Loader {
                 .orElse(null);
         //?}
     }
+
+    /**
+     * A file or folder inside any loaded mod, or null.
+     */
+    public static @Nullable Path findInMods(String path) {
+        //? if neoforge {
+        /*return net.neoforged.fml.ModList.get().getModFiles().stream()
+                .flatMap(file -> file.getFile().getContents().getContentRoots().stream())
+                .map(root -> root.resolve(path))
+                .filter(Files::exists)
+                .findFirst()
+                .orElse(null);
+        *///?} else {
+        return net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods().stream()
+                .map(mod -> mod.findPath(path))
+                .flatMap(Optional::stream)
+                .filter(Files::exists)
+                .findFirst()
+                .orElse(null);
+        //?}
+    }
 }
