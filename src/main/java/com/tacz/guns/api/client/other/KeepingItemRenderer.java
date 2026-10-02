@@ -24,7 +24,26 @@ public interface KeepingItemRenderer {
      * ItemInHandRenderer 通过 Mixin 的方式实现了此接口。
      * @return 返回 ItemInHandRenderer 实例
      */
+    /**
+     * No player yet (26.3 keeps the hand items on the local player).
+     */
+    KeepingItemRenderer NONE = new KeepingItemRenderer() {
+        @Override
+        public void keep(ItemStack itemStack, long timeMs) {
+        }
+
+        @Override
+        public ItemStack getCurrentItem() {
+            return ItemStack.EMPTY;
+        }
+    };
+
     static KeepingItemRenderer getRenderer(){
+        //? if >=26.3 {
+        /*net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
+        return player == null ? NONE : (KeepingItemRenderer) player.firstPersonHandsAndItems();
+        *///?} else {
         return (KeepingItemRenderer) Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer();
+        //?}
     }
 }

@@ -59,12 +59,12 @@ public abstract class GameRendererMixin {
     //? if >=26.1 {
     /*// 26.1 computes both fovs up front in Camera#update, so mark the pass from the two methods that call the bobs
     @Inject(method = "renderLevel", at = @At("HEAD"))
-    private void sbm$levelPass(net.minecraft.client.DeltaTracker deltaTracker, CallbackInfo ci) {
+    private void sbm$levelPass(CallbackInfo ci) {
         this.sbm$useFovSetting = true;
     }
 
     @Inject(method = "renderItemInHand", at = @At("HEAD"))
-    private void sbm$handPass(net.minecraft.client.renderer.state.CameraRenderState cameraState, float deltaPartialTick, org.joml.Matrix4fc modelViewMatrix, CallbackInfo ci) {
+    private void sbm$handPass(CallbackInfo ci) {
         this.sbm$useFovSetting = false;
     }
     *///?} else {

@@ -372,12 +372,28 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                 }
                 String url = packInfo.getUrl();
                 if (StringUtils.isNotBlank(url) && minecraft != null) {
+                    //? if >=26.3 {
+                    /*java.net.URI uri;
+                    try {
+                        uri = Util.parseAndValidateUntrustedUri(url);
+                    } catch (java.net.URISyntaxException e) {
+                        GunMod.LOGGER.warn("Invalid gun pack url {}", url, e);
+                        return;
+                    }
+                    minecraft.setScreen(new ConfirmLinkScreen(yes -> {
+                        if (yes) {
+                            com.mojang.blaze3d.Blaze3D.openUri(uri);
+                        }
+                        minecraft.setScreen(this);
+                    }, uri, false));
+                    *///?} else {
                     minecraft.setScreen(new ConfirmLinkScreen(yes -> {
                         if (yes) {
                             Util.getPlatform().openUri(url);
                         }
                         minecraft.setScreen(this);
                     }, url, false));
+                    //?}
                 }
             }
         }));

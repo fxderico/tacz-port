@@ -4,6 +4,7 @@ import com.tacz.guns.client.resource.ClientIndexManager;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.network.CommonNetworkCache;
 import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.network.BufMaps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 import net.fabricmc.api.EnvType;
@@ -22,14 +23,14 @@ public class ServerMessageSyncGunPack {
     }
 
     public static void encode(ServerMessageSyncGunPack message, FriendlyByteBuf buf) {
-        buf.writeMap(message.getCache(), FriendlyByteBuf::writeEnum, (buf1, map) -> {
-            buf1.writeMap(map, (b, id) -> b.writeIdentifier(id), (b, str) -> b.writeUtf(str));
+        BufMaps.write(buf, message.getCache(), FriendlyByteBuf::writeEnum, (buf1, map) -> {
+            BufMaps.write(buf1, map, (b, id) -> b.writeIdentifier(id), (b, str) -> b.writeUtf(str));
         });
     }
 
     public static ServerMessageSyncGunPack decode(FriendlyByteBuf buf) {
-        Map<DataType, Map<Identifier, String>> map = buf.readMap(buf1 -> buf1.readEnum(DataType.class), buf2 -> {
-            return buf2.<Identifier, String>readMap(b -> b.readIdentifier(), b -> b.readUtf());
+        Map<DataType, Map<Identifier, String>> map = BufMaps.read(buf, buf1 -> buf1.readEnum(DataType.class), buf2 -> {
+            return BufMaps.<Identifier, String>read(buf2, b -> b.readIdentifier(), b -> b.readUtf());
         });
         return new ServerMessageSyncGunPack(map);
     }

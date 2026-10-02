@@ -5,7 +5,6 @@ import com.tacz.guns.api.client.event.BeforeRenderHandEvent;
 import com.tacz.guns.api.client.other.KeepingItemRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemStack;
 import com.tacz.guns.platform.forge.common.MinecraftForge;
@@ -16,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemInHandRenderer.class)
+/**
+ * Hand item bookkeeping; 26.3 moved it out of the renderer into LocalPlayer#firstPersonHandsAndItems.
+ */
+@Mixin(/*? if >=26.3 {*//*net.minecraft.client.player.FirstPersonHandsAndItems.class*//*?} else {*/net.minecraft.client.renderer.ItemInHandRenderer.class/*?}*/)
 public class ItemInHandRendererMixin implements KeepingItemRenderer {
     @Shadow
     private float mainHandHeight;
@@ -31,10 +33,13 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
     @Unique
     private long tacz$KeepTimestamp;
 
+    // 26.3: posted from ItemInHandRendererEventMixin, the renderer is a separate class there
+    //? if <26.3 {
     @Inject(method = /*? if >=26.2 {*//*"submitHandsWithItems"*//*?} else {*/"renderHandsWithItems"/*?}*/, at = @At("HEAD"))
     public void beforeHandRender(float pPartialTicks, PoseStack pMatrixStack, net.minecraft.client.renderer.SubmitNodeCollector collector, LocalPlayer pPlayerEntity, int pCombinedLight, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new BeforeRenderHandEvent(pMatrixStack));
     }
+    //?}
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void cancelEquippedProgress(CallbackInfo ci) {

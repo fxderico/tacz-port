@@ -6,6 +6,7 @@ import com.tacz.guns.platform.forge.event.TickEvent;
 import com.tacz.guns.mixin.client.forge.CameraAccessor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,14 +22,15 @@ public abstract class GameRendererEventMixin {
     @Final
     private Camera mainCamera;
 
+    // render(DeltaTracker, boolean) became render() in 26.3, the tracker is the client's either way
     @Inject(method = "render", at = @At("HEAD"))
-    private void tacz$renderTickStart(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, deltaTracker.getGameTimeDeltaPartialTick(true)));
+    private void tacz$renderTickStart(CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true)));
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void tacz$renderTickEnd(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, deltaTracker.getGameTimeDeltaPartialTick(true)));
+    private void tacz$renderTickEnd(CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS.post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true)));
     }
 
     // 26.1 moved these into Camera, see CameraEventMixin

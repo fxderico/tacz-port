@@ -43,7 +43,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class TargetBlock extends BaseEntityBlock {
-    @Override
+    // abstract until 26.3, which dropped block codecs from BaseEntityBlock
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return MapCodec.unit(this);
     }

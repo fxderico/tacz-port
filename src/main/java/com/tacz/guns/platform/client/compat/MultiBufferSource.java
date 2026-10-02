@@ -92,7 +92,7 @@ public interface MultiBufferSource {
      *^/
     @Environment(EnvType.CLIENT)
     final class RecordingVertexConsumer implements VertexConsumer {
-        private static final int POSITION = 0, COLOR = 1, UV = 2, UV1 = 3, UV2 = 4, NORMAL = 5, LINE_WIDTH = 6;
+        private static final int POSITION = 0, COLOR = 1, UV = 2, UV1 = 3, UV2 = 4, NORMAL = 5, LINE_WIDTH = 6, UV3 = 7;
         private float[] floats = new float[256];
         private int[] ops = new int[64];
         private int floatCount;
@@ -127,6 +127,7 @@ public interface MultiBufferSource {
                     case UV2 -> target.setUv2((int) a, (int) b);
                     case NORMAL -> target.setNormal(a, b, c);
                     case LINE_WIDTH -> target.setLineWidth(a);
+                    case UV3 -> VertexUv3.set(target, a, b);
                     default -> throw new IllegalStateException();
                 }
             }
@@ -164,6 +165,12 @@ public interface MultiBufferSource {
         @Override
         public VertexConsumer setUv2(int u, int v) {
             this.op(UV2, u, v, 0, 0);
+            return this;
+        }
+
+        // VertexConsumer method since 26.3
+        public VertexConsumer setUv3(float u, float v) {
+            this.op(UV3, u, v, 0, 0);
             return this;
         }
 

@@ -21,7 +21,7 @@ public abstract class KeyboardHandlerEventMixin {
     @Inject(method = "keyPress", at = @At("TAIL"))
     private void tacz$keyInput(long window, int action, KeyEvent keyEvent, CallbackInfo ci) {
         if (window == this.minecraft.getWindow().handle()) {
-            MinecraftForge.EVENT_BUS.post(new InputEvent.Key(keyEvent.key(), keyEvent.scancode(), action, keyEvent.modifiers()));
+            MinecraftForge.EVENT_BUS.post(new InputEvent.Key(keyEvent.key(), keyEvent./*? if >=26.3 {*//*keycode*//*?} else {*/scancode/*?}*/(), action, keyEvent.modifiers()));
         }
     }
 }

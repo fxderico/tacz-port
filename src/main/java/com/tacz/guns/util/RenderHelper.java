@@ -76,7 +76,7 @@ public final class RenderHelper {
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
         Minecraft mc = Minecraft.getInstance();
-        AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer> renderer = mc.getEntityRenderDispatcher().getPlayerRenderer(player);
+        AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer> renderer = /*? if >=26.3 {*//*(AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer>) mc.getEntityRenderDispatcher().getRenderer(player)*//*?} else {*/mc.getEntityRenderDispatcher().getPlayerRenderer(player)/*?}*/;
         // queued on the game renderer, ItemInHandRenderer flushes the queue right after the hands are done
         SubmitNodeCollector collector = com.tacz.guns.platform.client.SubmitScope.current();
         Identifier skin = player.getSkin().body().texturePath();

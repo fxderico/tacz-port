@@ -101,6 +101,7 @@ tasks {
 
     // shaders follow the GLSL dialect of each version, older shader managers choke on the newer ones
     val shaderVariant = when {
+        sc.current.parsed >= "26.3" -> "26.3"
         sc.current.parsed >= "26.2" -> "26.2"
         else -> null
     }

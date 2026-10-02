@@ -100,6 +100,17 @@ public enum GunPackLoader {
 
         PackLocationInfo info = new PackLocationInfo("tacz_resources", Component.literal("TACZ Resources"), PackSource.BUILT_IN, Optional.empty());
         Pack.ResourcesSupplier supplier = new Pack.ResourcesSupplier() {
+            //? if >=26.3 {
+            /*@Override
+            public net.minecraft.server.packs.PackMetadataResources openMetadata(PackLocationInfo location) {
+                return new GunPackResources(location, roots, type);
+            }
+
+            @Override
+            public java.util.stream.Stream<PackResources> openResources(PackLocationInfo location, Pack.Metadata metadata) {
+                return java.util.stream.Stream.of(new GunPackResources(location, roots, type));
+            }
+            *///?} else {
             @Override
             public PackResources openPrimary(PackLocationInfo location) {
                 return new GunPackResources(location, roots, type);
@@ -109,6 +120,7 @@ public enum GunPackLoader {
             public PackResources openFull(PackLocationInfo location, Pack.Metadata metadata) {
                 return new GunPackResources(location, roots, type);
             }
+            //?}
         };
         return Pack.readMetaAndCreate(info, supplier, type, new PackSelectionConfig(true, Pack.Position.BOTTOM, false));
     }

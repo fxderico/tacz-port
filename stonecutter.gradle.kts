@@ -107,6 +107,22 @@ stonecutter parameters {
             replace(".mulPose(rotation)", ".rotate(rotation)")
             replace(".mulPose(quaternion)", ".rotate(quaternion)")
             replace(".mulPose(additionalQuaternion)", ".rotate(additionalQuaternion)")
+            // render API classes that moved to com.mojang.renderpearl (Std140Builder, RenderSystem, PoseStack... stayed)
+            replace("com.mojang.blaze3d.opengl.", "com.mojang.renderpearl.backend.opengl.")
+            replace("import com.mojang.blaze3d.buffers.GpuBuffer;", "import com.mojang.renderpearl.api.buffers.GpuBuffer;")
+            replace("import com.mojang.blaze3d.pipeline.BindGroupLayout;", "import com.mojang.renderpearl.api.pipeline.BindGroupLayout;")
+            replace("import com.mojang.blaze3d.pipeline.RenderPipeline;", "import com.mojang.renderpearl.api.pipeline.RenderPipeline;")
+            replace("import com.mojang.blaze3d.pipeline.ColorTargetState;", "import com.mojang.renderpearl.api.pipeline.ColorTargetState;")
+            replace("import com.mojang.blaze3d.pipeline.DepthStencilState;", "import com.mojang.renderpearl.api.pipeline.DepthStencilState;")
+            replace("import com.mojang.blaze3d.platform.CompareOp;", "import com.mojang.renderpearl.api.pipeline.CompareOp;")
+            replace("import com.mojang.blaze3d.shaders.UniformType;", "import com.mojang.renderpearl.api.pipeline.UniformType;")
+            replace("import com.mojang.blaze3d.systems.RenderPass;", "import com.mojang.renderpearl.api.commands.RenderPass;")
+            replace("import com.mojang.blaze3d.textures.GpuTexture;", "import com.mojang.renderpearl.api.textures.GpuTexture;")
+            replace("import com.mojang.blaze3d.vertex.VertexFormat;", "import com.mojang.renderpearl.api.vertex.VertexFormat;")
+            // vanilla moved to setters / a new enum constant name
+            replace(".invulnerableTime = 0;", ".setInvulnerableTime(0);")
+            replace("PushReaction.DESTROY", "PushReaction.POPPED")
+            replace("entity.hurtMarked = true;", "entity.needsSync = true;")
         }
     }
 }

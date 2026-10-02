@@ -13,6 +13,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(LivingEntity.class)
 public abstract class GunSwingMixin {
+    //? if >=26.3 {
+    /*// 26.3: swing takes the animation and reports whether it started
+    @Inject(method = "swing(Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/item/component/SwingAnimation;Z)Z", at = @At("HEAD"), cancellable = true)
+    private void tacz$noGunSwing(InteractionHand hand, net.minecraft.world.item.component.SwingAnimation animation, boolean sendToSwingingEntity,
+                                 org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (self.getItemInHand(hand).getItem() instanceof AbstractGunItem gun && gun.onEntitySwing(self.getItemInHand(hand), self)) {
+            cir.setReturnValue(false);
+        }
+    }
+    *///?} else {
     @Inject(method = "swing(Lnet/minecraft/world/InteractionHand;Z)V", at = @At("HEAD"), cancellable = true)
     private void tacz$noGunSwing(InteractionHand hand, boolean updateSelf, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
@@ -20,4 +31,5 @@ public abstract class GunSwingMixin {
             ci.cancel();
         }
     }
+    //?}
 }

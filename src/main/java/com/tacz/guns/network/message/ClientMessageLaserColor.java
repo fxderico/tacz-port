@@ -3,6 +3,7 @@ package com.tacz.guns.network.message;
 import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
+import com.tacz.guns.network.BufMaps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
@@ -43,7 +44,7 @@ public class ClientMessageLaserColor {
     }
 
     public static void encode(ClientMessageLaserColor message, FriendlyByteBuf buf) {
-        buf.writeMap(message.colorMap, FriendlyByteBuf::writeEnum, FriendlyByteBuf::writeInt);
+        BufMaps.write(buf, message.colorMap, FriendlyByteBuf::writeEnum, FriendlyByteBuf::writeInt);
         buf.writeBoolean(message.applyGunColor);
         buf.writeInt(message.gunColor);
         buf.writeInt(message.gunSlotIndex);
@@ -51,7 +52,7 @@ public class ClientMessageLaserColor {
 
     public static ClientMessageLaserColor decode(FriendlyByteBuf buf) {
         ClientMessageLaserColor message = new ClientMessageLaserColor();
-        message.colorMap.putAll(buf.readMap(buf1 -> buf.readEnum(AttachmentType.class), FriendlyByteBuf::readInt));
+        message.colorMap.putAll(BufMaps.read(buf, buf1 -> buf1.readEnum(AttachmentType.class), FriendlyByteBuf::readInt));
         message.applyGunColor = buf.readBoolean();
         message.gunColor = buf.readInt();
         message.gunSlotIndex = buf.readInt();

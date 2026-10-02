@@ -19,7 +19,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(targets = "net.minecraft.client.renderer.rendertype.PreparedRenderType")
 public abstract class PreparedRenderTypeScopeMixin {
-    //? if >=26.2 {
+    //? if >=26.3 {
+    /*@Inject(method = "draw", at = @At(value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/systems/RenderSystem;bindDefaultUniforms(Lcom/mojang/renderpearl/api/commands/RenderPass;)V", shift = At.Shift.AFTER))
+    private void tacz$bindScopeMask(net.minecraft.client.renderer.StagedVertexBuffer.ExecuteInfo info, RenderPass renderPass,
+                                    com.mojang.renderpearl.api.pipeline.RenderPipeline renderPipeline, CallbackInfo ci) {
+        ScopeMask.bind(renderPass, renderPipeline);
+    }
+    *///?} else if >=26.2 {
     /*@Inject(method = "drawFromBuffer(Lcom/mojang/blaze3d/buffers/GpuBuffer;Lcom/mojang/blaze3d/buffers/GpuBuffer;Lcom/mojang/blaze3d/IndexType;III)V",
             at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;bindDefaultUniforms(Lcom/mojang/blaze3d/systems/RenderPass;)V", shift = At.Shift.AFTER))
     private void tacz$bindScopeMask(CallbackInfo ci, @Local RenderPass renderPass) {

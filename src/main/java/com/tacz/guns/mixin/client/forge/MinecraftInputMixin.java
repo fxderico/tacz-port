@@ -36,7 +36,11 @@ public abstract class MinecraftInputMixin {
                 button == 0 ? options.keyAttack : button == 1 ? options.keyUse : options.keyPickItem, hand);
         if (MinecraftForge.EVENT_BUS.post(event)) {
             if (event.shouldSwingHand() && player != null) {
+                //? if >=26.3 {
+                /*player.swing(hand, net.minecraft.world.item.component.SwingAnimation.DEFAULT, false);
+                *///?} else {
                 player.swing(hand);
+                //?}
             }
             return true;
         }

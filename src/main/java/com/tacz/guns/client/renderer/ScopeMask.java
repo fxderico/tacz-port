@@ -4,6 +4,7 @@ package com.tacz.guns.client.renderer;
 /*import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.pipeline.BindGroupLayout;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.systems.RenderPass;
@@ -79,7 +80,9 @@ public final class ScopeMask {
                 .withShaderDefine(define)
                 .withBindGroupLayout(BindGroupLayouts.SAMPLER1)
                 .withBindGroupLayout(SCOPE_LAYOUT)
-                .withCull(false);
+                .withCull(false)
+                // 26.2 falls back to this when nothing is set, 26.3 requires it
+                .withColorTargetState(ColorTargetState.DEFAULT);
         if (!depthTest) {
             builder.withDepthStencilState(Optional.empty());
         }
@@ -234,6 +237,11 @@ public final class ScopeMask {
 
         @Override
         public VertexConsumer setUv2(int u, int v) {
+            return this;
+        }
+
+        // VertexConsumer method since 26.3
+        public VertexConsumer setUv3(float u, float v) {
             return this;
         }
 

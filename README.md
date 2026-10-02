@@ -11,6 +11,7 @@ Code is GPL-3.0 like upstream. Assets are CC BY-NC-ND 4.0 and belong to the orig
 | 1.21.11 | `tacz-fabric-1.21.11-*.jar` | works, client gametest passes |
 | 26.1 - 26.1.2 | `tacz-fabric-26.1.2-*.jar` | works, client gametest passes |
 | 26.2 | `tacz-fabric-26.2-*.jar` | works, client gametest passes on OpenGL and Vulkan |
+| 26.3 | `tacz-fabric-26.3-*.jar` | works, client gametest passes on OpenGL and Vulkan |
 
 Quilt loads the Fabric jars (with Fabric API installed).
 
@@ -41,14 +42,15 @@ Versions and dependency versions are in `stonecutter.properties.toml`. Gradle ne
 - Config uses Forge Config API Port (`forgeconfigapiport`, required at runtime).
 - Scopes mask their eyepiece with the stencil buffer like on Forge. 1.21.5+ render targets have no stencil, so depth textures are allocated as depth + stencil (`mixin/client/GlDeviceStencilMixin`, `DirectStateAccessStencilMixin`) and the stencil state is set with raw GL calls around the scope draws (`util/RenderHelper`, `client/renderer/ScopeRenderTypes`).
 - 26.2 removed `MultiBufferSource` and can run on Vulkan. TACZ's renderers keep writing to a stand-in (`platform/client/compat/MultiBufferSource`) that records vertices and submits them as custom geometry to the collector of the current render (`platform/client/SubmitScope`). Scopes drop the stencil: every scope part discards its own fragments against screen circles in the `tacz:core/scope_entity` shader (`client/renderer/ScopeMask`). Shaders differ per version and live in `src/main/shaders/<version>`.
+- 26.3 swapped GLFW for SDL (key codes are read through `InputConstants`, not GLFW constants), moved the render API to `com.mojang.renderpearl`, compiles shaders with shaderc (`#include`, explicit `layout(location)`), and moved the first person hand state from `ItemInHandRenderer` to `LocalPlayer#firstPersonHandsAndItems` / `FirstPersonHandsAndItemsRenderer`.
 
 ## Testing
 
-`./gradlew :<minecraft>:runClientGameTest` (for example `:26.1.2:runClientGameTest`) starts the client, makes a world, gives an AK-47, shoots a husk, aims, reloads, mounts an ACOG and checks third person (`src/gametest`). It fails on wrong ammo counts, missed shots or a failed reload, screenshots go to `versions/<minecraft>/build/run/clientGameTest/screenshots`. Needs a display, on a headless box run it under `xvfb-run -a`.
+`./gradlew :<minecraft>:runClientGameTest` (for example `:26.1.2:runClientGameTest`) starts the client, makes a world, gives an AK-47, shoots a husk, aims, reloads, mounts an ACOG and checks third person (`src/gametest`). It fails on wrong ammo counts, missed shots or a failed reload, screenshots go to `versions/<minecraft>/build/run/clientGameTest/screenshots`. Needs a display, on a headless box run it under `xvfb-run -a`. Pick the backend with `--args="--graphicsBackend vulkan"` (or `opengl`). 26.3 OpenGL asks SDL for an sRGB framebuffer, which Xvfb's GLX visuals lack, so it falls back to Vulkan there; run it under a headless Wayland compositor instead (`weston --backend=headless --socket=wl-tacz &`, then `WAYLAND_DISPLAY=wl-tacz SDL_VIDEO_DRIVER=wayland`).
 
 ## Next steps
 
-- More Minecraft versions: 26.3, then back down 1.21.10 to 1.21. Loaders: NeoForge and Forge builds.
+- More Minecraft versions: back down 1.21.10 to 1.21. Loaders: NeoForge and Forge builds.
 - Join a dedicated server with the client (`TestDedicatedServerContext` in the gametest can do it) to check the networking side.
 - Gun smith table crafting and the refit screen (attachment install/remove over the network).
 - Run through the rest of the default pack: shotguns, RPG/M320 explosions, minigun, burst fire, heat.
