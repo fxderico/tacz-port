@@ -44,28 +44,48 @@ val generateAccessTransformer = tasks.register("generateAccessTransformer") {
     }
 }
 
+// dev only smoke test mod, the NeoForge stand-in for Fabric's client gametest (src/gametest)
+val gametest = sourceSets.create("gametest") {
+    compileClasspath += sourceSets.main.get().compileClasspath + sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.main.get().output
+}
+
 neoForge {
     version = property("deps.neoforge") as String
     accessTransformers.from(accessTransformer)
+
+
+    mods {
+        register("tacz") {
+            sourceSet(sourceSets.main.get())
+        }
+        register("tacz_gametest") {
+            sourceSet(gametest)
+        }
+    }
 
     runs {
         register("client") {
             client()
             jvmArguments.add("-Xmx3G")
             gameDirectory = layout.projectDirectory.dir("run/client")
+            loadedMods = listOf(mods["tacz"])
+        }
+        // ./gradlew :<version>-neoforge:runGametest plays the scripted session, screenshots in run/gametest/screenshots
+        register("gametest") {
+            client()
+            sourceSet = gametest
+            jvmArguments.add("-Xmx3G")
+            gameDirectory = layout.projectDirectory.dir("run/gametest")
         }
         register("server") {
             server()
             gameDirectory = layout.projectDirectory.dir("run/server")
             programArgument("--nogui")
+            loadedMods = listOf(mods["tacz"])
         }
     }
 
-    mods {
-        register("tacz") {
-            sourceSet(sourceSets.main.get())
-        }
-    }
 }
 
 // libraries TACZ ships inside its jar
@@ -122,6 +142,8 @@ tasks {
         filesMatching("*.mixins.json") { expand(mixinJava) }
         // Fabric only
         exclude("fabric.mod.json", "tacz.accesswidener")
+        // the generated access transformer, also needed by dev runs
+        from(generateAccessTransformer) { into("META-INF") }
     }
 
     val shaderVariant = when {
@@ -137,7 +159,5 @@ tasks {
 
     jar {
         from(rootProject.file("LICENSE")) { rename { "${it}_tacz" } }
-        from(accessTransformer) { into("META-INF") }
-        dependsOn(generateAccessTransformer)
     }
 }

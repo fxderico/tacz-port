@@ -12,11 +12,9 @@ stonecutter parameters {
     replacements {
         // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
         string(loader == "neoforge") {
-            // on demand import: TACZ's own Dist shim (single type imports) wins where both are imported
-            replace("import net.fabricmc.api.EnvType;", "import net.neoforged.api.distmarker.*;")
-            replace("import net.fabricmc.api.Environment;", "import net.neoforged.api.distmarker.OnlyIn;")
-            replace("@Environment(EnvType.CLIENT)", "@OnlyIn(net.neoforged.api.distmarker.Dist.CLIENT)")
-            replace("@net.fabricmc.api.Environment(net.fabricmc.api.EnvType.CLIENT)", "@net.neoforged.api.distmarker.OnlyIn(net.neoforged.api.distmarker.Dist.CLIENT)")
+            // a do-nothing marker in place of Fabric's @Environment (NeoForge's @OnlyIn no longer strips and warns on every use)
+            replace("net.fabricmc.api.EnvType", "com.tacz.guns.platform.marker.EnvType")
+            replace("net.fabricmc.api.Environment", "com.tacz.guns.platform.marker.Environment")
             replace("import net.minecraftforge.common.ForgeConfigSpec;", "import net.neoforged.neoforge.common.ModConfigSpec;")
             replace("ForgeConfigSpec", "ModConfigSpec")
         }

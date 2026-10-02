@@ -98,10 +98,10 @@ public final class GunModNeoForgeClient {
         });
         modBus.addListener(RegisterParticleProvidersEvent.class, event -> event.registerSpecial(ModParticles.BULLET_HOLE.get(), new BulletHoleParticle.Provider()));
         modBus.addListener(AddClientReloadListenersEvent.class, event -> {
-            event.addListener(id("internal_assets"), GunModClient.internalAssetsListener());
-            event.addListener(id("client_assets"), GunModClient.clientAssetsListener());
-            // the internal default models/animations have to be there before the gun packs reference them
-            event.addDependency(id("internal_assets"), id("client_assets"));
+            // the internal default models/animations have to be there before the gun packs reference them; one listener,
+            // addDependency would hold client_assets back until internal_assets is done, which only happens after every
+            // listener reached the reload barrier
+            event.addListener(id("client_assets"), GunModClient.clientAssetsListener(true));
         });
         modBus.addListener(RegisterPictureInPictureRenderersEvent.class, event -> event.register(ItemPreviewRenderState.class, ItemPreviewRenderer::new));
         // item renderers: every TACZ item model is "minecraft:special" -> "tacz:item", which dispatches to the old BEWLRs

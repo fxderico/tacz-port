@@ -152,7 +152,18 @@ public class GunModClient /*? if fabric {*/implements net.fabricmc.api.ClientMod
      * One listener running TACZ's loaders in order, displays and indexes depend on what was loaded before them.
      */
     public static net.minecraft.server.packs.resources.PreparableReloadListener clientAssetsListener() {
+        return clientAssetsListener(false);
+    }
+
+    /**
+     * @param withInternalAssets run the internal default assets first, for loaders whose listener ordering would
+     *                           wait for a whole listener to finish (NeoForge's addDependency), which deadlocks on the reload barrier
+     */
+    public static net.minecraft.server.packs.resources.PreparableReloadListener clientAssetsListener(boolean withInternalAssets) {
         java.util.List<net.minecraft.server.packs.resources.PreparableReloadListener> clientListeners = new java.util.ArrayList<>();
+        if (withInternalAssets) {
+            clientListeners.add(internalAssetsListener());
+        }
         ClientAssetsManager.INSTANCE.reloadAndRegister(clientListeners::add);
         return new com.tacz.guns.platform.SequentialReloadListener("TaczClientAssets", () -> clientListeners);
     }
