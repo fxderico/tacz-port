@@ -7,6 +7,7 @@ import com.tacz.guns.platform.forge.event.TickEvent;
 import com.tacz.guns.platform.forge.event.entity.EntityJoinLevelEvent;
 import com.tacz.guns.platform.forge.event.entity.player.PlayerEvent;
 import com.tacz.guns.platform.forge.event.entity.player.PlayerInteractEvent;
+import com.tacz.guns.platform.forge.event.server.ServerStartedEvent;
 import com.tacz.guns.platform.forge.event.server.ServerStoppedEvent;
 import com.tacz.guns.platform.forge.server.ServerLifecycleHooks;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
@@ -28,6 +29,7 @@ public final class FabricEventBridge {
 
     public static void registerCommon() {
         ServerLifecycleEvents.SERVER_STARTING.register(ServerLifecycleHooks::setCurrentServer);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> MinecraftForge.EVENT_BUS.post(new ServerStartedEvent(server)));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             MinecraftForge.EVENT_BUS.post(new ServerStoppedEvent(server));
             ServerLifecycleHooks.setCurrentServer(null);

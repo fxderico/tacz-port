@@ -266,6 +266,12 @@ public interface GunItemDataAccessor extends IGun {
         String key = GUN_ATTACHMENT_BASE + type.name();
         if (ItemNbt.contains(nbt, key, Tag.TAG_COMPOUND)) {
             CompoundTag allItemStackTag = nbt.getCompoundOrEmpty(key);
+            // attachments are saved with the 1.21 item stack codec, their nbt is the custom data component
+            CompoundTag components = allItemStackTag.getCompoundOrEmpty("components");
+            if (ItemNbt.contains(components, "minecraft:custom_data", Tag.TAG_COMPOUND)) {
+                return components.getCompoundOrEmpty("minecraft:custom_data");
+            }
+            // 1.20 item stack nbt
             if (ItemNbt.contains(allItemStackTag, "tag", Tag.TAG_COMPOUND)) {
                 return allItemStackTag.getCompoundOrEmpty("tag");
             }

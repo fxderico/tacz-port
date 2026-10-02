@@ -12,7 +12,6 @@ import com.tacz.guns.util.RenderDistance;
 import net.minecraft.client.model.geom.EntityModelSet;
 import com.tacz.guns.platform.client.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -75,8 +74,7 @@ public class AttachmentItemRenderer extends BlockEntityWithoutLevelRenderer {
                 model = lodModel.getLeft();
                 texture = lodModel.getRight();
             }
-            RenderType renderType = RenderTypes.entityCutout(texture);
-            model.render(null, null, poseStack, transformType, renderType, pPackedLight, pPackedOverlay);
+            model.render(null, null, poseStack, transformType, texture, pPackedLight, pPackedOverlay);
         }
         // 否则，以 GUI 形式渲染
         else {

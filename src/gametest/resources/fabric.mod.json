@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "tacz-gametest",
+  "version": "1.0.0",
+  "name": "TACZ client gametests",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": ["com.tacz.guns.gametest.TaczClientGameTest"]
+  },
+  "depends": {
+    "tacz": "*",
+    "fabric-client-gametest-api-v1": "*"
+  }
+}

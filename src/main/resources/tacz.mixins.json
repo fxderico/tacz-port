@@ -24,6 +24,8 @@
   ],
   "client": [
     "client.AbstractButtonMixin",
+    "client.DirectStateAccessStencilMixin",
+    "client.GlDeviceStencilMixin",
     "client.GameRendererMixin",
     "client.HumanoidModelMixin",
     "client.ItemInHandLayerMixin",

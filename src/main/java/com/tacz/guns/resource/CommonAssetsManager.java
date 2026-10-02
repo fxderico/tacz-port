@@ -43,6 +43,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.phys.Vec3;
 import com.tacz.guns.platform.forge.event.OnDatapackSyncEvent;
 import com.tacz.guns.platform.forge.event.TagsUpdatedEvent;
+import com.tacz.guns.platform.forge.event.server.ServerStartedEvent;
 import com.tacz.guns.platform.forge.event.server.ServerStoppedEvent;
 import com.tacz.guns.platform.forge.eventbus.api.SubscribeEvent;
 import com.tacz.guns.platform.forge.fml.common.Mod;
@@ -238,8 +239,9 @@ public class CommonAssetsManager implements ICommonResourceProvider {
 
     /**
      * Forge's AddReloadListenerEvent made a new manager with fresh listeners on every data pack reload.
-     * Fabric registers a fixed listener, so this one builds the manager and runs its listeners the way vanilla
-     * would: each prepares, all of them meet at the shared barrier, then they apply in order.
+     * Fabric registers a fixed listener, so this one builds the manager and runs its listeners one after another
+     * (each prepares and applies before the next starts, the indexes need the data loaded before them), then
+     * joins vanilla's barrier.
      */
     public static final PreparableReloadListener RELOAD_LISTENER = new com.tacz.guns.platform.SequentialReloadListener("TaczCommonAssets", () -> {
         var commonAssetsManager = new CommonAssetsManager();
@@ -256,13 +258,27 @@ public class CommonAssetsManager implements ICommonResourceProvider {
      */
     @SubscribeEvent
     public static void onReload(TagsUpdatedEvent event) {
-        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD){
-            var server = ServerLifecycleHooks.getCurrentServer();
-            if (getInstance() != null && server != null) {
-                for (GunSmithTableRecipe recipe : TaczRecipes.getAll(server.overworld())) {
-                    recipe.init();
-                }
-            }
+        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+            // On the first load the tags are bound while the world is being created, before the server exists,
+            // so that case is handled by onServerStarted instead
+            initRecipes(ServerLifecycleHooks.getCurrentServer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerStarted(ServerStartedEvent event) {
+        initRecipes(event.getServer());
+    }
+
+    private static void initRecipes(@Nullable MinecraftServer server) {
+        if (getInstance() == null || server == null) {
+            return;
+        }
+        com.tacz.guns.GunMod.LOGGER.info("Gun packs loaded: {} guns, {} ammo, {} attachments, {} blocks",
+                getInstance().getAllGuns().size(), getInstance().getAllAmmos().size(),
+                getInstance().getAllAttachments().size(), getInstance().getAllBlocks().size());
+        for (GunSmithTableRecipe recipe : TaczRecipes.getAll(server.overworld())) {
+            recipe.init();
         }
     }
 

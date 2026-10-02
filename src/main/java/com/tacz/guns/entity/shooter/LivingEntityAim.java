@@ -4,13 +4,12 @@ import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
+import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
-import com.tacz.guns.api.item.nbt.AttachmentItemDataAccessor;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.modifier.custom.AdsModifier;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -39,14 +38,16 @@ public class LivingEntityAim {
             return;
         }
         Identifier scopeId = iGun.getAttachmentId(currentGunItem, AttachmentType.SCOPE);
-        CompoundTag scopeTag = iGun.getAttachmentTag(currentGunItem, AttachmentType.SCOPE);
-        if (!DefaultAssets.isEmptyAttachmentId(scopeId) && scopeTag != null) {
+        ItemStack scopeItem = iGun.getAttachment(currentGunItem, AttachmentType.SCOPE);
+        if (!DefaultAssets.isEmptyAttachmentId(scopeId) && scopeItem.getItem() instanceof IAttachment iAttachment) {
             TimelessAPI.getCommonAttachmentIndex(scopeId).ifPresent(index -> {
-                int zoomNumber = AttachmentItemDataAccessor.getZoomNumberFromTag(scopeTag);
+                int zoomNumber = iAttachment.getZoomNumber(scopeItem);
                 ++zoomNumber;
                 // 避免上溢变成负的
                 zoomNumber = zoomNumber % (Integer.MAX_VALUE - 1);
-                AttachmentItemDataAccessor.setZoomNumberToTag(scopeTag, zoomNumber);
+                // the Forge version edited the gun nbt in place, item data is immutable now so write it back
+                iAttachment.setZoomNumber(scopeItem, zoomNumber);
+                iGun.installAttachment(currentGunItem, scopeItem);
             });
         }
     }

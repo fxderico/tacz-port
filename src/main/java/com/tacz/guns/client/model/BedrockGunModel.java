@@ -14,6 +14,9 @@ import com.tacz.guns.client.model.bedrock.ModelRendererWrapper;
 import com.tacz.guns.client.model.functional.*;
 import com.tacz.guns.client.model.listener.model.ModelAdditionalMagazineListener;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
+import com.tacz.guns.util.RenderHelper;
+import org.lwjgl.opengl.GL11;
+import java.util.Optional;
 import com.tacz.guns.client.resource.pojo.display.gun.TextShow;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
@@ -59,6 +62,7 @@ public class BedrockGunModel extends BedrockAnimatedModel {
     protected @Nullable List<BedrockPart> laserBeamPaths;
 
     private boolean renderHand = true;
+    private boolean stencilUsed = false;
     private boolean renderMount;
     private ItemStack currentGunItem;
     private int currentExtendMagLevel = 0;
@@ -289,10 +293,29 @@ public class BedrockGunModel extends BedrockAnimatedModel {
             }
             AttachmentRender.renderAttachment(attachmentItem, currentGunItem, matrixStack, transformType, light, overlay);
             matrixStack.popPose();
-            // the Forge version enables a stencil test here so the gun body is not drawn inside the scope tube,
-            // no stencil on 1.21.5+ pipelines (see BedrockAttachmentModel#renderWithoutStencil)
+            // 开启模板测试，因为镜内不渲染枪体
+            if (iAttachment != null && transformType.firstPerson()) {
+                Optional<ClientAttachmentIndex> attachmentIndex = TimelessAPI.getClientAttachmentIndex(iAttachment.getAttachmentId(attachmentItem));
+                attachmentIndex.ifPresent(index -> {
+                    if (index.isScope() && index.isSight()) { // 组合镜
+                        RenderHelper.enableItemEntityStencilTest();
+                        RenderHelper.stencilFunc(GL11.GL_GREATER, 127, 0xFF);
+                        stencilUsed = true;
+                    } else if (index.isScope()) { // 长筒镜
+                        RenderHelper.enableItemEntityStencilTest();
+                        RenderHelper.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
+                        stencilUsed = true;
+                    }
+                });
+            }
         }
+        RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
         super.render(matrixStack, transformType, renderType, light, overlay);
+        if (stencilUsed) {
+            stencilUsed = false;
+            RenderHelper.disableItemEntityStencilTest();
+            RenderHelper.clearStencil();
+        }
     }
 
     @Nullable

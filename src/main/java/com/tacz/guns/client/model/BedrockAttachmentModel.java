@@ -6,17 +6,24 @@ import com.tacz.guns.client.model.bedrock.BedrockPart;
 import com.tacz.guns.client.model.bedrock.ModelRendererWrapper;
 import com.tacz.guns.client.model.functional.BeamRenderer;
 import com.tacz.guns.client.model.functional.TextShowRender;
+import com.tacz.guns.client.renderer.ScopeRenderTypes;
 import com.tacz.guns.client.resource.pojo.display.gun.TextShow;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
+import com.tacz.guns.util.RenderHelper;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,6 +54,7 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
 
     private @Nullable ItemStack currentGunItem;
     private @Nullable ItemStack attachmentItem;
+    private @Nullable Identifier texture;
 
     private boolean isScope = false;
     private boolean isSight = false;
@@ -144,10 +152,23 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
                 bedrockPart -> new TextShowRender(this, textShow, currentGunItem)));
     }
 
+    /**
+     * Renders with {@code RenderTypes.entityCutout(texture)}, the texture is also needed for the stencil passes of
+     * scopes and sights in first person.
+     */
+    public void render(@Nullable ItemStack attachmentItem, @Nullable ItemStack currentGunItem, PoseStack matrixStack, ItemDisplayContext transformType, Identifier texture, int light, int overlay) {
+        this.texture = texture;
+        try {
+            render(attachmentItem, currentGunItem, matrixStack, transformType, RenderTypes.entityCutout(texture), light, overlay);
+        } finally {
+            this.texture = null;
+        }
+    }
+
     public void render(@Nullable ItemStack attachmentItem, ItemStack currentGunItem, PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
         this.currentGunItem = currentGunItem;
         this.attachmentItem = attachmentItem;
-        if (transformType.firstPerson()) {
+        if (transformType.firstPerson() && texture != null) {
             if (isScope && isSight) {
                 renderBoth(matrixStack, transformType, renderType, light, overlay);
             } else if (isScope) {
@@ -202,34 +223,163 @@ public class BedrockAttachmentModel extends BedrockAnimatedModel {
         poseStack.popPose();
     }
 
-    /*
-     * The Forge version masks the eyepiece with the stencil buffer. 1.21.5+ draws through GPU render pipelines
-     * that have no stencil state, so for now scopes and sights draw without the mask: body, outer ring and
-     * reticle are rendered, the black ocular mask and the circular scope view are skipped.
-     */
-    private void renderWithoutStencil(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
+    private void renderOcularStencil(PoseStack matrixStack, ItemDisplayContext transformType, int light, int overlay, boolean isScope) {
+        if (!ocularNodePaths.isEmpty()) {
+            // color and depth writes are off in this render type
+            RenderType stencilType = ScopeRenderTypes.ocularStencil(texture);
+            GL11.glStencilMask(0xFF);
+            RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+            // 绘制目镜
+            for (int i = ocularNodePaths.size() - 1; i >= 0; i--) {
+                if (isScope == isScopeOcular.get(i)) {
+                    RenderHelper.stencilFunc(GL11.GL_GREATER, i + 1, 0xFF);
+                    renderTempPart(matrixStack, transformType, stencilType, light, overlay, ocularNodePaths.get(i));
+                }
+            }
+            // 恢复渲染状态
+            RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+        }
+    }
+
+    private void renderDivisionOnly(PoseStack matrixStack, ItemDisplayContext transformType, int light, int overlay) {
+        if (!divisionNodePaths.isEmpty()) {
+            // depth test is off in this render type
+            RenderType divisionType = ScopeRenderTypes.divisionNoDepth(texture);
+            for (int i = 0; i < divisionNodePaths.size(); i++) {
+                RenderHelper.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+                renderTempPart(matrixStack, transformType, divisionType, light, overlay, divisionNodePaths.get(i));
+            }
+        }
+    }
+
+    private void renderOcularAndDivision(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay, boolean selective) {
+        if (!ocularNodePaths.isEmpty()) {
+            // 准备渲染圆形模板层
+            RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT);
+            // 80是一个随便找的大小合适的数值。
+            float rad = 80 * scopeViewRadiusModifier;
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                rad *= IClientPlayerGunOperator.fromLocalPlayer(player).getClientAimingProgress(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            }
+            // The Forge version drew the circle in view space with an identity model view. Here the model view holds
+            // the camera rotation and the pose stack its inverse, so go to view space and back.
+            Matrix4f modelView = new Matrix4f(RenderSystem.getModelViewMatrix());
+            Matrix4f viewToPose = modelView.invert(new Matrix4f());
+            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            Vector3f vertex = new Vector3f();
+            for (int i = 0; i < ocularNodePaths.size(); i++) {
+                if (selective && !isScopeOcular.get(i)) {
+                    continue;
+                }
+                RenderHelper.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+                Vector3f ocularCenter = modelView.transformPosition(getBedrockPartCenter(matrixStack, ocularNodePaths.get(i)));
+                float centerX = ocularCenter.x() * 16 * 90;
+                float centerY = ocularCenter.y() * 16 * 90;
+                // color and depth writes are off in this render type
+                VertexConsumer builder = bufferSource.getBuffer(ScopeRenderTypes.SCOPE_VIEW_CIRCLE);
+                viewToPose.transformPosition(centerX, centerY, -90.0F, vertex);
+                builder.addVertex(vertex.x(), vertex.y(), vertex.z()).setColor(255, 255, 255, 255);
+                for (int j = 0; j <= 90; j++) {
+                    float angle = (float) j * ((float) Math.PI * 2F) / 90.0F;
+                    float sin = Mth.sin(angle);
+                    float cos = Mth.cos(angle);
+                    viewToPose.transformPosition(centerX + cos * rad, centerY + sin * rad, -90.0F, vertex);
+                    builder.addVertex(vertex.x(), vertex.y(), vertex.z()).setColor(255, 255, 255, 255);
+                }
+                bufferSource.endBatch(ScopeRenderTypes.SCOPE_VIEW_CIRCLE);
+            }
+            RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            for (int i = 0; i < ocularNodePaths.size() && i < divisionNodePaths.size(); i++) {
+                if (i > Byte.MAX_VALUE) {
+                    throw new IllegalArgumentException("Index of oculus is out of range for 127");
+                }
+                if (selective && !isScopeOcular.get(i)) {
+                    RenderHelper.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+                    renderTempPart(matrixStack, transformType, renderType, light, overlay, divisionNodePaths.get(i));
+                } else {
+                    // 渲染目镜黑色遮罩
+                    RenderHelper.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF);
+                    renderTempPart(matrixStack, transformType, renderType, light, overlay, ocularNodePaths.get(i));
+                    // 渲染划分
+                    int b = ~(i + 1) & 0xFF;
+                    RenderHelper.stencilFunc(GL11.GL_EQUAL, b, 0xFF);
+                    renderTempPart(matrixStack, transformType, renderType, light, overlay, divisionNodePaths.get(i));
+                }
+            }
+        }
+    }
+
+    private void renderBoth(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
+        RenderHelper.enableItemEntityStencilTest();
+        // 清空模板缓冲区、准备绘制模板缓冲
+        RenderHelper.clearStencil();
         if (ocularRingPath != null) {
+            RenderHelper.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+            RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            // 渲染目镜外环
             renderTempPart(matrixStack, transformType, renderType, light, overlay, ocularRingPath);
         }
+        // 渲染目镜以写入模板桓冲值 (暂时只渲染 ocular_scope)
+        renderOcularStencil(matrixStack, transformType, light, overlay, true);
+        // 渲染镜身
         if (scopeBodyPath != null) {
+            RenderHelper.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
             renderTempPart(matrixStack, transformType, renderType, light, overlay, scopeBodyPath);
         }
-        for (List<BedrockPart> divisionPath : divisionNodePaths) {
-            renderTempPart(matrixStack, transformType, renderType, light, overlay, divisionPath);
+        // 渲染目镜以写入模板桓冲值 (渲染其他的目镜)
+        renderOcularStencil(matrixStack, transformType, light, overlay, false);
+        // 渲染目镜遮罩和划分
+        renderOcularAndDivision(matrixStack, transformType, renderType, light, overlay, true);
+        // 关闭模板缓冲
+        RenderHelper.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        RenderHelper.disableItemEntityStencilTest();
+        // 渲染其他部分
+        super.render(matrixStack, transformType, renderType, light, overlay);
+    }
+
+    private void renderSight(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
+        RenderHelper.enableItemEntityStencilTest();
+        // 清空模板缓冲区、准备绘制模板缓冲
+        RenderHelper.clearStencil();
+        // 渲染目镜以写入模板桓冲值
+        renderOcularStencil(matrixStack, transformType, light, overlay, false);
+        // 渲染划分
+        renderDivisionOnly(matrixStack, transformType, light, overlay);
+        // 关闭模板缓冲
+        RenderHelper.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        RenderHelper.disableItemEntityStencilTest();
+        // 渲染其他部分
+        if (scopeBodyPath != null) {
+            renderTempPart(matrixStack, transformType, renderType, light, overlay, scopeBodyPath);
         }
         super.render(matrixStack, transformType, renderType, light, overlay);
     }
 
-    private void renderBoth(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
-        renderWithoutStencil(matrixStack, transformType, renderType, light, overlay);
-    }
-
-    private void renderSight(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
-        renderWithoutStencil(matrixStack, transformType, renderType, light, overlay);
-    }
-
     private void renderScope(PoseStack matrixStack, ItemDisplayContext transformType, RenderType renderType, int light, int overlay) {
-        renderWithoutStencil(matrixStack, transformType, renderType, light, overlay);
+        RenderHelper.enableItemEntityStencilTest();
+        // 清空模板缓冲区、准备绘制模板缓冲
+        RenderHelper.clearStencil();
+        // 渲染目镜外环
+        if (ocularRingPath != null) {
+            RenderHelper.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+            RenderHelper.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+            renderTempPart(matrixStack, transformType, renderType, light, overlay, ocularRingPath);
+        }
+        // 渲染目镜以写入模板桓冲值
+        renderOcularStencil(matrixStack, transformType, light, overlay, false);
+        // 渲染镜身
+        if (scopeBodyPath != null) {
+            RenderHelper.stencilFunc(GL11.GL_EQUAL, 0, 0xFF);
+            renderTempPart(matrixStack, transformType, renderType, light, overlay, scopeBodyPath);
+        }
+        // 渲染目镜遮罩和划分
+        renderOcularAndDivision(matrixStack, transformType, renderType, light, overlay, false);
+        // 关闭模板缓冲
+        RenderHelper.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
+        RenderHelper.disableItemEntityStencilTest();
+        // 渲染其他部分
+        super.render(matrixStack, transformType, renderType, light, overlay);
     }
 
     private static class OcularWrapper{
