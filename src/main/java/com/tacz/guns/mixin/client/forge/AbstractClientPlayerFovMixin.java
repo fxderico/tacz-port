@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractClientPlayer.class)
 public abstract class AbstractClientPlayerFovMixin {
     @Inject(method = "getFieldOfViewModifier", at = @At("RETURN"), cancellable = true)
-    private void tacz$fovModifier(boolean firstPerson, float fovEffectScale, CallbackInfoReturnable<Float> cir) {
+    private void tacz$fovModifier(/*? if >=1.21.2 {*/boolean firstPerson, float fovEffectScale, /*?}*/CallbackInfoReturnable<Float> cir) {
         ComputeFovModifierEvent event = new ComputeFovModifierEvent((AbstractClientPlayer) (Object) this, cir.getReturnValueF());
         MinecraftForge.EVENT_BUS.post(event);
         cir.setReturnValue(event.getNewFovModifier());

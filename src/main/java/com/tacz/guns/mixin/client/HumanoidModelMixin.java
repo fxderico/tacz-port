@@ -4,6 +4,7 @@ import com.tacz.guns.client.animation.third.InnerThirdPersonManager;
 import com.tacz.guns.client.renderer.RenderStateEntity;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
+//? if >=1.21.2
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(HumanoidModel.class)
-public class HumanoidModelMixin<T extends HumanoidRenderState> {
+public class HumanoidModelMixin<T extends /*? if >=1.21.2 {*/HumanoidRenderState/*?} else {*//*LivingEntity*//*?}*/> {
     @Shadow
     @Final
     public ModelPart head;
@@ -28,6 +29,7 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
     @Final
     public ModelPart rightArm;
 
+    //? if >=1.21.2 {
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V", at = @At(value = "TAIL"))
     private void setRotationAnglesHead(T state, CallbackInfo ci) {
         if (state.ageInTicks == 0) {
@@ -38,4 +40,13 @@ public class HumanoidModelMixin<T extends HumanoidRenderState> {
             InnerThirdPersonManager.setRotationAnglesHead(entity, rightArm, leftArm, body, head, state.walkAnimationSpeed);
         }
     }
+    //?} else {
+    /*@Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "TAIL"))
+    private void setRotationAnglesHead(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
+        if (ageInTicks == 0) {
+            return;
+        }
+        InnerThirdPersonManager.setRotationAnglesHead(entity, rightArm, leftArm, body, head, limbSwingAmount);
+    }
+    *///?}
 }

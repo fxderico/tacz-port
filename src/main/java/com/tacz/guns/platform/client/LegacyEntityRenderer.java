@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+//? if >=1.21.2
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 //? if >=1.21.9
 import net.minecraft.client.renderer.state.CameraRenderState;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * Same idea as LegacyBlockEntityRenderer, for entities: the render state keeps the entity and the old
  * render method draws into the main buffer source.
  */
+//? if >=1.21.2 {
 @Environment(EnvType.CLIENT)
 public abstract class LegacyEntityRenderer<T extends Entity> extends EntityRenderer<T, LegacyEntityRenderer.State<T>> {
     public static class State<T> extends EntityRenderState {
@@ -63,3 +65,20 @@ public abstract class LegacyEntityRenderer<T extends Entity> extends EntityRende
     }
     *///?}
 }
+//?} else {
+/*// before 1.21.2 entity renderers drew straight from the entity, the old render method is the renderer's own
+@Environment(EnvType.CLIENT)
+public abstract class LegacyEntityRenderer<T extends Entity> extends EntityRenderer<T> {
+    protected LegacyEntityRenderer(EntityRendererProvider.Context context) {
+        super(context);
+    }
+
+    @Override
+    public abstract void render(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight);
+
+    @Override
+    public net.minecraft.resources.Identifier getTextureLocation(T entity) {
+        return net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS;
+    }
+}
+*///?}

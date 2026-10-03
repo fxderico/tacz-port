@@ -79,6 +79,7 @@ public class GunSmithTableRecipe implements Recipe<RecipeInput> {
         return ModRecipe.GUN_SMITH_TABLE_CRAFTING.get();
     }
 
+    //? if >=1.21.2 {
     @Override
     public PlacementInfo placementInfo() {
         return PlacementInfo.NOT_PLACEABLE;
@@ -88,6 +89,18 @@ public class GunSmithTableRecipe implements Recipe<RecipeInput> {
     public RecipeBookCategory recipeBookCategory() {
         return RecipeBookCategories.CRAFTING_MISC;
     }
+    //?} else {
+    /*// the recipe book API before 1.21.2
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
+        return getOutput();
+    }
+    *///?}
 
     public ItemStack getOutput() {
         return result.getResult();

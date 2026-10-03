@@ -39,22 +39,47 @@ public final class GuiCompat {
      * blit(texture, x, y, u, v, width, height, textureWidth, textureHeight)
      */
     public static void blit(GuiGraphics graphics, Identifier texture, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+        //? if >=1.21.2 {
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, width, height, textureWidth, textureHeight, shaderColor);
+        //?} else {
+        /*tinted(() -> graphics.blit(texture, x, y, u, v, width, height, textureWidth, textureHeight));
+        *///?}
     }
 
     /**
      * blit(texture, x, y, width, height, u, v, uWidth, vHeight, textureWidth, textureHeight)
      */
     public static void blit(GuiGraphics graphics, Identifier texture, int x, int y, int width, int height, float u, float v, int uWidth, int vHeight, int textureWidth, int textureHeight) {
+        //? if >=1.21.2 {
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, width, height, uWidth, vHeight, textureWidth, textureHeight, shaderColor);
+        //?} else {
+        /*tinted(() -> graphics.blit(texture, x, y, width, height, u, v, uWidth, vHeight, textureWidth, textureHeight));
+        *///?}
     }
 
     /**
      * blit(texture, x, y, u, v, width, height) on a 256x256 texture
      */
     public static void blit(GuiGraphics graphics, Identifier texture, int x, int y, int u, int v, int width, int height) {
+        //? if >=1.21.2 {
         graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, width, height, 256, 256, shaderColor);
+        //?} else {
+        /*tinted(() -> graphics.blit(texture, x, y, u, v, width, height));
+        *///?}
     }
+
+    //? if <1.21.2 {
+    /*// blits had no color before 1.21.2, the shader color tinted them, and blending was up to the caller
+    private static void tinted(Runnable blit) {
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
+        com.mojang.blaze3d.systems.RenderSystem.setShaderColor(ARGB.red(shaderColor) / 255.0F, ARGB.green(shaderColor) / 255.0F,
+                ARGB.blue(shaderColor) / 255.0F, ARGB.alpha(shaderColor) / 255.0F);
+        blit.run();
+        com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        com.mojang.blaze3d.systems.RenderSystem.disableBlend();
+    }
+    *///?}
 
     private static int opaque(int color) {
         return (color & 0xFF000000) == 0 ? color | 0xFF000000 : color;

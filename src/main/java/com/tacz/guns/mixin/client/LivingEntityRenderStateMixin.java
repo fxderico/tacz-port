@@ -1,13 +1,15 @@
 package com.tacz.guns.mixin.client;
 
 import com.tacz.guns.client.renderer.RenderStateEntity;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(LivingEntityRenderState.class)
+// render states came with 1.21.2, older versions hand the entity itself to the layers
+@Pseudo
+@Mixin(targets = "net.minecraft.client.renderer.entity.state.LivingEntityRenderState")
 public abstract class LivingEntityRenderStateMixin implements RenderStateEntity {
     @Unique
     private @Nullable LivingEntity tacz$entity;

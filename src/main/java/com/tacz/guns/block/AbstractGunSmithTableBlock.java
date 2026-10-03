@@ -62,8 +62,17 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
         }
     }
 
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState pState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult pHit) {
+        return com.tacz.guns.platform.compat.ItemInteractions.of(tacz$useItemOn(stack, pState, level, pos, player, hand, pHit));
+    }
+
+    private InteractionResult tacz$useItemOn(ItemStack stack, BlockState pState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult pHit) {
+    *///?} else {
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState pState, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult pHit) {
+    //?}
         // the table opens whatever the player holds, like the Forge version did
         return useWithoutItem(pState, level, pos, player, pHit);
     }

@@ -4,6 +4,7 @@ import com.tacz.guns.platform.client.GuiCompat;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.Toast;
+//? if >=1.21.2
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,7 @@ public class GunLevelUpToast implements Toast {
         this.subTitle = subtitle;
     }
 
+    //? if >=1.21.2 {
     private Visibility visibility = Visibility.SHOW;
 
     @Override
@@ -47,4 +49,17 @@ public class GunLevelUpToast implements Toast {
         }
         gui.renderFakeItem(this.icon, 8, 8);
     }
+    //?} else {
+    /*// toasts drew and timed themselves in one call before 1.21.2
+    @Override
+    public Visibility render(GuiGraphics gui, net.minecraft.client.gui.components.toasts.ToastComponent toastComponent, long timeSinceLastVisible) {
+        Font font = toastComponent.getMinecraft().font;
+        gui.drawString(font, this.title, 30, 7, 0xFFFFFF00, false);
+        if (this.subTitle != null) {
+            gui.drawString(font, this.subTitle, 30, 18, -1, false);
+        }
+        gui.renderFakeItem(this.icon, 8, 8);
+        return timeSinceLastVisible >= 5000L ? Visibility.HIDE : Visibility.SHOW;
+    }
+    *///?}
 }

@@ -19,14 +19,17 @@ import java.util.Optional;
  * OnDatapackSyncEvent#sendRecipes on NeoForge.
  */
 public final class TaczRecipes {
+    //? if >=1.21.2 {
     /**
      * Recipes the server sent, NeoForge hands them over in RecipesReceivedEvent, Fabric before 1.21.9 in ServerMessageSyncRecipes.
      */
     public static net.minecraft.world.item.crafting.RecipeMap clientRecipes = net.minecraft.world.item.crafting.RecipeMap.EMPTY;
+    //?}
 
     private TaczRecipes() {
     }
 
+    //? if >=1.21.2 {
     private static Collection<RecipeHolder<GunSmithTableRecipe>> syncedRecipes(Level level) {
         //? if neoforge || <1.21.9 {
         /*return clientRecipes.byType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
@@ -42,9 +45,19 @@ public final class TaczRecipes {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().get(key);
         //?}
     }
+    //?}
 
     @SuppressWarnings("unchecked")
     public static List<GunSmithTableRecipe> getAll(Level level) {
+        //? if <1.21.2 {
+        /*// before 1.21.2 every recipe reached the client, both sides ask their own recipe manager
+        List<GunSmithTableRecipe> all = new ArrayList<>();
+        for (RecipeHolder<GunSmithTableRecipe> holder : level.getRecipeManager().getAllRecipesFor(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get())) {
+            holder.value().setId(holder.id());
+            all.add(holder.value());
+        }
+        return all;
+        *///?} else {
         Collection<RecipeHolder<GunSmithTableRecipe>> holders;
         if (level instanceof ServerLevel serverLevel) {
             holders = new ArrayList<>();
@@ -63,9 +76,13 @@ public final class TaczRecipes {
             recipes.add(recipe);
         }
         return recipes;
+        //?}
     }
 
     public static Optional<GunSmithTableRecipe> byId(Level level, Identifier id) {
+        //? if <1.21.2 {
+        /*RecipeHolder<?> holder = level.getRecipeManager().byKey(id).orElse(null);
+        *///?} else {
         ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> key = ResourceKey.create(Registries.RECIPE, id);
         RecipeHolder<?> holder;
         if (level instanceof ServerLevel serverLevel) {
@@ -73,6 +90,7 @@ public final class TaczRecipes {
         } else {
             holder = syncedRecipe(level, key);
         }
+        //?}
         if (holder != null && holder.value() instanceof GunSmithTableRecipe recipe) {
             recipe.setId(id);
             return Optional.of(recipe);

@@ -42,12 +42,23 @@ public class SequentialReloadListener implements PreparableReloadListener {
         }
         return chain.thenCompose(ignored -> barrier.wait(null));
     }
-    //?} else {
+    //?} else if >=1.21.2 {
     /*public CompletableFuture<Void> reload(PreparationBarrier barrier, net.minecraft.server.packs.resources.ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
         List<PreparableReloadListener> listeners = listenerFactory.get();
         CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
         for (PreparableReloadListener listener : listeners) {
             chain = chain.thenCompose(ignored -> listener.reload(IMMEDIATE, manager, prepareExecutor, applyExecutor));
+        }
+        return chain.thenCompose(ignored -> barrier.wait(null));
+    }
+    *///?} else {
+    /*public CompletableFuture<Void> reload(PreparationBarrier barrier, net.minecraft.server.packs.resources.ResourceManager manager,
+                                          net.minecraft.util.profiling.ProfilerFiller prepareProfiler, net.minecraft.util.profiling.ProfilerFiller applyProfiler,
+                                          Executor prepareExecutor, Executor applyExecutor) {
+        List<PreparableReloadListener> listeners = listenerFactory.get();
+        CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
+        for (PreparableReloadListener listener : listeners) {
+            chain = chain.thenCompose(ignored -> listener.reload(IMMEDIATE, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor));
         }
         return chain.thenCompose(ignored -> barrier.wait(null));
     }

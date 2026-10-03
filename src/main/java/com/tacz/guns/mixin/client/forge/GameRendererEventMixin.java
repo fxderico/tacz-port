@@ -50,10 +50,11 @@ public abstract class GameRendererEventMixin {
     }
 
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
-    private void tacz$computeFov(Camera camera, float partialTick, boolean useConfiguredFov, CallbackInfoReturnable<Float> cir) {
-        ViewportEvent.ComputeFov event = new ViewportEvent.ComputeFov((GameRenderer) (Object) this, camera, partialTick, cir.getReturnValueF(), useConfiguredFov);
+    // the field of view was a double before 1.21.2
+    private void tacz$computeFov(Camera camera, float partialTick, boolean useConfiguredFov, CallbackInfoReturnable</*? if >=1.21.2 {*/Float/*?} else {*//*Double*//*?}*/> cir) {
+        ViewportEvent.ComputeFov event = new ViewportEvent.ComputeFov((GameRenderer) (Object) this, camera, partialTick, cir./*? if >=1.21.2 {*/getReturnValueF/*?} else {*//*getReturnValueD*//*?}*/(), useConfiguredFov);
         MinecraftForge.EVENT_BUS.post(event);
-        cir.setReturnValue((float) event.getFOV());
+        cir.setReturnValue(/*? if >=1.21.2 {*/(float)/*?} else {*//*(double)*//*?}*/ event.getFOV());
     }
     //?}
 }

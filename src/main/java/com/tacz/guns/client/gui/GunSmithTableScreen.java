@@ -634,7 +634,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                 GunSmithTableIngredient smithTableIngredient = inputs.get(index);
                 Ingredient ingredient = smithTableIngredient.getIngredient();
 
-                ItemStack[] items = ingredient.items().map(ItemStack::new).toArray(ItemStack[]::new);
+                ItemStack[] items = /*? if >=1.21.5 {*/ingredient.items().map(ItemStack::new).toArray(ItemStack[]::new)/*?} else if >=1.21.2 {*//*ingredient.items().stream().map(ItemStack::new).toArray(ItemStack[]::new)*//*?} else {*//*ingredient.getItems()*//*?}*/;
                 if (items.length == 0) {
                     continue;
                 }

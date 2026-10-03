@@ -85,7 +85,7 @@ public final class TaczSmokeTest {
                             WorldDataConfiguration.DEFAULT),
                     *///?} else {
                     new LevelSettings("tacz_test", GameType.SURVIVAL, false, Difficulty.EASY, true,
-                            new GameRules(WorldDataConfiguration.DEFAULT.enabledFeatures()), WorldDataConfiguration.DEFAULT),
+                            new GameRules(/*? if >=1.21.2 {*/WorldDataConfiguration.DEFAULT.enabledFeatures()/*?}*/), WorldDataConfiguration.DEFAULT),
                     //?}
                     WorldOptions.defaultWithRandomSeed(),
                     lookup -> lookup.lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.FLAT).value().createWorldDimensions(),

@@ -39,10 +39,19 @@ public final class FabricReloadListeners {
                 return id;
             }
 
+            //? if >=1.21.2 {
             @Override
             public CompletableFuture<Void> reload(PreparationBarrier barrier, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
                 return listener.reload(barrier, manager, prepareExecutor, applyExecutor);
             }
+            //?} else {
+            /^// reload listeners got profilers before 1.21.2
+            @Override
+            public CompletableFuture<Void> reload(PreparationBarrier barrier, ResourceManager manager, net.minecraft.util.profiling.ProfilerFiller prepareProfiler,
+                                                  net.minecraft.util.profiling.ProfilerFiller applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+                return listener.reload(barrier, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor);
+            }
+            ^///?}
 
             @Override
             public String getName() {

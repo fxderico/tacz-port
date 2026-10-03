@@ -36,7 +36,6 @@ stonecutter parameters {
             replace("pd.getIntArray(TRACER_COLOR_OVERRIDER_KEY).orElse(new int[0])", "pd.getIntArray(TRACER_COLOR_OVERRIDER_KEY)")
             replace("raw.nbt.keySet()", "raw.nbt.getAllKeys()")
             replace(".setStrictness(com.google.gson.Strictness.LENIENT)", ".setLenient()")
-            replace("ingredient.items().map(ItemStack::new)", "ingredient.items().stream().map(ItemStack::new)")
             replace("new ClickEvent.RunCommand(", "new ClickEvent(ClickEvent.Action.RUN_COMMAND, ")
             replace("new HoverEvent.ShowText(", "new HoverEvent(HoverEvent.Action.SHOW_TEXT, ")
             replace("this.filterList.refreshScrollAmount();", "this.filterList.clampScrollAmount();")
@@ -46,6 +45,43 @@ stonecutter parameters {
             replace("super.getCloneItemStack(level, pos, state, includeData)", "super.getCloneItemStack(level, pos, state)")
             // tooltips were a list, before 1.21.5's TooltipDisplay
             replace("TooltipDisplay tooltipDisplay, Consumer<Component> componentConsumer, TooltipFlag isAdvanced) {", "List<Component> tooltipLines, TooltipFlag isAdvanced) { Consumer<Component> componentConsumer = tooltipLines::add;")
+        }
+        // before 1.21.2: no ARGB helper, the delta tracker was the "timer", older input, damage and registry calls
+        string(current.parsed < "1.21.2") {
+            replace("import net.minecraft.util.ARGB;", "import com.tacz.guns.platform.compat.ARGB;")
+            replace("net.minecraft.util.ARGB.", "com.tacz.guns.platform.compat.ARGB.")
+            replace("getDeltaTracker()", "getTimer()")
+            replace("player.input.keyPresses.forward()", "player.input.up")
+            replace("player.input.keyPresses.backward()", "player.input.down")
+            replace("player.input.keyPresses.left()", "player.input.left")
+            replace("player.input.keyPresses.right()", "player.input.right")
+            replace("player.input.keyPresses.jump()", "player.input.jumping")
+            replace("entity.hurtServer(level, damageSource, ", "entity.hurt(damageSource, ")
+            replace("entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel && entity.hurtServer(serverLevel, entity.level().damageSources().generic(), amount)", "entity.hurt(entity.level().damageSources().generic(), amount)")
+            replace("Direction.getApproximateNearest(", "Direction.getNearest(")
+            replace("BuiltInRegistries.REGISTRY.getValueOrThrow(", "BuiltInRegistries.REGISTRY.getOrThrow(")
+            replace("BuiltInRegistries.MOB_EFFECT.get(", "BuiltInRegistries.MOB_EFFECT.getHolder(")
+            replace("ForgeRegistries.ITEMS.getValue(", "ForgeRegistries.ITEMS.get(")
+            replace("import net.minecraft.world.level.portal.TeleportTransition;", "import net.minecraft.world.level.portal.DimensionTransition;")
+            replace("TeleportTransition transition", "DimensionTransition transition")
+            replace("@Inject(method = \"teleport\", at = @At(\"HEAD\"), cancellable = true)", "@Inject(method = \"changeDimension\", at = @At(\"HEAD\"), cancellable = true)")
+            replace("return lookup != null ? lookup : BuiltInRegistries.ITEM;", "return lookup != null ? lookup : BuiltInRegistries.ITEM.asLookup();")
+            replace("return Ingredient.of(set);", "return Ingredient.of(tags.get(0));")
+            replace("return Ingredient.of(items.stream());", "return Ingredient.of(items.stream().map(net.minecraft.world.item.ItemStack::new));")
+            // block items took the block's name by default
+            replace(".useBlockDescriptionPrefix()", ".requiredFeatures()")
+            // tooltip components measured their height without the font
+            replace("public int getHeight(Font font) {", "public int getHeight() { Font font = net.minecraft.client.Minecraft.getInstance().font;")
+        }
+        regex(current.parsed < "1.21.2") {
+            // neighbour updates: (state, direction, neighbour state, level, pos, neighbour pos) before 1.21.2
+            replace("protected BlockState updateShape\\(BlockState (\\w+), LevelReader (\\w+), ScheduledTickAccess \\w+, BlockPos (\\w+), Direction (\\w+), BlockPos (\\w+), BlockState (\\w+), RandomSource \\w+\\)",
+                "protected BlockState updateShape(BlockState $1, Direction $4, BlockState $6, net.minecraft.world.level.LevelAccessor $2, BlockPos $3, BlockPos $5)", "(?!)", "$0")
+            replace("super\\.updateShape\\((\\w+), (\\w+), \\w+, (\\w+), (\\w+), (\\w+), (\\w+), \\w+\\)", "super.updateShape($1, $4, $6, $2, $3, $5)", "(?!)", "$0")
+            replace("import net\\.minecraft\\.world\\.level\\.ScheduledTickAccess;", "import net.minecraft.world.level.LevelAccessor;", "(?!)", "$0")
+            // texture shards took a plain blur flag
+            replace("net\\.minecraft\\.util\\.TriState\\.FALSE", "false", "(?!)", "$0")
+            replace("public void renderImage\\((Font \\w+), (int \\w+), (int \\w+), int tooltipWidth, int tooltipHeight, (GuiGraphics \\w+)\\)", "public void renderImage($1, $2, $3, $4)", "(?!)", "$0")
         }
         string(current.parsed < "1.21.4") {
             replace("public <T> @Nullable T getMetadataSection(MetadataSectionType<T> type) {", "public <T> @Nullable T getMetadataSection(net.minecraft.server.packs.metadata.MetadataSectionSerializer<T> type) {")

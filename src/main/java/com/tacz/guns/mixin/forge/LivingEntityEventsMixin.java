@@ -13,12 +13,16 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityEventsMixin {
     @WrapMethod(method = "actuallyHurt")
+    //? if >=1.21.2 {
     private void tacz$livingHurt(ServerLevel level, DamageSource source, float amount, Operation<Void> original) {
+    //?} else {
+    /*private void tacz$livingHurt(DamageSource source, float amount, Operation<Void> original) {
+    *///?}
         LivingHurtEvent event = new LivingHurtEvent((LivingEntity) (Object) this, source, amount);
         if (MinecraftForge.EVENT_BUS.post(event)) {
             return;
         }
-        original.call(level, source, event.getAmount());
+        original.call(/*? if >=1.21.2 {*/level, /*?}*/source, event.getAmount());
     }
 
     //? if >=26.2 {

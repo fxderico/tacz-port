@@ -131,10 +131,10 @@ public final class ScopeRenderTypes {
             super("", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 0, false, false, () -> {}, () -> {});
         }
 
-        static RenderType entity(String name, Identifier texture, WriteMaskStateShard writeMask, DepthTestStateShard depthTest) {
+        static RenderType entity(String name, Identifier location, WriteMaskStateShard writeMask, DepthTestStateShard depthTest) {
             return create(name, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, false, CompositeState.builder()
                     .setShaderState(RENDERTYPE_ENTITY_CUTOUT_SHADER)
-                    .setTextureState(new TextureStateShard(texture, false))
+                    .setTextureState(new TextureStateShard(location, net.minecraft.util.TriState.FALSE, false))
                     .setTransparencyState(NO_TRANSPARENCY)
                     .setLightmapState(LIGHTMAP)
                     .setOverlayState(OVERLAY)

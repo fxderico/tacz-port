@@ -102,12 +102,19 @@ public final class RenderHelper {
         } else {
             renderer.renderLeftHand(matrixStack, collector, combinedLight, skin, player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
         }
-        //?} else {
+        //?} else if >=1.21.2 {
         /*Identifier skin = player.getSkin().texture();
         if (hand == HumanoidArm.RIGHT) {
             renderer.renderRightHand(matrixStack, collector.bufferSource(), combinedLight, skin, player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE));
         } else {
             renderer.renderLeftHand(matrixStack, collector.bufferSource(), combinedLight, skin, player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
+        }
+        *///?} else {
+        /*// the renderer picked skin and sleeves from the player before 1.21.2
+        if (hand == HumanoidArm.RIGHT) {
+            renderer.renderRightHand(matrixStack, collector.bufferSource(), combinedLight, player);
+        } else {
+            renderer.renderLeftHand(matrixStack, collector.bufferSource(), combinedLight, player);
         }
         *///?}
     }

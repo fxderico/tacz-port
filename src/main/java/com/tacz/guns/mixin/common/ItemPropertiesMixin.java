@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(Item.Properties.class)
 public abstract class ItemPropertiesMixin {
+    // ids in the properties came with 1.21.2
+    //? if >=1.21.2 {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void tacz$setRegistryId(CallbackInfo ci) {
         ResourceKey<Item> key = DeferredRegister.currentKey(Registries.ITEM);
@@ -22,4 +24,5 @@ public abstract class ItemPropertiesMixin {
             ((Item.Properties) (Object) this).setId(key);
         }
     }
+    //?}
 }

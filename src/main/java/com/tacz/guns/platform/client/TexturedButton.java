@@ -4,8 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-//? if >=1.21.6
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
 
@@ -38,6 +36,6 @@ public class TexturedButton extends Button {
     /*? if >=1.21.11 {*/@Override/*?}*/
     protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int v = this.yTexStart + (this.isHoveredOrFocused() ? this.yDiffTex : 0);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, this.getX(), this.getY(), this.xTexStart, v, this.width, this.height, 256, 256);
+        GuiCompat.blit(graphics, this.texture, this.getX(), this.getY(), this.xTexStart, v, this.width, this.height, 256, 256);
     }
 }

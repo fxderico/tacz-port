@@ -80,11 +80,20 @@ public class StatueBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState pState, Level level, BlockPos pos, Player player, BlockHitResult pHit) {
-        return useItemOn(ItemStack.EMPTY, pState, level, pos, player, InteractionHand.MAIN_HAND, pHit);
+        return /*? if <1.21.2 {*//*tacz$useItemOn*//*?} else {*/useItemOn/*?}*/(ItemStack.EMPTY, pState, level, pos, player, InteractionHand.MAIN_HAND, pHit);
     }
 
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack heldStack, BlockState pState, Level level, BlockPos pos, Player player, InteractionHand pHand, BlockHitResult pHit) {
+        return com.tacz.guns.platform.compat.ItemInteractions.of(tacz$useItemOn(heldStack, pState, level, pos, player, pHand, pHit));
+    }
+
+    private InteractionResult tacz$useItemOn(ItemStack heldStack, BlockState pState, Level level, BlockPos pos, Player player, InteractionHand pHand, BlockHitResult pHit) {
+    *///?} else {
     @Override
     protected InteractionResult useItemOn(ItemStack heldStack, BlockState pState, Level level, BlockPos pos, Player player, InteractionHand pHand, BlockHitResult pHit) {
+    //?}
         if (level.isClientSide()) {
             return InteractionResult.SUCCESS;
         } else {

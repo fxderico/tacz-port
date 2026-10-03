@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(BlockBehaviour.Properties.class)
 public abstract class BlockPropertiesMixin {
+    // ids in the properties came with 1.21.2
+    //? if >=1.21.2 {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void tacz$setRegistryId(CallbackInfo ci) {
         ResourceKey<Block> key = DeferredRegister.currentKey(Registries.BLOCK);
@@ -22,4 +24,5 @@ public abstract class BlockPropertiesMixin {
             ((BlockBehaviour.Properties) (Object) this).setId(key);
         }
     }
+    //?}
 }
