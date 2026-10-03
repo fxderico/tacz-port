@@ -1,9 +1,12 @@
 name: Release
 
-# Pushing a v* tag (or publishing a release by hand) builds every Minecraft version and attaches the jars to the release
+# Builds every Minecraft version and attaches the jars to a release. Triggered by pushing a v* tag, publishing a
+# release by hand, running it manually, or pushing a change of .github/release-tag (the tag to create) to tacz-port
 on:
   push:
     tags: ["v*"]
+    branches: [tacz-port]
+    paths: [.github/release-tag]
   release:
     types: [published]
   workflow_dispatch:
@@ -21,6 +24,11 @@ jobs:
     timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
+      - id: tag
+        run: |
+          if [ "${{ github.ref_type }}" = tag ]; then echo "name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ inputs.tag }}" ]; then echo "name=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else echo "name=$(tr -d '[:space:]' < .github/release-tag)" >> "$GITHUB_OUTPUT"; fi
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -41,8 +49,8 @@ jobs:
           path: versions/*/build/libs/tacz-*.jar
       - uses: softprops/action-gh-release@v2
         with:
-          # a manual run creates the tag on the branch it ran on
-          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          # created on the commit that was built when it does not exist yet
+          tag_name: ${{ steps.tag.outputs.name }}
           target_commitish: ${{ github.sha }}
           files: versions/*/build/libs/tacz-*.jar
           body_path: .github/release-notes.md
