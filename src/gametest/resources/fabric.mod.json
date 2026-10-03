@@ -5,7 +5,12 @@
   "name": "TACZ client gametests",
   "environment": "client",
   "entrypoints": {
-    "fabric-client-gametest": ["com.tacz.guns.gametest.TaczClientGameTest"]
+    "fabric-client-gametest": [
+      "com.tacz.guns.gametest.TaczClientGameTest"
+    ],
+    "client": [
+      "com.tacz.guns.gametest.TaczFabricSmokeTest"
+    ]
   },
   "depends": {
     "tacz": "*",

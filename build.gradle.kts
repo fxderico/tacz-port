@@ -71,6 +71,20 @@ fabricApi {
     }
 }
 
+loom {
+    // ./gradlew :<version>:runSmokeTest plays the scripted session of src/gametest (TaczSmokeTest), screenshots in
+    // build/run/smokeTest/screenshots. Works on every version, unlike Fabric's client gametest (1.21.4+).
+    runs {
+        register("smokeTest") {
+            client()
+            source(sourceSets.getByName("gametest"))
+            vmArg("-Dtacz.smoketest=true")
+            vmArg("-Xmx3G")
+            runDir("build/run/smokeTest")
+        }
+    }
+}
+
 java {
     sourceCompatibility = requiredJava
     targetCompatibility = requiredJava
