@@ -10,8 +10,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+//? if >=1.21.4 {
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
-import net.minecraft.client.renderer.item.ItemStackRenderState;
+//?} else {
+/*import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
+*///?}
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +29,7 @@ public class ItemInHandLayerMixin {
     @Inject(method = /*? if >=1.21.9 {*/"submit"/*?} else {*//*"render"*//*?}*/, at = @At(value = "TAIL"))
     private void render(CallbackInfo ci, @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) PoseStack matrixStack,
                         @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) int packedLight,
-                        @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) ArmedEntityRenderState state) {
+                        @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) /*? if >=1.21.4 {*/ArmedEntityRenderState/*?} else {*//*LivingEntityRenderState*//*?}*/ state) {
         MuzzleFlashRender.isSelf = false;
         ShellRender.isSelf = false;
         if (state instanceof RenderStateEntity access && access.tacz$getEntity() != null) {
@@ -35,7 +38,7 @@ public class ItemInHandLayerMixin {
     }
 
     @Inject(method = /*? if >=1.21.9 {*/"submitArmWithItem"/*?} else {*//*"renderArmWithItem"*//*?}*/, at = @At(value = "HEAD"), cancellable = true)
-    private void renderArmWithItemHead(CallbackInfo ci, @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) ArmedEntityRenderState state,
+    private void renderArmWithItemHead(CallbackInfo ci, @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) /*? if >=1.21.4 {*/ArmedEntityRenderState/*?} else {*//*LivingEntityRenderState*//*?}*/ state,
                                        @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) HumanoidArm arm) {
         LivingEntity livingEntity = state instanceof RenderStateEntity access ? access.tacz$getEntity() : null;
         if (livingEntity == null) {

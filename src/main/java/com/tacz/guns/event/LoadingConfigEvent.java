@@ -12,7 +12,13 @@ public class LoadingConfigEvent {
      * 客户端和服务端启动时，会触发此事件
      */
     public static void onLoadingConfig(ModConfig config) {
-        String fileName = config.getFileName();
+        onConfigFile(config.getFileName());
+    }
+
+    /**
+     * Same as {@link #onLoadingConfig}, for config APIs with their own ModConfig class.
+     */
+    public static void onConfigFile(String fileName) {
         if (CONFIG_NAME.equals(fileName)) {
             HeadShotAABBConfigRead.init();
             InteractKeyConfigRead.init();

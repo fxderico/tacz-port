@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+//? if >=1.21.4
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -36,12 +37,16 @@ public final class ItemRenderHelper {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
+        //? if >=1.21.4 {
         ItemStackRenderState state = new ItemStackRenderState();
         mc.getItemModelResolver().updateForTopItem(state, stack, context, level, null, seed);
+        //?}
         //? if >=1.21.9 {
         state.submit(poseStack, SubmitScope.current(), light, overlay, 0);
-        //?} else {
+        //?} else if >=1.21.4 {
         /*state.render(poseStack, buffer, light, overlay);
+        *///?} else {
+        /*mc.getItemRenderer().renderStatic(stack, context, light, overlay, poseStack, buffer, level, seed);
         *///?}
     }
 }

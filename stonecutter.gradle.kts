@@ -10,6 +10,46 @@ stonecutter parameters {
     constants.match(loader, "fabric", "neoforge", "forge")
 
     replacements {
+        // before 1.21.5: plain NBT getters with zero defaults instead of Optionals, public inventory fields, older Gson.
+        // These only run forward (the reverse pattern "(?!)" never matches), the targets also occur elsewhere.
+        regex(current.parsed < "1.21.5") {
+            replace("\\.getStringOr\\(([^,()]+), \"\"\\)", ".getString($1)", "(?!)", "$0")
+            replace("\\.getIntOr\\(([^,()]+), 0\\)", ".getInt($1)", "(?!)", "$0")
+            replace("\\.getLongOr\\(([^,()]+), 0L\\)", ".getLong($1)", "(?!)", "$0")
+            replace("\\.getFloatOr\\(([^,()]+), 0f\\)", ".getFloat($1)", "(?!)", "$0")
+            replace("\\.getDoubleOr\\(([^,()]+), 0d\\)", ".getDouble($1)", "(?!)", "$0")
+            replace("\\.getBooleanOr\\(([^,()]+), false\\)", ".getBoolean($1)", "(?!)", "$0")
+            replace("\\.getCompoundOrEmpty\\(", ".getCompound(", "(?!)", "$0")
+            replace("\\.getListOrEmpty\\((\"[^\"]*\")\\)", ".getList($1, net.minecraft.nbt.Tag.TAG_COMPOUND)", "(?!)", "$0")
+            replace("\\.getSelectedSlot\\(\\)", ".selected", "(?!)", "$0")
+            replace("\\.getNonEquipmentItems\\(\\)", ".items", "(?!)", "$0")
+        }
+        string(current.parsed < "1.21.5") {
+            replace("tag).byteValue()", "tag).getAsByte()")
+            replace("tag).shortValue()", "tag).getAsShort()")
+            replace("tag).intValue()", "tag).getAsInt()")
+            replace("tag).longValue()", "tag).getAsLong()")
+            replace("tag).floatValue()", "tag).getAsFloat()")
+            replace("tag).doubleValue()", "tag).getAsDouble()")
+            replace("tag.asString().orElse(\"\")", "tag.getAsString()")
+            replace("TagParser.parseCompoundFully(", "TagParser.parseTag(")
+            replace("pd.getIntArray(TRACER_COLOR_OVERRIDER_KEY).orElse(new int[0])", "pd.getIntArray(TRACER_COLOR_OVERRIDER_KEY)")
+            replace("raw.nbt.keySet()", "raw.nbt.getAllKeys()")
+            replace(".setStrictness(com.google.gson.Strictness.LENIENT)", ".setLenient()")
+            replace("ingredient.items().map(ItemStack::new)", "ingredient.items().stream().map(ItemStack::new)")
+            replace("new ClickEvent.RunCommand(", "new ClickEvent(ClickEvent.Action.RUN_COMMAND, ")
+            replace("new HoverEvent.ShowText(", "new HoverEvent(HoverEvent.Action.SHOW_TEXT, ")
+            replace("this.filterList.refreshScrollAmount();", "this.filterList.clampScrollAmount();")
+            replace("protected int scrollBarX() {", "protected int getScrollbarPosition() {")
+            replace("transform.apply(false, poseStack.last())", "transform.apply(false, poseStack)")
+            replace("protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {", "public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {")
+            replace("super.getCloneItemStack(level, pos, state, includeData)", "super.getCloneItemStack(level, pos, state)")
+            // tooltips were a list, before 1.21.5's TooltipDisplay
+            replace("TooltipDisplay tooltipDisplay, Consumer<Component> componentConsumer, TooltipFlag isAdvanced) {", "List<Component> tooltipLines, TooltipFlag isAdvanced) { Consumer<Component> componentConsumer = tooltipLines::add;")
+        }
+        string(current.parsed < "1.21.4") {
+            replace("public <T> @Nullable T getMetadataSection(MetadataSectionType<T> type) {", "public <T> @Nullable T getMetadataSection(net.minecraft.server.packs.metadata.MetadataSectionSerializer<T> type) {")
+        }
         // before 1.21.6 NBT was read and written as CompoundTags, TACZ's stand-ins mimic the new value API over them
         string(current.parsed < "1.21.6") {
             replace("net.minecraft.world.level.storage.ValueInput", "com.tacz.guns.platform.compat.ValueInput")

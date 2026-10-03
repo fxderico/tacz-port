@@ -30,6 +30,7 @@
     "client.GameRendererMixin",
     "client.HumanoidModelMixin",
     "client.KeyMappingSharedKeyMixin",
+    "client.RenderTargetStencilMixin",
     "client.ItemInHandLayerMixin",
     "client.ItemInHandRendererMixin",
     "client.LanguageMixin",

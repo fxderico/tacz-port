@@ -39,9 +39,11 @@ import net.minecraft.client.Minecraft;
 import com.tacz.guns.util.TaczRegistries;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+//? if >=1.21.4
 import net.minecraft.client.renderer.special.SpecialModelRenderers;
 import net.minecraft.world.item.Item;
 import com.tacz.guns.init.ModItems;
+//? if >=1.21.4
 import com.tacz.guns.platform.client.TaczItemSpecialRenderer;
 import com.tacz.guns.platform.forge.client.extensions.common.IClientItemExtensions;
 import com.tacz.guns.platform.forge.registries.RegistryObject;
@@ -62,6 +64,7 @@ public class GunModClient /*? if fabric {*/implements net.fabricmc.api.ClientMod
     @Override
     public void onInitializeClient() {
         // item renderers: every TACZ item model is "minecraft:special" -> "tacz:item", which dispatches to the old BEWLRs
+        //? if >=1.21.4
         SpecialModelRenderers.ID_MAPPER.put(id("item"), TaczItemSpecialRenderer.Unbaked.MAP_CODEC);
         com.tacz.guns.client.resource.AmmoBoxModelProperties.register();
         collectItemExtensions();
@@ -80,12 +83,21 @@ public class GunModClient /*? if fabric {*/implements net.fabricmc.api.ClientMod
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(id("tac_heat_bar"), hud(new HeatBarOverlay()));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(id("tac_kill_amount_overlay"), hud(new KillAmountOverlay()));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.attachElementAfter(net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements.CROSSHAIR, id("tac_interact_key_overlay"), hud(new InteractKeyTextOverlay()));
-        //?} else {
+        //?} else if >=1.21.4 {
         /*net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback.EVENT.register(drawer -> drawer
                 .addLayer(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.of(id("tac_gun_hud_overlay"), hud(new GunHudOverlay())))
                 .addLayer(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.of(id("tac_heat_bar"), hud(new HeatBarOverlay())))
                 .addLayer(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.of(id("tac_kill_amount_overlay"), hud(new KillAmountOverlay())))
                 .attachLayerAfter(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.CROSSHAIR, id("tac_interact_key_overlay"), hud(new InteractKeyTextOverlay())));
+        *///?} else {
+        /*// no HUD layers in Fabric API yet, drawn after the vanilla HUD
+        List<net.minecraft.client.gui.LayeredDraw.Layer> hudLayers = List.of(hud(new GunHudOverlay()), hud(new HeatBarOverlay()),
+                hud(new KillAmountOverlay()), hud(new InteractKeyTextOverlay()));
+        net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback.EVENT.register((graphics, deltaTracker) -> {
+            if (!Minecraft.getInstance().options.hideGui) {
+                hudLayers.forEach(layer -> layer.render(graphics, deltaTracker));
+            }
+        });
         *///?}
 
         MenuScreens.register(GunSmithTableMenu.TYPE, GunSmithTableScreen::new);

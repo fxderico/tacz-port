@@ -40,8 +40,14 @@ public final class FabricEventBridge {
         ServerTickEvents.START_SERVER_TICK.register(server -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, server)));
         ServerTickEvents.END_SERVER_TICK.register(server -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, server)));
 
+        //? if >=1.21.4 {
         ServerPlayerEvents.JOIN.register(player -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedInEvent(player)));
         ServerPlayerEvents.LEAVE.register(player -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player)));
+        //?} else {
+        /*// no player join/leave events in Fabric API yet
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedInEvent(handler.player)));
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(handler.player)));
+        *///?}
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.Clone(newPlayer, oldPlayer, !alive)));
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerRespawnEvent(newPlayer, alive)));
 

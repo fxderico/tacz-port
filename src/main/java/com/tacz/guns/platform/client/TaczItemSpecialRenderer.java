@@ -1,5 +1,7 @@
 package com.tacz.guns.platform.client;
 
+// item model definitions came with 1.21.4, see compat.LegacyItemModels before that
+//? if >=1.21.4 {
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.MapCodec;
 import com.tacz.guns.platform.forge.client.extensions.common.IClientItemExtensions;
@@ -98,3 +100,4 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
         }
     }
 }
+//?}

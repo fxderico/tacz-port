@@ -297,7 +297,7 @@ public final class TaczSmokeTest {
         ItemStack ammo = AmmoItemBuilder.create().setId(index.getGunData().getAmmoId()).setCount(120).build();
         player.getInventory().setItem(0, gun);
         player.getInventory().setItem(1, ammo);
-        player.getInventory().setSelectedSlot(0);
+        player.getInventory()./*? if >=1.21.5 {*/setSelectedSlot(0)/*?} else {*//*selected = 0*//*?}*/;
         return magazine;
     }
 

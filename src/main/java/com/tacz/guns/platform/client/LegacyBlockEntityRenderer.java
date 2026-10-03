@@ -57,10 +57,13 @@ public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implement
 public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
     public abstract void render(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay);
 
+    // the camera position came with 1.21.5, before that the method above is the renderer's own
+    //? if >=1.21.5 {
     @Override
     public void render(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay, Vec3 cameraPos) {
         render(blockEntity, partialTick, poseStack, buffer, packedLight, packedOverlay);
     }
+    //?}
 
     // the argumentless form came with 1.21.9
     public boolean shouldRenderOffScreen() {

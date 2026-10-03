@@ -1,5 +1,6 @@
 package com.tacz.guns.item;
 
+//? if >=1.21.5
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import com.tacz.guns.api.TimelessAPI;

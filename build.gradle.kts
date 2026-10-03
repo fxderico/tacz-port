@@ -127,6 +127,13 @@ tasks {
         }
     }
 
+    // before 1.21.4's item model definitions: builtin renderers and predicate overrides replace the plain item models
+    if (sc.current.parsed < "1.21.4") {
+        processResources {
+            from(rootProject.file("src/main/legacy-item-models")) { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
+        }
+    }
+
     jar {
         from(rootProject.file("LICENSE")) { rename { "${it}_tacz" } }
     }

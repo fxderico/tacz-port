@@ -59,11 +59,20 @@ public class GunMod /*? if fabric {*/implements net.fabricmc.api.ModInitializer/
     //? if fabric {
     @Override
     public void onInitialize() {
+        //? if >=1.21.5 {
         fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.COMMON, CommonConfig.init());
         fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.SERVER, ServerConfig.init());
         fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.CLIENT, ClientConfig.init());
         fuzs.forgeconfigapiport.fabric.api.v5.ModConfigEvents.loading(MOD_ID).register(LoadingConfigEvent::onLoadingConfig);
         fuzs.forgeconfigapiport.fabric.api.v5.ModConfigEvents.reloading(MOD_ID).register(LoadingConfigEvent::onReloadingConfig);
+        //?} else {
+        /*// Forge Config API Port before its v5 API
+        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.COMMON, CommonConfig.init());
+        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.SERVER, ServerConfig.init());
+        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeConfigRegistry.INSTANCE.register(MOD_ID, ModConfig.Type.CLIENT, ClientConfig.init());
+        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeModConfigEvents.loading(MOD_ID).register(config -> LoadingConfigEvent.onConfigFile(config.getFileName()));
+        fuzs.forgeconfigapiport.fabric.api.forge.v4.ForgeModConfigEvents.reloading(MOD_ID).register(config -> LoadingConfigEvent.onConfigFile(config.getFileName()));
+        *///?}
 
         registers().forEach(DeferredRegister::register);
         commonInit();

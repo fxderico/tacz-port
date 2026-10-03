@@ -1,12 +1,13 @@
 package com.tacz.guns.client.renderer;
 
+//? if >=1.21.5
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 //? if >=26.1 {
 /*import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.platform.CompareOp;
 import java.util.Optional;
-*///?} else {
+*///?} else if >=1.21.5 {
 import com.mojang.blaze3d.platform.DepthTestFunction;
 //?}
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -14,6 +15,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.tacz.guns.GunMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+//? if >=1.21.5
 import net.minecraft.client.renderer.RenderPipelines;
 //? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderSetup;
@@ -32,6 +34,8 @@ import java.util.function.Function;
 public final class ScopeRenderTypes {
     // OpenGL stencil, replaced by shader masks in 26.2 (Vulkan has no stencil here), see ScopeMask
     //? if <26.2 {
+    // before 1.21.5 the same state lived in render state shards, see the end of the file
+    //? if >=1.21.5 {
     /**
      * Ocular drawn only into the stencil buffer: no color, no depth write, still depth tested and alpha cut.
      */
@@ -80,6 +84,7 @@ public final class ScopeRenderTypes {
             .withDepthWrite(false)
             //?}
             .build();
+    //?}
 
     //? if >=1.21.11 {
     private static final Function<Identifier, RenderType> OCULAR_STENCIL = Util.memoize(texture -> RenderType.create("tacz_ocular_stencil",
@@ -90,7 +95,7 @@ public final class ScopeRenderTypes {
 
     public static final RenderType SCOPE_VIEW_CIRCLE = RenderType.create("tacz_scope_view_circle",
             RenderSetup.builder(SCOPE_VIEW_CIRCLE_PIPELINE).createRenderSetup());
-    //?} else {
+    //?} else if >=1.21.5 {
     /*// before 1.21.11 render types were a pipeline plus composite state shards
     private static final Function<Identifier, RenderType> OCULAR_STENCIL = Util.memoize(texture -> RenderType.create("tacz_ocular_stencil",
             1536, false, false, OCULAR_STENCIL_PIPELINE, textured(texture)));
@@ -107,6 +112,44 @@ public final class ScopeRenderTypes {
                 .setLightmapState(net.minecraft.client.renderer.RenderStateShard.LIGHTMAP)
                 .setOverlayState(net.minecraft.client.renderer.RenderStateShard.OVERLAY)
                 .createCompositeState(true);
+    }
+    *///?} else {
+    /*// before 1.21.5: shader, write mask and depth test as render state shards
+    private static final Function<Identifier, RenderType> OCULAR_STENCIL = Util.memoize(texture ->
+            Shards.entity("tacz_ocular_stencil", texture, Shards.NO_WRITE, Shards.LEQUAL_DEPTH_TEST));
+
+    private static final Function<Identifier, RenderType> DIVISION_NO_DEPTH = Util.memoize(texture ->
+            Shards.entity("tacz_division_no_depth", texture, Shards.COLOR_WRITE, Shards.NO_DEPTH_TEST));
+
+    public static final RenderType SCOPE_VIEW_CIRCLE = Shards.viewCircle();
+
+    // the shards are protected, only reachable from a subclass
+    private abstract static class Shards extends RenderType {
+        static final WriteMaskStateShard NO_WRITE = new WriteMaskStateShard(false, false);
+
+        private Shards() {
+            super("", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 0, false, false, () -> {}, () -> {});
+        }
+
+        static RenderType entity(String name, Identifier texture, WriteMaskStateShard writeMask, DepthTestStateShard depthTest) {
+            return create(name, DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, true, false, CompositeState.builder()
+                    .setShaderState(RENDERTYPE_ENTITY_CUTOUT_SHADER)
+                    .setTextureState(new TextureStateShard(texture, false))
+                    .setTransparencyState(NO_TRANSPARENCY)
+                    .setLightmapState(LIGHTMAP)
+                    .setOverlayState(OVERLAY)
+                    .setWriteMaskState(writeMask)
+                    .setDepthTestState(depthTest)
+                    .createCompositeState(true));
+        }
+
+        static RenderType viewCircle() {
+            return create("tacz_scope_view_circle", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN, 1536, false, false, CompositeState.builder()
+                    .setShaderState(POSITION_COLOR_SHADER)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(NO_WRITE)
+                    .createCompositeState(false));
+        }
     }
     *///?}
 

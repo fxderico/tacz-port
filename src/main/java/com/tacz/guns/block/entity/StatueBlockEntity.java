@@ -106,11 +106,13 @@ public class StatueBlockEntity extends BlockEntity {
     /**
      * Forge's onRemove hook moved here in 1.21.5.
      */
+    //? if >=1.21.5 {
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
         this.dropItem();
         super.preRemoveSideEffects(pos, state);
     }
+    //?}
 
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {

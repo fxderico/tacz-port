@@ -5,11 +5,13 @@ import com.tacz.guns.GunMod;
 import com.tacz.guns.item.AmmoBoxItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+//? if >=1.21.4 {
 import net.minecraft.client.color.item.ItemTintSource;
 import net.minecraft.client.color.item.ItemTintSources;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperties;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
+//?}
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 //? if >=1.21.9
@@ -32,12 +34,15 @@ public final class AmmoBoxModelProperties {
 
     // NeoForge registers both in its RegisterRangeSelectItemModelPropertyEvent / RegisterColorHandlersEvent.ItemTintSources
     public static void register() {
-        //? if fabric {
+        //? if fabric && >=1.21.4 {
         RangeSelectItemModelProperties.ID_MAPPER.put(STATUE_ID, Statue.MAP_CODEC);
         ItemTintSources.ID_MAPPER.put(TINT_ID, Tint.MAP_CODEC);
-        //?}
+        //?} else if fabric {
+        /*com.tacz.guns.platform.client.compat.LegacyItemModels.register();
+        *///?}
     }
 
+    //? if >=1.21.4 {
     public record Statue() implements RangeSelectItemModelProperty {
         public static final MapCodec<Statue> MAP_CODEC = MapCodec.unit(new Statue());
 
@@ -65,4 +70,5 @@ public final class AmmoBoxModelProperties {
             return MAP_CODEC;
         }
     }
+    //?}
 }

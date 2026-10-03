@@ -3,6 +3,7 @@ package com.tacz.guns.item;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.DyedItemColor;
 
+//? if >=1.21.5
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;

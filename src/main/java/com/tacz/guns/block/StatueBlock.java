@@ -34,6 +34,17 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class StatueBlock extends BaseEntityBlock {
+    // before 1.21.5 the block entity had no removal hook, the block drops the displayed gun
+    //? if <1.21.5 {
+    /*@Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof StatueBlockEntity statue) {
+            statue.dropItem();
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
+    *///?}
+
     // abstract until 26.3, which dropped block codecs from BaseEntityBlock
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return MapCodec.unit(this);

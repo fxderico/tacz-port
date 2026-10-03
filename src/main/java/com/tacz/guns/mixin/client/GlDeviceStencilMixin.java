@@ -2,11 +2,13 @@ package com.tacz.guns.mixin.client;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+//? if >=1.21.5
 import com.mojang.blaze3d.opengl.GlConst;
-//? if <26.2 && fabric
+//? if >=1.21.5 && <26.2 && fabric
 import com.mojang.blaze3d.textures.TextureFormat;
 import org.lwjgl.opengl.GL30;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
@@ -15,11 +17,13 @@ import org.spongepowered.asm.mixin.injection.At;
  * matching formats. Framebuffers attach them through {@link DirectStateAccessStencilMixin}.
  */
 // GlDevice is package private since 26.1
+// pseudo: the GPU device classes came with 1.21.5
+@Pseudo
 @Mixin(targets = "com.mojang.blaze3d.opengl.GlDevice")
 public abstract class GlDeviceStencilMixin {
     // OpenGL stencil, replaced by shader masks in 26.2 (Vulkan has no stencil here), see ScopeMask
     // NeoForge has a stencil switch of its own (ConfigureMainRenderTargetEvent), see GunModNeoForgeClient
-    //? if <26.2 && fabric {
+    //? if >=1.21.5 && <26.2 && fabric {
     @WrapOperation(method = "createTexture(Ljava/lang/String;ILcom/mojang/blaze3d/textures/TextureFormat;IIII)Lcom/mojang/blaze3d/textures/GpuTexture;",
             at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/opengl/GlConst;toGlInternalId(Lcom/mojang/blaze3d/textures/TextureFormat;)I"))
     private int tacz$depthStencilInternalFormat(TextureFormat format, Operation<Integer> original) {

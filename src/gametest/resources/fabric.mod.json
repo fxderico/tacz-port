@@ -13,7 +13,9 @@
     ]
   },
   "depends": {
-    "tacz": "*",
+    "tacz": "*"
+  },
+  "recommends": {
     "fabric-client-gametest-api-v1": "*"
   }
 }

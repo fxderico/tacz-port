@@ -1,9 +1,11 @@
 package com.tacz.guns.util;
 
+//? if >=1.21.5 {
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTexture;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
+//?}
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -52,6 +54,13 @@ public final class RenderHelper {
      */
     public static void clearStencil() {
         RenderSystem.assertOnRenderThread();
+        //? if <1.21.5 {
+        /*// render targets were bound for drawing before 1.21.5, the main one is bound while the hands render
+        com.mojang.blaze3d.platform.GlStateManager._disableScissorTest();
+        GL11.glStencilMask(0xFF);
+        GL11.glClearStencil(0);
+        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+        *///?} else {
         GpuTexture depthTexture = Minecraft.getInstance().getMainRenderTarget().getDepthTexture();
         //? if neoforge && <26.1 {
         /*// NeoForge wraps GPU objects for validation in dev
@@ -78,6 +87,7 @@ public final class RenderHelper {
         GL11.glClearStencil(0);
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
         GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+        //?}
     }
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
