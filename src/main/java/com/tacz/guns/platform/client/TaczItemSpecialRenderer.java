@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
-import org.jspecify.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -55,11 +55,19 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
         SubmitScope.run(collector, () -> renderer.renderByItem(stack, displayContext, poseStack, bufferSource, light, overlay));
     }
 
+    //? if >=1.21.11 {
     @Override
     public void getExtents(Consumer<Vector3fc> consumer) {
         consumer.accept(new Vector3f(-0.5F, -0.5F, -0.5F));
         consumer.accept(new Vector3f(1.5F, 1.5F, 1.5F));
     }
+    //?} else {
+    /*@Override
+    public void getExtents(java.util.Set<Vector3f> extents) {
+        extents.add(new Vector3f(-0.5F, -0.5F, -0.5F));
+        extents.add(new Vector3f(1.5F, 1.5F, 1.5F));
+    }
+    *///?}
 
     @Override
     public ItemStack extractArgument(ItemStack stack) {

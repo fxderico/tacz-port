@@ -35,8 +35,9 @@ public abstract class GameRendererEventMixin {
 
     // 26.1 moved these into Camera, see CameraEventMixin
     //? if <26.1 {
-    @Inject(method = "updateCamera", at = @At("TAIL"))
-    private void tacz$computeCameraAngles(DeltaTracker deltaTracker, CallbackInfo ci) {
+    // 1.21.10 and older set the camera up in renderLevel, right before extractCamera
+    @Inject(method = /*? if >=1.21.11 {*/"updateCamera", at = @At("TAIL")/*?} else {*//*"extractCamera", at = @At("HEAD")*//*?}*/)
+    private void tacz$computeCameraAngles(CallbackInfo ci) {
         if (!this.mainCamera.isInitialized()) {
             return;
         }

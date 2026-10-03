@@ -32,7 +32,7 @@ public class ItemInHandLayerMixin {
     }
 
     @Inject(method = "submitArmWithItem", at = @At(value = "HEAD"), cancellable = true)
-    private void renderArmWithItemHead(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    private void renderArmWithItemHead(ArmedEntityRenderState state, ItemStackRenderState itemState, /*? if >=1.21.11 {*/ItemStack itemStack, /*?}*/HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
         LivingEntity livingEntity = state instanceof RenderStateEntity access ? access.tacz$getEntity() : null;
         if (livingEntity == null) {
             return;
@@ -48,7 +48,7 @@ public class ItemInHandLayerMixin {
     }
 
     @Inject(method = "submitArmWithItem", at = @At(value = "TAIL"))
-    private void renderArmWithItemTail(ArmedEntityRenderState state, ItemStackRenderState itemState, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    private void renderArmWithItemTail(ArmedEntityRenderState state, ItemStackRenderState itemState, /*? if >=1.21.11 {*/ItemStack itemStack, /*?}*/HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
         MuzzleFlashRender.isSelf = false;
         ShellRender.isSelf = false;
     }

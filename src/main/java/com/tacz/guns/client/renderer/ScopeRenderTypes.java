@@ -15,7 +15,9 @@ import com.tacz.guns.GunMod;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.RenderPipelines;
+//? if >=1.21.11 {
 import net.minecraft.client.renderer.rendertype.RenderSetup;
+//?}
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
@@ -79,6 +81,7 @@ public final class ScopeRenderTypes {
             //?}
             .build();
 
+    //? if >=1.21.11 {
     private static final Function<Identifier, RenderType> OCULAR_STENCIL = Util.memoize(texture -> RenderType.create("tacz_ocular_stencil",
             RenderSetup.builder(OCULAR_STENCIL_PIPELINE).withTexture("Sampler0", texture).useLightmap().useOverlay().createRenderSetup()));
 
@@ -87,6 +90,25 @@ public final class ScopeRenderTypes {
 
     public static final RenderType SCOPE_VIEW_CIRCLE = RenderType.create("tacz_scope_view_circle",
             RenderSetup.builder(SCOPE_VIEW_CIRCLE_PIPELINE).createRenderSetup());
+    //?} else {
+    /*// before 1.21.11 render types were a pipeline plus composite state shards
+    private static final Function<Identifier, RenderType> OCULAR_STENCIL = Util.memoize(texture -> RenderType.create("tacz_ocular_stencil",
+            1536, false, false, OCULAR_STENCIL_PIPELINE, textured(texture)));
+
+    private static final Function<Identifier, RenderType> DIVISION_NO_DEPTH = Util.memoize(texture -> RenderType.create("tacz_division_no_depth",
+            1536, false, false, DIVISION_NO_DEPTH_PIPELINE, textured(texture)));
+
+    public static final RenderType SCOPE_VIEW_CIRCLE = RenderType.create("tacz_scope_view_circle",
+            1536, false, false, SCOPE_VIEW_CIRCLE_PIPELINE, RenderType.CompositeState.builder().createCompositeState(false));
+
+    private static RenderType.CompositeState textured(Identifier texture) {
+        return RenderType.CompositeState.builder()
+                .setTextureState(new net.minecraft.client.renderer.RenderStateShard.TextureStateShard(texture, false))
+                .setLightmapState(net.minecraft.client.renderer.RenderStateShard.LIGHTMAP)
+                .setOverlayState(net.minecraft.client.renderer.RenderStateShard.OVERLAY)
+                .createCompositeState(true);
+    }
+    *///?}
 
     private ScopeRenderTypes() {
     }

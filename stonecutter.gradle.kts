@@ -10,6 +10,32 @@ stonecutter parameters {
     constants.match(loader, "fabric", "neoforge", "forge")
 
     replacements {
+        // 1.21.10 and older: ResourceLocation before its 1.21.11 rename to Identifier, render types before the rendertype package
+        regex(current.parsed < "1.21.11") {
+            replace("\\bIdentifier\\b", "ResourceLocation", "\\bResourceLocation\\b", "Identifier")
+        }
+        regex(current.parsed < "1.21.11") {
+            replace("\\bRenderTypes\\.", "RenderType.",
+                "\\bRenderType\\.(entity|energySwirl|eyes|text|lines|lightning|translucent|cutout|solid|leash|beaconBeam|outline|itemEntity|armor|glint|gui|debug)", "RenderTypes.$1")
+        }
+        string(current.parsed < "1.21.11") {
+            replace("import net.minecraft.client.renderer.rendertype.RenderTypes;", "import net.minecraft.client.renderer.*;")
+            replace("import net.minecraft.client.renderer.rendertype.RenderType;", "import net.minecraft.client.renderer.RenderType;")
+            replace("readIdentifier()", "readResourceLocation()")
+            replace("writeIdentifier(", "writeResourceLocation(")
+            replace(".identifier()", ".location()")
+            replace("net.minecraft.util.Util", "net.minecraft.Util")
+            replace("camera.yRot()", "camera.getYRot()")
+            replace("camera.xRot()", "camera.getXRot()")
+            replace("mainCamera.yRot()", "mainCamera.getYRot()")
+            replace("mainCamera.xRot()", "mainCamera.getXRot()")
+            replace("getCamera().entity()", "getCamera().getEntity()")
+            replace("ARGB.srgbLerp(", "ARGB.lerp(")
+            // 1.21.11 split AbstractButton#renderWidget into renderContents
+            replace("protected void renderContents(GuiGraphics", "protected void renderWidget(GuiGraphics")
+            replace("net.minecraft.world.entity.boss.enderdragon.EnderDragonPart", "net.minecraft.world.entity.boss.EnderDragonPart")
+        }
+
         // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
         string(loader == "neoforge") {
             // a do-nothing marker in place of Fabric's @Environment (NeoForge's @OnlyIn no longer strips and warns on every use)
