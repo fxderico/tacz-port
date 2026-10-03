@@ -2,7 +2,7 @@ package com.tacz.guns.mixin.client;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import org.spongepowered.asm.mixin.Mixin;
-//? if fabric && <1.21.5 {
+//? if <1.21.5 && (fabric || (>=1.21.2 && <1.21.4)) {
 /*import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.lwjgl.opengl.GL30;
@@ -19,7 +19,7 @@ import java.nio.IntBuffer;
  */
 @Mixin(RenderTarget.class)
 public abstract class RenderTargetStencilMixin {
-    //? if fabric && <1.21.5 {
+    //? if <1.21.5 && (fabric || (>=1.21.2 && <1.21.4)) {
     /*@WrapOperation(method = "createBuffers", at = @At(value = "INVOKE",
             target = "Lcom/mojang/blaze3d/platform/GlStateManager;_texImage2D(IIIIIIIILjava/nio/IntBuffer;)V", ordinal = 0))
     private void tacz$depthStencilTexture(int target, int level, int internalFormat, int width, int height, int border, int format, int type,

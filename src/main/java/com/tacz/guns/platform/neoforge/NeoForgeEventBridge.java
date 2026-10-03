@@ -19,6 +19,7 @@ import com.tacz.guns.resource.manager.LootInjectionManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
+//? if >=1.21.4
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -94,11 +95,18 @@ public final class NeoForgeEventBridge {
         });
         bus.addListener(net.neoforged.neoforge.event.OnDatapackSyncEvent.class, event -> {
             // 1.21.2+ only syncs the recipe types asked for, the smith table screen needs its recipes on the client
+            //? if >=1.21.4 {
             event.sendRecipes(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
+            //?} else if >=1.21.2 {
+            /^// no sendRecipes before NeoForge 21.4, TACZ's own packet carries them
+            event.getRelevantPlayers().forEach(player -> com.tacz.guns.network.NetworkHandler.sendToClientPlayer(
+                    com.tacz.guns.network.message.ServerMessageSyncRecipes.of(event.getPlayerList().getServer()), player));
+            ^///?}
             event.getRelevantPlayers().forEach(player -> MinecraftForge.EVENT_BUS.post(new OnDatapackSyncEvent(event.getPlayerList(), player)));
         });
 
         bus.addListener(RegisterCommandsEvent.class, event -> RootCommand.register(event.getDispatcher()));
+        //? if >=1.21.4 {
         bus.addListener(AddServerReloadListenersEvent.class, event -> {
             //? if >=26.3 {
             /^LootInjectionManager.reloadRegistries = event.getServerResources().fullRegistries().lookup();
@@ -108,6 +116,12 @@ public final class NeoForgeEventBridge {
             // gun pack data (indexes, gun data, scripts...) reloads with the server data packs
             event.addListener(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "common_assets"), CommonAssetsManager.RELOAD_LISTENER);
         });
+        //?} else {
+        /^bus.addListener(net.neoforged.neoforge.event.AddReloadListenerEvent.class, event -> {
+            LootInjectionManager.reloadRegistries = event.getRegistryAccess();
+            event.addListener(CommonAssetsManager.RELOAD_LISTENER);
+        });
+        ^///?}
     }
 }
 *///?}
