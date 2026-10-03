@@ -19,16 +19,40 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  # one job per jar: every NeoForge/Forge version sets up its own Minecraft, all of them at once fill a runner's disk
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - "1.21.1"
+          - "1.21.3"
+          - "1.21.4"
+          - "1.21.5"
+          - "1.21.8"
+          - "1.21.10"
+          - "1.21.11"
+          - "26.1.2"
+          - "26.2"
+          - "26.3"
+          - "1.21.1-neoforge"
+          - "1.21.3-neoforge"
+          - "1.21.4-neoforge"
+          - "1.21.5-neoforge"
+          - "1.21.8-neoforge"
+          - "1.21.10-neoforge"
+          - "1.21.11-neoforge"
+          - "26.1.2-neoforge"
+          - "26.2-neoforge"
+          - "26.3-neoforge"
+          - "1.21.10-forge"
+          - "1.21.11-forge"
     steps:
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
       - uses: actions/checkout@v4
-      - id: tag
-        run: |
-          if [ "${{ github.ref_type }}" = tag ]; then echo "name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ inputs.tag }}" ]; then echo "name=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
-          else echo "name=$(tr -d '[:space:]' < .github/release-tag)" >> "$GITHUB_OUTPUT"; fi
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -37,23 +61,35 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@v4
-      # every version that builds
-      - run: >-
-          chmod +x gradlew && ./gradlew --no-daemon -x test
-          :1.21.1:build :1.21.3:build :1.21.4:build :1.21.5:build :1.21.8:build :1.21.10:build :1.21.11:build
-          :26.1.2:build :26.2:build :26.3:build
-          :1.21.1-neoforge:build :1.21.3-neoforge:build :1.21.4-neoforge:build :1.21.5-neoforge:build :1.21.8-neoforge:build
-          :1.21.10-neoforge:build :1.21.11-neoforge:build :26.1.2-neoforge:build :26.2-neoforge:build :26.3-neoforge:build
-          :1.21.10-forge:build :1.21.11-forge:build
+        with:
+          cache-disabled: true
+      - run: chmod +x gradlew && ./gradlew --no-daemon -x test ":${{ matrix.project }}:build"
       - uses: actions/upload-artifact@v4
         with:
-          name: jars
-          path: versions/*/build/libs/tacz-*.jar
+          name: jar-${{ matrix.project }}
+          path: versions/${{ matrix.project }}/build/libs/tacz-*.jar
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: tag
+        run: |
+          if [ "${{ github.ref_type }}" = tag ]; then echo "name=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ inputs.tag }}" ]; then echo "name=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else echo "name=$(tr -d '[:space:]' < .github/release-tag)" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: jar-*
+          path: jars
+          merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
           # created on the commit that was built when it does not exist yet
           tag_name: ${{ steps.tag.outputs.name }}
           target_commitish: ${{ github.sha }}
-          files: versions/*/build/libs/tacz-*.jar
+          files: jars/tacz-*.jar
           body_path: .github/release-notes.md
           generate_release_notes: true
