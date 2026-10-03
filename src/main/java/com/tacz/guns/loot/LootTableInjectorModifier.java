@@ -78,7 +78,12 @@ public final class LootTableInjectorModifier {
         public static final com.mojang.serialization.MapCodec<Glm> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(
                 instance -> codecStart(instance).apply(instance, Glm::new));
 
-        //? if >=26.1 {
+        //? if >=26.3 {
+        /^// one optional condition since 26.3
+        Glm(java.util.Optional<net.minecraft.core.Holder<net.minecraft.world.level.storage.loot.predicates.LootItemCondition>> condition, int priority) {
+            super(condition, priority);
+        }
+        ^///?} else if >=26.1 {
         /^Glm(net.minecraft.world.level.storage.loot.predicates.LootItemCondition[] conditions, int priority) {
             super(conditions, priority);
         }

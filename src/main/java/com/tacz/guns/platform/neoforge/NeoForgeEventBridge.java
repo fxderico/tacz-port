@@ -83,9 +83,15 @@ public final class NeoForgeEventBridge {
             }
         });
 
-        bus.addListener(net.neoforged.neoforge.event.TagsUpdatedEvent.class, event -> MinecraftForge.EVENT_BUS.post(new TagsUpdatedEvent(
-                event.getUpdateCause() == net.neoforged.neoforge.event.TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED
-                        ? TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED : TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD)));
+        bus.addListener(net.neoforged.neoforge.event.TagsUpdatedEvent.class, event -> {
+            //? if >=26.3 {
+            /^boolean fromClientPacket = event instanceof net.neoforged.neoforge.event.TagsUpdatedEvent.ClientPacketReceived;
+            ^///?} else {
+            boolean fromClientPacket = event.getUpdateCause() == net.neoforged.neoforge.event.TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED;
+            //?}
+            MinecraftForge.EVENT_BUS.post(new TagsUpdatedEvent(fromClientPacket
+                    ? TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED : TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD));
+        });
         bus.addListener(net.neoforged.neoforge.event.OnDatapackSyncEvent.class, event -> {
             // 1.21.2+ only syncs the recipe types asked for, the smith table screen needs its recipes on the client
             event.sendRecipes(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
@@ -94,7 +100,11 @@ public final class NeoForgeEventBridge {
 
         bus.addListener(RegisterCommandsEvent.class, event -> RootCommand.register(event.getDispatcher()));
         bus.addListener(AddServerReloadListenersEvent.class, event -> {
+            //? if >=26.3 {
+            /^LootInjectionManager.reloadRegistries = event.getServerResources().fullRegistries().lookup();
+            ^///?} else {
             LootInjectionManager.reloadRegistries = event.getRegistryAccess();
+            //?}
             // gun pack data (indexes, gun data, scripts...) reloads with the server data packs
             event.addListener(Identifier.fromNamespaceAndPath(GunMod.MOD_ID, "common_assets"), CommonAssetsManager.RELOAD_LISTENER);
         });

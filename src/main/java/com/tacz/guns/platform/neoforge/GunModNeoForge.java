@@ -27,8 +27,14 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 @Mod(GunMod.MOD_ID)
 public final class GunModNeoForge {
     public GunModNeoForge(IEventBus modBus, ModContainer container) {
+        //? if >=26.3 {
+        /^// FML 12 renamed the config types, the old file names stay
+        container.registerConfig(ModConfig.Type.LOCAL, CommonConfig.init(), "tacz-common.toml");
+        container.registerConfig(ModConfig.Type.SYNCED, ServerConfig.init(), "tacz-server.toml");
+        ^///?} else {
         container.registerConfig(ModConfig.Type.COMMON, CommonConfig.init());
         container.registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
+        //?}
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.init());
         modBus.addListener(ModConfigEvent.Loading.class, event -> {
             if (GunMod.MOD_ID.equals(event.getConfig().getModId())) {
