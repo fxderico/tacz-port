@@ -62,7 +62,7 @@ public final class RenderHelper {
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
         *///?} else {
         GpuTexture depthTexture = Minecraft.getInstance().getMainRenderTarget().getDepthTexture();
-        //? if neoforge && <26.1 {
+        //? if neoforge && >=1.21.6 && <26.1 {
         /*// NeoForge wraps GPU objects for validation in dev
         if (depthTexture instanceof net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture validation) {
             depthTexture = validation.getRealTexture();

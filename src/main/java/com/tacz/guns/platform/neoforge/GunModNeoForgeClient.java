@@ -29,8 +29,10 @@ import com.tacz.guns.inventory.tooltip.AmmoBoxTooltip;
 import com.tacz.guns.inventory.tooltip.AttachmentItemTooltip;
 import com.tacz.guns.inventory.tooltip.BlockItemTooltip;
 import com.tacz.guns.inventory.tooltip.GunTooltip;
+//? if >=1.21.6 {
 import com.tacz.guns.platform.client.ItemPreviewRenderState;
 import com.tacz.guns.platform.client.ItemPreviewRenderer;
+//?}
 import com.tacz.guns.platform.client.TaczItemSpecialRenderer;
 import com.tacz.guns.platform.forge.client.event.ClientPlayerNetworkEvent;
 import com.tacz.guns.platform.forge.client.gui.overlay.IGuiOverlay;
@@ -51,6 +53,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+//? if >=1.21.6
 import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent;
 import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
@@ -109,6 +112,7 @@ public final class GunModNeoForgeClient {
             // listener reached the reload barrier
             event.addListener(id("client_assets"), GunModClient.clientAssetsListener(true));
         });
+        //? if >=1.21.6
         modBus.addListener(RegisterPictureInPictureRenderersEvent.class, event -> event.register(ItemPreviewRenderState.class, ItemPreviewRenderer::new));
         // item renderers: every TACZ item model is "minecraft:special" -> "tacz:item", which dispatches to the old BEWLRs
         modBus.addListener(RegisterSpecialModelRendererEvent.class, event -> event.register(id("item"), TaczItemSpecialRenderer.Unbaked.MAP_CODEC));

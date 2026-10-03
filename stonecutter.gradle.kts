@@ -159,6 +159,12 @@ stonecutter parameters {
             replace("FMLEnvironment.getDist()", "FMLEnvironment.dist")
             replace("FMLEnvironment.isProduction()", "FMLEnvironment.production")
         }
+        // NeoForge before 1.21.6: vanilla's layered HUD and the old packet distributor
+        string(loader == "neoforge" && current.parsed < "1.21.6") {
+            replace("import net.neoforged.neoforge.client.gui.GuiLayer;", "import net.minecraft.client.gui.LayeredDraw;")
+            replace("private static GuiLayer layer(", "private static LayeredDraw.Layer layer(")
+            replace("net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(", "net.neoforged.neoforge.network.PacketDistributor.sendToServer(")
+        }
         // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
         string(loader == "neoforge") {
             // a do-nothing marker in place of Fabric's @Environment (NeoForge's @OnlyIn no longer strips and warns on every use)
