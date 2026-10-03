@@ -156,8 +156,8 @@ stonecutter parameters {
 
         // NeoForge before 1.21.9 (FML 9 and older): environment fields instead of getters
         string(loader == "neoforge" && current.parsed < "1.21.9") {
-            replace("FMLEnvironment.getDist()", "FMLEnvironment.dist")
-            replace("FMLEnvironment.isProduction()", "FMLEnvironment.production")
+            replace("net.neoforged.fml.loading.FMLEnvironment.getDist()", "net.neoforged.fml.loading.FMLEnvironment.dist")
+            replace("net.neoforged.fml.loading.FMLEnvironment.isProduction()", "net.neoforged.fml.loading.FMLEnvironment.production")
         }
         // NeoForge before 1.21.2: Item has a deprecated initializeClient taking NeoForge's own extensions
         string(loader == "neoforge" && current.parsed < "1.21.2") {

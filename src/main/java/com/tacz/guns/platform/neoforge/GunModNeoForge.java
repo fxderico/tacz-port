@@ -15,7 +15,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -53,7 +52,7 @@ public final class GunModNeoForge {
         GunMod.commonInit();
         NeoForgeEventBridge.register(NeoForge.EVENT_BUS);
 
-        if (FMLEnvironment.getDist().isClient()) {
+        if (net.neoforged.fml.loading.FMLEnvironment.getDist().isClient()) {
             GunModNeoForgeClient.init(modBus);
         }
     }
