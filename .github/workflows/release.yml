@@ -37,12 +37,13 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@v4
-      # every version that builds; NeoForge 26.3 is not ported yet
+      # every version that builds
       - run: >-
           chmod +x gradlew && ./gradlew --no-daemon -x test
           :1.21.1:build :1.21.3:build :1.21.4:build :1.21.5:build :1.21.8:build :1.21.10:build :1.21.11:build
           :26.1.2:build :26.2:build :26.3:build
-          :1.21.11-neoforge:build :26.1.2-neoforge:build :26.2-neoforge:build
+          :1.21.1-neoforge:build :1.21.3-neoforge:build :1.21.4-neoforge:build :1.21.5-neoforge:build :1.21.8-neoforge:build
+          :1.21.10-neoforge:build :1.21.11-neoforge:build :26.1.2-neoforge:build :26.2-neoforge:build :26.3-neoforge:build
       - uses: actions/upload-artifact@v4
         with:
           name: jars

@@ -15,4 +15,4 @@ Pick the jar for your loader whose name covers your Minecraft version: `tacz-<lo
 | 26.2 | `tacz-fabric-26.2.jar` | `tacz-neoforge-26.2.jar` |
 | 26.3 | `tacz-fabric-26.3.jar` | `tacz-neoforge-26.3.jar` |
 
-Fabric needs Fabric API and Forge Config API Port; Quilt loads the Fabric jars. A NeoForge jar only appears here once that version is ported.
+Fabric needs Fabric API and Forge Config API Port; Quilt loads the Fabric jars.
