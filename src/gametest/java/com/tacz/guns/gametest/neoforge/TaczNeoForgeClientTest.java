@@ -83,8 +83,13 @@ public final class TaczNeoForgeClientTest {
         steps.add(() -> shot("tacz_title"));
         steps.add(() -> {
             mc.createWorldOpenFlows().createFreshLevel("tacz_test",
+                    //? if >=26.1 {
+                    /^new LevelSettings("tacz_test", GameType.SURVIVAL, new LevelSettings.DifficultySettings(Difficulty.EASY, false, false), true,
+                            WorldDataConfiguration.DEFAULT),
+                    ^///?} else {
                     new LevelSettings("tacz_test", GameType.SURVIVAL, false, Difficulty.EASY, true,
                             new GameRules(WorldDataConfiguration.DEFAULT.enabledFeatures()), WorldDataConfiguration.DEFAULT),
+                    //?}
                     WorldOptions.defaultWithRandomSeed(),
                     lookup -> lookup.lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.FLAT).value().createWorldDimensions(),
                     new TitleScreen());

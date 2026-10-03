@@ -53,7 +53,7 @@ public final class RenderHelper {
     public static void clearStencil() {
         RenderSystem.assertOnRenderThread();
         GpuTexture depthTexture = Minecraft.getInstance().getMainRenderTarget().getDepthTexture();
-        //? if neoforge {
+        //? if neoforge && <26.1 {
         /*// NeoForge wraps GPU objects for validation in dev
         if (depthTexture instanceof net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture validation) {
             depthTexture = validation.getRealTexture();

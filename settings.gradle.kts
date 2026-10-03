@@ -23,7 +23,9 @@ stonecutter {
         // every Minecraft version range gets its own jar, see stonecutter.properties.toml
         versions("1.21.11", "26.1.2", "26.2", "26.3")
         // NeoForge builds share the sources, `//? if neoforge` marks what differs
-        version("1.21.11-neoforge", "1.21.11").buildscript("build.neoforge.gradle.kts")
+        for (mc in listOf("1.21.11", "26.1.2", "26.2", "26.3")) {
+            version("$mc-neoforge", mc).buildscript("build.neoforge.gradle.kts")
+        }
         // the version the code in src/ is written for when committed
         vcsVersion = "1.21.11"
     }

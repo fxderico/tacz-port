@@ -18,7 +18,8 @@ repositories {
 val accessTransformer = layout.buildDirectory.file("generated/accesstransformer.cfg")
 // things Fabric API widens for everyone (transitive access wideners) that NeoForge leaves closed
 val extraAccess = buildList {
-    if (sc.current.parsed < "26.1") add("public net.minecraft.client.gui.GuiGraphics guiRenderState")
+    add(if (sc.current.parsed < "26.1") "public net.minecraft.client.gui.GuiGraphics guiRenderState"
+        else "public net.minecraft.client.gui.GuiGraphicsExtractor guiRenderState")
 }
 val generateAccessTransformer = tasks.register("generateAccessTransformer") {
     val widener = sc.process(rootProject.file("src/main/resources/tacz.accesswidener"), "build/processed.accesswidener")
@@ -142,6 +143,8 @@ tasks {
         filesMatching("*.mixins.json") { expand(mixinJava) }
         // Fabric only
         exclude("fabric.mod.json", "tacz.accesswidener")
+        // 26.1+ loads every data/*/loot_modifiers file on its own, the old global list would be read as a modifier
+        if (sc.current.parsed >= "26.1") exclude("data/neoforge/loot_modifiers/global_loot_modifiers.json")
         // the generated access transformer, also needed by dev runs
         from(generateAccessTransformer) { into("META-INF") }
     }
