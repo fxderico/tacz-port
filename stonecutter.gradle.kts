@@ -159,6 +159,10 @@ stonecutter parameters {
             replace("FMLEnvironment.getDist()", "FMLEnvironment.dist")
             replace("FMLEnvironment.isProduction()", "FMLEnvironment.production")
         }
+        // NeoForge before 1.21.2: Item has a deprecated initializeClient taking NeoForge's own extensions
+        string(loader == "neoforge" && current.parsed < "1.21.2") {
+            replace("initializeClient(", "taczInitializeClient(")
+        }
         // NeoForge before 1.21.6: vanilla's layered HUD and the old packet distributor
         string(loader == "neoforge" && current.parsed < "1.21.6") {
             replace("import net.neoforged.neoforge.client.gui.GuiLayer;", "import net.minecraft.client.gui.LayeredDraw;")

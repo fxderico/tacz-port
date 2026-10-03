@@ -20,7 +20,12 @@ public final class BlockEntityTypes {
 
     public static <T extends BlockEntity> BlockEntityType<T> create(Factory<T> factory, Block... blocks) {
         //? if neoforge {
-        /*return new BlockEntityType<>(factory::create, java.util.Set.of(blocks));
+        /*//? if >=1.21.2 {
+        return new BlockEntityType<>(factory::create, java.util.Set.of(blocks));
+        //?} else {
+        /^// the data fixer type went away in 1.21.2
+        return new BlockEntityType<>(factory::create, java.util.Set.of(blocks), null);
+        ^///?}
         *///?} else {
         return net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(factory::create, blocks).build();
         //?}
