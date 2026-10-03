@@ -114,6 +114,15 @@ dependencies {
         jarJar(lib) {
             isTransitive = false
         }
+        // FML 9 and older (modlauncher) keep plain classpath libraries away from mods in dev runs
+        if (sc.current.parsed < "1.21.9") {
+            "additionalRuntimeClasspath"(lib) {
+                exclude(group = "org.apache.commons", module = "commons-lang3")
+                exclude(group = "com.google.code.findbugs", module = "jsr305")
+                exclude(group = "it.unimi.dsi", module = "fastutil")
+                exclude(group = "org.joml", module = "joml")
+            }
+        }
     }
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 }

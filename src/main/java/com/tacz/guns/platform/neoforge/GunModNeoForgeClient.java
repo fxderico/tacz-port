@@ -77,6 +77,7 @@ public final class GunModNeoForgeClient {
                 net.neoforged.neoforge.client.event.ConfigureMainRenderTargetEvent::enableStencil);
         //?}
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> {
+            //? if >=1.21.9
             event.registerCategory(TaczKeyCategory.CATEGORY);
             for (KeyMapping key : GunModClient.keyMappings()) {
                 event.register(key);

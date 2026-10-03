@@ -154,6 +154,11 @@ stonecutter parameters {
             replace("net.minecraft.world.level.gamerules.GameRules", "net.minecraft.world.level.GameRules")
         }
 
+        // NeoForge before 1.21.9 (FML 9 and older): environment fields instead of getters
+        string(loader == "neoforge" && current.parsed < "1.21.9") {
+            replace("FMLEnvironment.getDist()", "FMLEnvironment.dist")
+            replace("FMLEnvironment.isProduction()", "FMLEnvironment.production")
+        }
         // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
         string(loader == "neoforge") {
             // a do-nothing marker in place of Fabric's @Environment (NeoForge's @OnlyIn no longer strips and warns on every use)

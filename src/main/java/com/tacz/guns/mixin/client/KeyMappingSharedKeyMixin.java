@@ -2,7 +2,7 @@ package com.tacz.guns.mixin.client;
 
 import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
-//? if <1.21.9 {
+//? if <1.21.9 && fabric {
 /*import com.mojang.blaze3d.platform.InputConstants;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Mixin(KeyMapping.class)
 public abstract class KeyMappingSharedKeyMixin {
-    //? if <1.21.9 {
+    //? if <1.21.9 && fabric {
     /*@Shadow
     @Final
     private static Map<String, KeyMapping> ALL;

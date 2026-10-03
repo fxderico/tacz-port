@@ -88,12 +88,19 @@ public final class Loader {
      */
     public static @Nullable Path modFile(String modId, String name) {
         //? if neoforge {
-        /*return net.neoforged.fml.ModList.get().getModContainerById(modId)
+        /*//? if >=1.21.9 {
+        return net.neoforged.fml.ModList.get().getModContainerById(modId)
                 .flatMap(mod -> mod.getModInfo().getOwningFile().getFile().getContents().getContentRoots().stream()
                         .map(root -> root.resolve(name))
                         .filter(Files::exists)
                         .findFirst())
                 .orElse(null);
+        //?} else {
+        /^return net.neoforged.fml.ModList.get().getModContainerById(modId)
+                .map(mod -> mod.getModInfo().getOwningFile().getFile().findResource(name))
+                .filter(Files::exists)
+                .orElse(null);
+        ^///?}
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(modId)
                 .flatMap(container -> container.findPath(name))
@@ -107,12 +114,20 @@ public final class Loader {
      */
     public static @Nullable Path findInMods(String path) {
         //? if neoforge {
-        /*return net.neoforged.fml.ModList.get().getModFiles().stream()
+        /*//? if >=1.21.9 {
+        return net.neoforged.fml.ModList.get().getModFiles().stream()
                 .flatMap(file -> file.getFile().getContents().getContentRoots().stream())
                 .map(root -> root.resolve(path))
                 .filter(Files::exists)
                 .findFirst()
                 .orElse(null);
+        //?} else {
+        /^return net.neoforged.fml.ModList.get().getModFiles().stream()
+                .map(file -> file.getFile().findResource(path))
+                .filter(Files::exists)
+                .findFirst()
+                .orElse(null);
+        ^///?}
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods().stream()
                 .map(mod -> mod.findPath(path))
