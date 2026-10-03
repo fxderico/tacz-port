@@ -1,23 +1,18 @@
 TACZ (Timeless and Classics Guns: Zero) 1.1.8-hotfix, ported to Fabric and NeoForge.
 
-## Which jar
+Pick the jar for your loader whose name covers your Minecraft version: `tacz-<loader>-<first>-to-<last>.jar`, or `tacz-<loader>-<version>.jar` for a single version.
 
-| Jar | Minecraft | Loader |
+| Minecraft | Fabric / Quilt | NeoForge |
 |---|---|---|
-| `tacz-fabric-1.21.1-*` | 1.21, 1.21.1 | Fabric |
-| `tacz-fabric-1.21.3-*` | 1.21.2, 1.21.3 | Fabric |
-| `tacz-fabric-1.21.4-*` | 1.21.4 | Fabric |
-| `tacz-fabric-1.21.5-*` | 1.21.5 | Fabric |
-| `tacz-fabric-1.21.8-*` | 1.21.6 - 1.21.8 | Fabric |
-| `tacz-fabric-1.21.10-*` | 1.21.9, 1.21.10 | Fabric |
-| `tacz-fabric-1.21.11-*` | 1.21.11 | Fabric |
-| `tacz-fabric-26.1.2-*` | 26.1 - 26.1.2 | Fabric |
-| `tacz-fabric-26.2-*` | 26.2 | Fabric |
-| `tacz-fabric-26.3-*` | 26.3 | Fabric |
-| `tacz-neoforge-1.21.11-*` | 1.21.11 | NeoForge |
-| `tacz-neoforge-26.1.2-*` | 26.1 - 26.1.2 | NeoForge |
-| `tacz-neoforge-26.2-*` | 26.2 | NeoForge |
+| 1.21 - 1.21.1 | `tacz-fabric-1.21-to-1.21.1.jar` | `tacz-neoforge-1.21-to-1.21.1.jar` |
+| 1.21.2 - 1.21.3 | `tacz-fabric-1.21.2-to-1.21.3.jar` | `tacz-neoforge-1.21.2-to-1.21.3.jar` |
+| 1.21.4 | `tacz-fabric-1.21.4.jar` | `tacz-neoforge-1.21.4.jar` |
+| 1.21.5 | `tacz-fabric-1.21.5.jar` | `tacz-neoforge-1.21.5.jar` |
+| 1.21.6 - 1.21.8 | `tacz-fabric-1.21.6-to-1.21.8.jar` | `tacz-neoforge-1.21.6-to-1.21.8.jar` |
+| 1.21.9 - 1.21.10 | `tacz-fabric-1.21.9-to-1.21.10.jar` | `tacz-neoforge-1.21.9-to-1.21.10.jar` |
+| 1.21.11 | `tacz-fabric-1.21.11.jar` | `tacz-neoforge-1.21.11.jar` |
+| 26.1 - 26.1.2 | `tacz-fabric-26.1-to-26.1.2.jar` | `tacz-neoforge-26.1-to-26.1.2.jar` |
+| 26.2 | `tacz-fabric-26.2.jar` | `tacz-neoforge-26.2.jar` |
+| 26.3 | `tacz-fabric-26.3.jar` | `tacz-neoforge-26.3.jar` |
 
-Fabric needs Fabric API and Forge Config API Port. Quilt loads the Fabric jars.
-
-Not built yet: Minecraft 1.21.4 and 1.21.6 - 1.21.8, NeoForge 26.3, Forge.
+Fabric needs Fabric API and Forge Config API Port; Quilt loads the Fabric jars. A NeoForge jar only appears here once that version is ported.

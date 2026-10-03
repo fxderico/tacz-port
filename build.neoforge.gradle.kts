@@ -5,7 +5,12 @@ plugins {
 val mcVersion = sc.current.version
 version = "${property("mod.version")}".replace("-fabric", "-neoforge")
 group = property("mod.group") as String
-base.archivesName = "tacz-neoforge-$mcVersion"
+
+// jar name: tacz-<loader>-<first>-to-<last>.jar over the Minecraft releases it supports, or tacz-<loader>-<version>.jar
+val releases = Regex("""\d+(\.\d+)+""").findAll(property("mod.mc_releases").toString()).map { it.value }.toList()
+val releaseRange = if (releases.size > 1) "${releases.first()}-to-${releases.last()}" else releases.single()
+base.archivesName = "tacz-neoforge-$releaseRange"
+tasks.withType<AbstractArchiveTask>().configureEach { archiveVersion.set("") }
 
 val requiredJava: JavaVersion = if (sc.current.parsed >= "26.1") JavaVersion.VERSION_25 else JavaVersion.VERSION_21
 
@@ -134,7 +139,7 @@ tasks {
             "version" to project.version.toString(),
             "minecraft" to project.property("mod.mc_compat").toString(),
             "mc_version" to mcVersion,
-            "neoforge" to project.property("deps.neoforge").toString(),
+            "neoforge" to project.property("deps.neoforge_min").toString(),
         )
         inputs.properties(props)
         filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
