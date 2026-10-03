@@ -160,7 +160,8 @@ stonecutter parameters {
             replace("net.neoforged.fml.loading.FMLEnvironment.isProduction()", "net.neoforged.fml.loading.FMLEnvironment.production")
         }
         // NeoForge before 1.21.2: Item has a deprecated initializeClient taking NeoForge's own extensions
-        string(loader == "neoforge" && current.parsed < "1.21.2") {
+        // Forge's Item has it in every version
+        string((loader == "neoforge" && current.parsed < "1.21.2") || loader == "forge") {
             replace("initializeClient(", "taczInitializeClient(")
         }
         // NeoForge before 1.21.6: vanilla's layered HUD and the old packet distributor
@@ -170,10 +171,19 @@ stonecutter parameters {
             replace("net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(", "net.neoforged.neoforge.network.PacketDistributor.sendToServer(")
         }
         // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
-        string(loader == "neoforge") {
-            // a do-nothing marker in place of Fabric's @Environment (NeoForge's @OnlyIn no longer strips and warns on every use)
+        string(loader != "fabric") {
+            // a do-nothing marker in place of Fabric's @Environment (@OnlyIn no longer strips and warns on every use)
             replace("net.fabricmc.api.EnvType", "com.tacz.guns.platform.marker.EnvType")
             replace("net.fabricmc.api.Environment", "com.tacz.guns.platform.marker.Environment")
+        }
+        // Forge: FML and the loot modifiers under net.minecraftforge (environment fields: Loader has Forge branches, a rule
+        // here would overlap the NeoForge one above)
+        // (Fabric and NeoForge read NeoForge's ModConfig, from Forge Config API Port on Fabric)
+        string(loader == "forge") {
+            replace("net.neoforged.fml.", "net.minecraftforge.fml.")
+            replace("net.neoforged.neoforge.common.loot.", "net.minecraftforge.common.loot.")
+        }
+        string(loader == "neoforge") {
             replace("import net.minecraftforge.common.ForgeConfigSpec;", "import net.neoforged.neoforge.common.ModConfigSpec;")
             replace("ForgeConfigSpec", "ModConfigSpec")
         }

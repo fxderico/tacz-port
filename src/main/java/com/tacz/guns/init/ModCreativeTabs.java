@@ -24,7 +24,7 @@ public class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, GunMod.MOD_ID);
 
     private static CreativeModeTab.Builder tabBuilder() {
-        //? if neoforge {
+        //? if !fabric {
         /*return CreativeModeTab.builder();
         *///?} else {
         return net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup.builder();

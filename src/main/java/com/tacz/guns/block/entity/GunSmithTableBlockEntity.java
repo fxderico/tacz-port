@@ -30,7 +30,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 
-public class GunSmithTableBlockEntity extends BlockEntity implements /*? if neoforge {*//*net.minecraft.world.MenuProvider*//*?} else {*/net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory<Identifier>/*?}*/ {
+public class GunSmithTableBlockEntity extends BlockEntity implements /*? if !fabric {*//*net.minecraft.world.MenuProvider*//*?} else {*/net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory<Identifier>/*?}*/ {
     public static final BlockEntityType<GunSmithTableBlockEntity> TYPE = BlockEntityTypes.create(GunSmithTableBlockEntity::new,
             ModBlocks.GUN_SMITH_TABLE.get(),
             ModBlocks.WORKBENCH_111.get(),

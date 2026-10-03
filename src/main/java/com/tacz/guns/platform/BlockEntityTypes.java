@@ -19,7 +19,7 @@ public final class BlockEntityTypes {
     }
 
     public static <T extends BlockEntity> BlockEntityType<T> create(Factory<T> factory, Block... blocks) {
-        //? if neoforge {
+        //? if !fabric {
         /*//? if >=1.21.2 {
         return new BlockEntityType<>(factory::create, java.util.Set.of(blocks));
         //?} else {

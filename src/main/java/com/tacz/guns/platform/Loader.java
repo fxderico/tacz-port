@@ -14,7 +14,7 @@ public final class Loader {
     }
 
     public static Path gameDir() {
-        //? if neoforge {
+        //? if !fabric {
         /*return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get();
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().getGameDir();
@@ -22,7 +22,7 @@ public final class Loader {
     }
 
     public static Path configDir() {
-        //? if neoforge {
+        //? if !fabric {
         /*return net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get();
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir();
@@ -30,7 +30,9 @@ public final class Loader {
     }
 
     public static boolean isClient() {
-        //? if neoforge {
+        //? if forge {
+        /*return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
+        *///?} else if neoforge {
         /*return net.neoforged.fml.loading.FMLEnvironment.getDist().isClient();
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT;
@@ -38,7 +40,9 @@ public final class Loader {
     }
 
     public static boolean isProduction() {
-        //? if neoforge {
+        //? if forge {
+        /*return net.minecraftforge.fml.loading.FMLEnvironment.production;
+        *///?} else if neoforge {
         /*return net.neoforged.fml.loading.FMLEnvironment.isProduction();
         *///?} else {
         return !net.fabricmc.loader.api.FabricLoader.getInstance().isDevelopmentEnvironment();
@@ -46,7 +50,7 @@ public final class Loader {
     }
 
     public static boolean isModLoaded(String modId) {
-        //? if neoforge {
+        //? if !fabric {
         /*return net.neoforged.fml.ModList.get().isLoaded(modId);
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded(modId);
@@ -57,7 +61,7 @@ public final class Loader {
      * Version of a loaded mod as written by its author.
      */
     public static Optional<String> modVersion(String modId) {
-        //? if neoforge {
+        //? if !fabric {
         /*return net.neoforged.fml.ModList.get().getModContainerById(modId).map(mod -> mod.getModInfo().getVersion().toString());
         *///?} else {
         return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(modId).map(mod -> mod.getMetadata().getVersion().getFriendlyString());
@@ -68,7 +72,7 @@ public final class Loader {
      * major.minor.patch of a loaded mod, for gun pack version ranges.
      */
     public static Optional<String> modSemanticVersion(String modId) {
-        //? if neoforge {
+        //? if !fabric {
         /*return net.neoforged.fml.ModList.get().getModContainerById(modId).map(mod -> {
             org.apache.maven.artifact.versioning.ArtifactVersion version = mod.getModInfo().getVersion();
             return version.getMajorVersion() + "." + version.getMinorVersion() + "." + version.getIncrementalVersion();
@@ -87,8 +91,8 @@ public final class Loader {
      * A file at the root of a mod's jar, or null.
      */
     public static @Nullable Path modFile(String modId, String name) {
-        //? if neoforge {
-        /*//? if >=1.21.9 {
+        //? if !fabric {
+        /*//? if neoforge && >=1.21.9 {
         return net.neoforged.fml.ModList.get().getModContainerById(modId)
                 .flatMap(mod -> mod.getModInfo().getOwningFile().getFile().getContents().getContentRoots().stream()
                         .map(root -> root.resolve(name))
@@ -113,8 +117,8 @@ public final class Loader {
      * A file or folder inside any loaded mod, or null.
      */
     public static @Nullable Path findInMods(String path) {
-        //? if neoforge {
-        /*//? if >=1.21.9 {
+        //? if !fabric {
+        /*//? if neoforge && >=1.21.9 {
         return net.neoforged.fml.ModList.get().getModFiles().stream()
                 .flatMap(file -> file.getFile().getContents().getContentRoots().stream())
                 .map(root -> root.resolve(path))

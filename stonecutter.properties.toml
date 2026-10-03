@@ -144,3 +144,10 @@ mod.mc_releases = ["26.3"]
 mod.jar_range = "26.3"
 deps.neoforge = "26.3.0.46-beta"
 deps.neoforge_min = "26.3"
+
+["1.21.11-forge"]
+mod.mc_compat = "[1.21.11]"
+mod.mc_releases = ["1.21.11"]
+mod.jar_range = "1.21.11"
+deps.forge = "61.2.1"
+deps.forge_min = "61"

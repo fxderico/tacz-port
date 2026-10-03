@@ -33,6 +33,9 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
     //? if neoforge {
     /*public static final MenuType<GunSmithTableMenu> TYPE = net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(
             (id, inventory, buf) -> new GunSmithTableMenu(id, inventory, Identifier.STREAM_CODEC.decode(buf)));
+    *///?} else if forge {
+    /*public static final MenuType<GunSmithTableMenu> TYPE = net.minecraftforge.common.extensions.IForgeMenuType.create(
+            (id, inventory, buf) -> new GunSmithTableMenu(id, inventory, Identifier.STREAM_CODEC.decode(buf)));
     *///?} else {
     public static final MenuType<GunSmithTableMenu> TYPE = new net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType<>(GunSmithTableMenu::new, Identifier.STREAM_CODEC);
     //?}

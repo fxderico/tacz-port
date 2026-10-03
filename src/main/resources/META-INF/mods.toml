@@ -1,0 +1,26 @@
+modLoader = "javafml"
+loaderVersion = "[0,)"
+license = "GPL-3.0 (code) / CC BY-NC-ND 4.0 (assets)"
+issueTrackerURL = "https://github.com/MCModderAnchor/TACZ/issues"
+
+[[mods]]
+modId = "tacz"
+version = "${version}"
+displayName = "Timeless & Classics Guns: Zero (Forge port)"
+logoFile = "icon.png"
+authors = "Serene Wave Studio | Timeless Squad"
+description = '''Unofficial Forge ${mc_version} port of Timeless & Classics Guns: Zero.'''
+
+[[dependencies.tacz]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.tacz]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "BOTH"

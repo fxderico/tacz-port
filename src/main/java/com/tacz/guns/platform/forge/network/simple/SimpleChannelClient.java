@@ -8,7 +8,9 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public final class SimpleChannelClient {
     public static void sendToServer(SimpleChannel.Payload<?> payload) {
-        //? if neoforge {
+        //? if forge {
+        /*com.tacz.guns.network.NetworkHandler.CHANNEL.forgeSendToServer(payload);
+        *///?} else if neoforge {
         /*net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(payload);
         *///?} else {
         net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(payload);

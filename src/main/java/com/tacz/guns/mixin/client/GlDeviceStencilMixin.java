@@ -42,4 +42,14 @@ public abstract class GlDeviceStencilMixin {
         return format == TextureFormat.DEPTH32 ? GL30.GL_FLOAT_32_UNSIGNED_INT_24_8_REV : original.call(format);
     }
     //?}
+
+    // Forge allocates depth + stencil when asked (RenderTarget#enableStencil), asked here for every depth texture
+    //? if >=1.21.5 && <26.2 && forge {
+    /*@org.spongepowered.asm.mixin.injection.ModifyVariable(
+            method = "createTexture(Ljava/lang/String;ILcom/mojang/blaze3d/textures/TextureFormat;IIIIZ)Lcom/mojang/blaze3d/textures/GpuTexture;",
+            at = @At("HEAD"), argsOnly = true)
+    private boolean tacz$alwaysStencil(boolean stencil) {
+        return true;
+    }
+    *///?}
 }

@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class DirectStateAccessStencilMixin {
     // OpenGL stencil, replaced by shader masks in 26.2 (Vulkan has no stencil here), see ScopeMask
     // NeoForge has a stencil switch of its own (ConfigureMainRenderTargetEvent), see GunModNeoForgeClient
-    //? if >=1.21.5 && <26.2 && fabric {
+    //? if >=1.21.5 && <26.2 && !neoforge {
     @ModifyConstant(method = {"bindFrameBufferTextures", "clearDepthTexture"}, constant = @Constant(intValue = GL30.GL_DEPTH_ATTACHMENT))
     private int tacz$depthStencilAttachment(int attachment) {
         return GL30.GL_DEPTH_STENCIL_ATTACHMENT;

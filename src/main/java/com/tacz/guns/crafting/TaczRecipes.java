@@ -31,7 +31,7 @@ public final class TaczRecipes {
 
     //? if >=1.21.2 {
     private static Collection<RecipeHolder<GunSmithTableRecipe>> syncedRecipes(Level level) {
-        //? if neoforge || <1.21.9 {
+        //? if !fabric || <1.21.9 {
         /*return clientRecipes.byType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
         *///?} else {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().getAllOfType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
@@ -39,7 +39,7 @@ public final class TaczRecipes {
     }
 
     private static RecipeHolder<?> syncedRecipe(Level level, ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> key) {
-        //? if neoforge || <1.21.9 {
+        //? if !fabric || <1.21.9 {
         /*return clientRecipes.byKey(key);
         *///?} else {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().get(key);

@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[0,)"
+license = "GPL-3.0"
+
+[[mods]]
+modId = "tacz_gametest"
+version = "1.0.0"
+displayName = "TACZ client smoke test"
+description = '''Dev only: plays a short scripted session and screenshots it.'''
+
+[[dependencies.tacz_gametest]]
+modId = "tacz"
+mandatory = true
+versionRange = "*"
+ordering = "AFTER"
+side = "CLIENT"

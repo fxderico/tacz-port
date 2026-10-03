@@ -1,6 +1,6 @@
 package com.tacz.guns.network.message;
 
-//? if >=1.21.2 && <1.21.9 && (fabric || <1.21.4) {
+//? if >=1.21.2 && ((fabric && <1.21.9) || (neoforge && <1.21.4) || forge) {
 /*import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.crafting.GunSmithTableSerializer;
 import com.tacz.guns.crafting.TaczRecipes;

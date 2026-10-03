@@ -73,7 +73,7 @@ public final class LootTableInjectorModifier {
         }
     }
 
-    //? if neoforge {
+    //? if !fabric {
     /*public static final class Glm extends net.neoforged.neoforge.common.loot.LootModifier {
         public static final com.mojang.serialization.MapCodec<Glm> CODEC = com.mojang.serialization.codecs.RecordCodecBuilder.mapCodec(
                 instance -> codecStart(instance).apply(instance, Glm::new));
@@ -94,7 +94,12 @@ public final class LootTableInjectorModifier {
         //?}
 
         @Override
+        //? if forge {
+        /^protected it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> doApply(net.minecraft.world.level.storage.loot.LootTable table,
+                                                                                   it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> loot, LootContext context) {
+        ^///?} else {
         protected it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> doApply(it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> loot, LootContext context) {
+        //?}
             LootTableInjectorModifier.apply(context.getQueriedLootTableId(), context, loot);
             return loot;
         }

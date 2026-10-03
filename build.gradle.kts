@@ -116,7 +116,7 @@ tasks {
         inputs.properties(mixinJava)
         filesMatching("*.mixins.json") { expand(mixinJava) }
         // NeoForge only
-        exclude("META-INF/neoforge.mods.toml")
+        exclude("META-INF/neoforge.mods.toml", "META-INF/mods.toml")
     }
 
     // shaders follow the GLSL dialect of each version, older shader managers choke on the newer ones

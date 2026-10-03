@@ -155,7 +155,7 @@ tasks {
         inputs.properties(mixinJava)
         filesMatching("*.mixins.json") { expand(mixinJava) }
         // Fabric only
-        exclude("fabric.mod.json", "tacz.accesswidener")
+        exclude("fabric.mod.json", "tacz.accesswidener", "META-INF/mods.toml")
         // 26.1+ loads every data/*/loot_modifiers file on its own, the old global list would be read as a modifier
         if (sc.current.parsed >= "26.1") exclude("data/neoforge/loot_modifiers/global_loot_modifiers.json")
         // the generated access transformer, also needed by dev runs

@@ -34,7 +34,7 @@ public final class AmmoBoxModelProperties {
 
     // NeoForge registers both in its RegisterRangeSelectItemModelPropertyEvent / RegisterColorHandlersEvent.ItemTintSources
     public static void register() {
-        //? if fabric && >=1.21.4 {
+        //? if !neoforge && >=1.21.4 {
         RangeSelectItemModelProperties.ID_MAPPER.put(STATUE_ID, Statue.MAP_CODEC);
         ItemTintSources.ID_MAPPER.put(TINT_ID, Tint.MAP_CODEC);
         //?} else if fabric {

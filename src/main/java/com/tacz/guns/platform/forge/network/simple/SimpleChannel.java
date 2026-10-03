@@ -94,6 +94,40 @@ public final class SimpleChannel {
     }
     *///?}
 
+    //? if forge {
+    /*private net.minecraftforge.network.Channel<CustomPacketPayload> forgeChannel;
+
+    /^*
+     * Builds Forge's payload channel once every message is registered. Forge calls the handlers on the network
+     * thread, they are moved to the main thread like Fabric and NeoForge do.
+     ^/
+    public void buildForgeChannel() {
+        net.minecraftforge.network.payload.PayloadFlow<net.minecraft.network.RegistryFriendlyByteBuf, CustomPacketPayload> flow =
+                net.minecraftforge.network.ChannelBuilder.named(name).networkProtocolVersion(1).payloadChannel().play().serverbound();
+        for (Entry<?> entry : serverBound) {
+            addForge(flow, entry, NetworkDirection.PLAY_TO_SERVER);
+        }
+        flow = flow.clientbound();
+        for (Entry<?> entry : clientBound) {
+            addForge(flow, entry, NetworkDirection.PLAY_TO_CLIENT);
+        }
+        forgeChannel = flow.build();
+    }
+
+    private static <M> void addForge(net.minecraftforge.network.payload.PayloadFlow<net.minecraft.network.RegistryFriendlyByteBuf, CustomPacketPayload> flow,
+                                     Entry<M> entry, NetworkDirection direction) {
+        flow.add(entry.type, entry.codec, (payload, ctx) -> {
+            net.minecraft.server.level.ServerPlayer sender = direction == NetworkDirection.PLAY_TO_SERVER ? ctx.getSender() : null;
+            ctx.enqueueWork(() -> entry.handle(payload, new NetworkEvent.Context(direction, sender)));
+            ctx.setPacketHandled(true);
+        });
+    }
+
+    public void forgeSendToServer(Payload<?> payload) {
+        forgeChannel.send(payload, net.minecraftforge.network.PacketDistributor.SERVER.noArg());
+    }
+    *///?}
+
     /**
      * Client bound entries, the client entrypoint registers their receivers.
      */
@@ -116,6 +150,8 @@ public final class SimpleChannel {
     public <M> net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.common.ClientCommonPacketListener> toClientPacket(M message) {
         //? if neoforge {
         /*return new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(wrap(message));
+        *///?} else if forge {
+        /*return net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT.buildPacket(forgeChannel, wrap(message));
         *///?} else {
         return net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.createS2CPacket(wrap(message));
         //?}
