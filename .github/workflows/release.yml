@@ -7,6 +7,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to create the release on (made from the selected branch)
+        default: v1.1.8-hotfix
 
 permissions:
   contents: write
@@ -35,9 +39,11 @@ jobs:
         with:
           name: jars
           path: versions/*/build/libs/tacz-*.jar
-      - if: github.event_name != 'workflow_dispatch'
-        uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v2
         with:
+          # a manual run creates the tag on the branch it ran on
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: versions/*/build/libs/tacz-*.jar
           body_path: .github/release-notes.md
           generate_release_notes: true
