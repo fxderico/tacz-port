@@ -1,9 +1,12 @@
 name: Release
 
-# Publish a release on GitHub and this builds every Minecraft version and attaches the jars to it
+# Pushing a v* tag (or publishing a release by hand) builds every Minecraft version and attaches the jars to the release
 on:
+  push:
+    tags: ["v*"]
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,6 +14,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -21,8 +25,19 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x gradlew && ./gradlew build --no-daemon
-      - uses: softprops/action-gh-release@v2
+      # every version that builds; NeoForge 26.3 is not ported yet
+      - run: >-
+          chmod +x gradlew && ./gradlew --no-daemon -x test
+          :1.21.1:build :1.21.3:build :1.21.5:build :1.21.10:build :1.21.11:build
+          :26.1.2:build :26.2:build :26.3:build
+          :1.21.11-neoforge:build :26.1.2-neoforge:build :26.2-neoforge:build
+      - uses: actions/upload-artifact@v4
         with:
-          files: versions/*/build/libs/tacz-fabric-*.jar
+          name: jars
+          path: versions/*/build/libs/tacz-*.jar
+      - if: github.event_name != 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: versions/*/build/libs/tacz-*.jar
+          body_path: .github/release-notes.md
           generate_release_notes: true
