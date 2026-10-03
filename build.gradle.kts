@@ -8,8 +8,7 @@ version = "${property("mod.version")}"
 group = property("mod.group") as String
 
 // jar name: tacz-<loader>-<first>-to-<last>.jar over the Minecraft releases it supports, or tacz-<loader>-<version>.jar
-val releases = Regex("""\d+(\.\d+)+""").findAll(property("mod.mc_releases").toString()).map { it.value }.toList()
-val releaseRange = if (releases.size > 1) "${releases.first()}-to-${releases.last()}" else releases.single()
+val releaseRange = property("mod.jar_range") as String
 base.archivesName = "tacz-fabric-$releaseRange"
 tasks.withType<AbstractArchiveTask>().configureEach { archiveVersion.set("") }
 
