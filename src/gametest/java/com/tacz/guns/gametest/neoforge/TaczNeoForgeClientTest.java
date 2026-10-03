@@ -76,7 +76,7 @@ public final class TaczNeoForgeClientTest {
             if (!(mc.screen instanceof TitleScreen)) {
                 mc.options.onboardAccessibility = false;
                 mc.options.save();
-                mc.setScreen(new TitleScreen());
+                Minecraft.getInstance().setScreen(new TitleScreen());
             }
             return 20;
         });
@@ -182,12 +182,12 @@ public final class TaczNeoForgeClientTest {
         steps.add(() -> {
             key(InputConstants.KEY_F5, InputConstants.PRESS);
             key(InputConstants.KEY_F5, InputConstants.RELEASE);
-            mc.setScreen(new InventoryScreen(mc.player));
+            Minecraft.getInstance().setScreen(new InventoryScreen(mc.player));
             return 5;
         });
         steps.add(() -> shot("tacz_inventory"));
         steps.add(() -> {
-            mc.setScreen(null);
+            Minecraft.getInstance().setScreen(null);
             finish(null);
             return 0;
         });
@@ -224,7 +224,7 @@ public final class TaczNeoForgeClientTest {
     private int shot(String name) {
         Minecraft mc = Minecraft.getInstance();
         String file = String.format("%04d_%s.png", screenshot++, name);
-        Screenshot.grab(mc.gameDirectory, file, mc.getMainRenderTarget(), 1, message -> LOGGER.info("Screenshot {}", file));
+        Screenshot.grab(mc.gameDirectory, file, Minecraft.getInstance().getMainRenderTarget(), 1, message -> LOGGER.info("Screenshot {}", file));
         return 2;
     }
 
@@ -307,7 +307,7 @@ public final class TaczNeoForgeClientTest {
     }
 
     private static float huskHealth(MinecraftServer server) {
-        List<? extends Husk> husks = server.overworld().getEntities(EntityType.HUSK, husk -> true);
+        List<? extends Husk> husks = server.overworld().getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(Husk.class), husk -> true);
         return husks.isEmpty() ? 0 : husks.getFirst().getHealth();
     }
 
