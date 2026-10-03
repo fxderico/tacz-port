@@ -34,6 +34,8 @@ stonecutter parameters {
             // 1.21.11 split AbstractButton#renderWidget into renderContents
             replace("protected void renderContents(GuiGraphics", "protected void renderWidget(GuiGraphics")
             replace("net.minecraft.world.entity.boss.enderdragon.EnderDragonPart", "net.minecraft.world.entity.boss.EnderDragonPart")
+            replace("net.minecraft.world.entity.monster.zombie.Husk", "net.minecraft.world.entity.monster.Husk")
+            replace("net.minecraft.world.level.gamerules.GameRules", "net.minecraft.world.level.GameRules")
         }
 
         // NeoForge: its own dist marker and config spec (Fabric gets the Forge flavoured config from Forge Config API Port)
