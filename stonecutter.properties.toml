@@ -151,3 +151,66 @@ mod.mc_releases = ["1.21.11"]
 mod.jar_range = "1.21.11"
 deps.forge = "61.2.1"
 deps.forge_min = "61"
+
+["1.21.1-forge"]
+mod.mc_compat = "[1.21,1.21.2)"
+mod.mc_releases = ["1.21", "1.21.1"]
+mod.jar_range = "1.21-to-1.21.1"
+deps.forge = "52.1.16"
+deps.forge_min = "51"
+
+["1.21.3-forge"]
+mod.mc_compat = "[1.21.2,1.21.4)"
+mod.mc_releases = ["1.21.2", "1.21.3"]
+mod.jar_range = "1.21.2-to-1.21.3"
+deps.forge = "53.1.12"
+deps.forge_min = "53"
+
+["1.21.4-forge"]
+mod.mc_compat = "[1.21.4]"
+mod.mc_releases = ["1.21.4"]
+mod.jar_range = "1.21.4"
+deps.forge = "54.1.18"
+deps.forge_min = "54"
+
+["1.21.5-forge"]
+mod.mc_compat = "[1.21.5]"
+mod.mc_releases = ["1.21.5"]
+mod.jar_range = "1.21.5"
+deps.forge = "55.1.14"
+deps.forge_min = "55"
+
+["1.21.8-forge"]
+mod.mc_compat = "[1.21.6,1.21.9)"
+mod.mc_releases = ["1.21.6", "1.21.7", "1.21.8"]
+mod.jar_range = "1.21.6-to-1.21.8"
+deps.forge = "58.1.22"
+deps.forge_min = "56"
+
+["1.21.10-forge"]
+mod.mc_compat = "[1.21.9,1.21.11)"
+mod.mc_releases = ["1.21.9", "1.21.10"]
+mod.jar_range = "1.21.9-to-1.21.10"
+deps.forge = "60.1.15"
+deps.forge_min = "59"
+
+["26.1.2-forge"]
+mod.mc_compat = "[26.1,26.2)"
+mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
+mod.jar_range = "26.1-to-26.1.2"
+deps.forge = "64.1.3"
+deps.forge_min = "62"
+
+["26.2-forge"]
+mod.mc_compat = "[26.2,26.3)"
+mod.mc_releases = ["26.2"]
+mod.jar_range = "26.2"
+deps.forge = "65.1.3"
+deps.forge_min = "65"
+
+["26.3-forge"]
+mod.mc_compat = "[26.3,26.4)"
+mod.mc_releases = ["26.3"]
+mod.jar_range = "26.3"
+deps.forge = "66.0.9"
+deps.forge_min = "66"
