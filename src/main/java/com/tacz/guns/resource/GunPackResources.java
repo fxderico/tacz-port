@@ -185,7 +185,7 @@ public class GunPackResources implements PackResources {
         }
         //?} else {
         /*if (type == PackMetadataSection.TYPE) {
-            int format = SharedConstants.getCurrentVersion().getPackVersion(packType);
+            int format = SharedConstants.getCurrentVersion().packVersion(packType);
             return (T) new PackMetadataSection(Component.translatable("tacz.resources.modresources"), format, java.util.Optional.empty());
         }
         *///?}

@@ -65,7 +65,8 @@ public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implement
     }
     //?}
 
-    // the argumentless form came with 1.21.9
+    // the argumentless form came with 1.21.6
+    //? if <1.21.6 {
     public boolean shouldRenderOffScreen() {
         return false;
     }
@@ -74,5 +75,6 @@ public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implement
     public boolean shouldRenderOffScreen(T blockEntity) {
         return shouldRenderOffScreen();
     }
+    //?}
 }
 *///?}

@@ -21,7 +21,7 @@ plugins {
 stonecutter {
     create(rootProject) {
         // every Minecraft version range gets its own jar, see stonecutter.properties.toml
-        versions("1.21.1", "1.21.3", "1.21.5", "1.21.10", "1.21.11", "26.1.2", "26.2", "26.3")
+        versions("1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.8", "1.21.10", "1.21.11", "26.1.2", "26.2", "26.3")
         // NeoForge builds share the sources, `//? if neoforge` marks what differs
         for (mc in listOf("1.21.11", "26.1.2", "26.2", "26.3")) {
             version("$mc-neoforge", mc).buildscript("build.neoforge.gradle.kts")

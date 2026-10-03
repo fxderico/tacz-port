@@ -1,6 +1,6 @@
 package com.tacz.guns.gametest;
 
-//? if fabric && >=1.21.4 {
+//? if fabric && >=1.21.5 {
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;

@@ -40,7 +40,7 @@ public final class FabricEventBridge {
         ServerTickEvents.START_SERVER_TICK.register(server -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, server)));
         ServerTickEvents.END_SERVER_TICK.register(server -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, server)));
 
-        //? if >=1.21.4 {
+        //? if >=1.21.5 {
         ServerPlayerEvents.JOIN.register(player -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedInEvent(player)));
         ServerPlayerEvents.LEAVE.register(player -> MinecraftForge.EVENT_BUS.post(new PlayerEvent.PlayerLoggedOutEvent(player)));
         //?} else {

@@ -38,11 +38,7 @@ stonecutter parameters {
             replace(".setStrictness(com.google.gson.Strictness.LENIENT)", ".setLenient()")
             replace("new ClickEvent.RunCommand(", "new ClickEvent(ClickEvent.Action.RUN_COMMAND, ")
             replace("new HoverEvent.ShowText(", "new HoverEvent(HoverEvent.Action.SHOW_TEXT, ")
-            replace("this.filterList.refreshScrollAmount();", "this.filterList.clampScrollAmount();")
-            replace("protected int scrollBarX() {", "protected int getScrollbarPosition() {")
             replace("transform.apply(false, poseStack.last())", "transform.apply(false, poseStack)")
-            replace("protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {", "public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {")
-            replace("super.getCloneItemStack(level, pos, state, includeData)", "super.getCloneItemStack(level, pos, state)")
             // tooltips were a list, before 1.21.5's TooltipDisplay
             replace("TooltipDisplay tooltipDisplay, Consumer<Component> componentConsumer, TooltipFlag isAdvanced) {", "List<Component> tooltipLines, TooltipFlag isAdvanced) { Consumer<Component> componentConsumer = tooltipLines::add;")
         }
@@ -84,6 +80,12 @@ stonecutter parameters {
             replace("public void renderImage\\((Font \\w+), (int \\w+), (int \\w+), int tooltipWidth, int tooltipHeight, (GuiGraphics \\w+)\\)", "public void renderImage($1, $2, $3, $4)", "(?!)", "$0")
         }
         string(current.parsed < "1.21.4") {
+            // selection lists before 1.21.4's scroll area
+            replace("this.filterList.refreshScrollAmount();", "this.filterList.clampScrollAmount();")
+            replace("protected int scrollBarX() {", "protected int getScrollbarPosition() {")
+            // block picking passed no data flag before 1.21.4
+            replace("protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {", "public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {")
+            replace("super.getCloneItemStack(level, pos, state, includeData)", "super.getCloneItemStack(level, pos, state)")
             replace("public <T> @Nullable T getMetadataSection(MetadataSectionType<T> type) {", "public <T> @Nullable T getMetadataSection(net.minecraft.server.packs.metadata.MetadataSectionSerializer<T> type) {")
         }
         // before 1.21.6 NBT was read and written as CompoundTags, TACZ's stand-ins mimic the new value API over them
@@ -98,6 +100,7 @@ stonecutter parameters {
             replace("setComponentTooltipForNextFrame(", "renderComponentTooltip(")
             replace("graphics.setTooltipForNextFrame(", "graphics.renderTooltip(")
             replace("SharedConstants.getCurrentVersion().name()", "SharedConstants.getCurrentVersion().getName()")
+            replace("getCurrentVersion().packVersion(packType)", "getCurrentVersion().getPackVersion(packType)")
             // uniforms were declared one by one before the 1.21.6 uniform blocks
             replace("RenderPipelines.MATRICES_PROJECTION_SNIPPET", "RenderPipelines.MATRICES_COLOR_SNIPPET")
             replace("TextureStateShard(texture, false)", "TextureStateShard(texture, net.minecraft.util.TriState.FALSE, false)")
