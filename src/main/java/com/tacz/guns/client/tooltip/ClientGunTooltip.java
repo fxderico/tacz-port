@@ -234,7 +234,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         }
     }
 
-    @Override
+    /*? if >=1.21.6 {*/@Override/*?}*/
     public void renderText(GuiGraphics textGraphics, Font font, int pX, int pY) {
         int yOffset = pY;
 
@@ -315,6 +315,9 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderImage(Font pFont, int pX, int pY, int tooltipWidth, int tooltipHeight, GuiGraphics guiGraphics) {
+        // before 1.21.6 the text pass had no GuiGraphics
+        //? if <1.21.6
+        /*renderText(guiGraphics, pFont, pX, pY);*/
         IGun iGun = IGun.getIGunOrNull(this.gun);
         if (iGun == null) {
             return;

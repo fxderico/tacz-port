@@ -35,8 +35,8 @@ public abstract class GameRendererEventMixin {
 
     // 26.1 moved these into Camera, see CameraEventMixin
     //? if <26.1 {
-    // 1.21.10 and older set the camera up in renderLevel, right before extractCamera
-    @Inject(method = /*? if >=1.21.11 {*/"updateCamera", at = @At("TAIL")/*?} else {*//*"extractCamera", at = @At("HEAD")*//*?}*/)
+    // 1.21.9-1.21.10 set the camera up in renderLevel right before extractCamera, older versions right after Camera#setup
+    @Inject(method = /*? if >=1.21.11 {*/"updateCamera", at = @At("TAIL")/*?} else if >=1.21.9 {*//*"extractCamera", at = @At("HEAD")*//*?} else {*//*"renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V", shift = At.Shift.AFTER)*//*?}*/)
     private void tacz$computeCameraAngles(CallbackInfo ci) {
         if (!this.mainCamera.isInitialized()) {
             return;

@@ -100,7 +100,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
         return Math.max(width[0], showGuns.size() * 16 + 4);
     }
 
-    @Override
+    /*? if >=1.21.6 {*/@Override/*?}*/
     public void renderText(GuiGraphics textGraphics, Font font, int pX, int pY) {
         int yOffset = pY;
         for (Component component : this.components) {
@@ -121,6 +121,9 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderImage(Font font, int mouseX, int mouseY, int tooltipWidth, int tooltipHeight, GuiGraphics gui) {
+        // before 1.21.6 the text pass had no GuiGraphics
+        //? if <1.21.6
+        /*renderText(gui, font, mouseX, mouseY);*/
         if (!net.minecraft.client.Minecraft.getInstance().hasShiftDown()) {
             return;
         }

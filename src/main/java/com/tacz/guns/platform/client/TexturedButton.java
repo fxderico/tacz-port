@@ -26,7 +26,15 @@ public class TexturedButton extends Button {
         this.yDiffTex = yDiffTex;
     }
 
-    @Override
+    // 1.21.11 split AbstractButton#renderWidget into renderContents
+    //? if <1.21.11 {
+    /*@Override
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        renderContents(graphics, mouseX, mouseY, partialTick);
+    }
+    *///?}
+
+    /*? if >=1.21.11 {*/@Override/*?}*/
     protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         int v = this.yTexStart + (this.isHoveredOrFocused() ? this.yDiffTex : 0);
         graphics.blit(RenderPipelines.GUI_TEXTURED, this.texture, this.getX(), this.getY(), this.xTexStart, v, this.width, this.height, 256, 256);

@@ -18,7 +18,15 @@ public class RefitUnloadButton extends Button implements IComponentTooltip {
         super(pX, pY, 8, 8, Component.empty(), pOnPress, DEFAULT_NARRATION);
     }
 
-    @Override
+    // 1.21.11 split AbstractButton#renderWidget into renderContents
+    //? if <1.21.11 {
+    /*@Override
+    protected void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+        renderContents(graphics, pMouseX, pMouseY, pPartialTick);
+    }
+    *///?}
+
+    /*? if >=1.21.11 {*/@Override/*?}*/
     protected void renderContents(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
 
         int x = getX(), y = getY();

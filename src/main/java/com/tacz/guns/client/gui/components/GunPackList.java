@@ -150,11 +150,19 @@ public class GunPackList extends ContainerObjectSelectionList<GunPackList.Entry>
         }
 
         @Override
+        //? if >=1.21.9 {
         public void renderContent(GuiGraphics pGraphics, int pMouseX, int pMouseY, boolean pHovering, float pPartialTick) {
             this.widget.setX(this.getContentX());
             this.widget.setY(this.getContentY());
             this.widget.render(pGraphics, pMouseX, pMouseY, pPartialTick);
         }
+        //?} else {
+        /*public void render(GuiGraphics pGraphics, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pHovering, float pPartialTick) {
+            this.widget.setX(pLeft);
+            this.widget.setY(pTop);
+            this.widget.render(pGraphics, pMouseX, pMouseY, pPartialTick);
+        }
+        *///?}
 
         @Override
         public List<? extends GuiEventListener> children() {
@@ -207,7 +215,15 @@ public class GunPackList extends ContainerObjectSelectionList<GunPackList.Entry>
 
         }
 
-        @Override
+        // 1.21.11 split AbstractButton#renderWidget into renderContents
+        //? if <1.21.11 {
+        /*@Override
+        protected void renderWidget(GuiGraphics pGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+            renderContents(pGraphics, pMouseX, pMouseY, pPartialTick);
+        }
+        *///?}
+
+        /*? if >=1.21.11 {*/@Override/*?}*/
     protected void renderContents(GuiGraphics pGraphics, int pMouseX, int pMouseY, float pPartialTick) {
             Minecraft minecraft = Minecraft.getInstance();
             Font font = minecraft.font;

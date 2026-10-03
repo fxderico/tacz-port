@@ -36,7 +36,12 @@ public abstract class EntityDataHolderMixin implements DataHolderAccess {
     }
 
     @Inject(method = "saveWithoutId", at = @At("TAIL"))
+    //? if >=1.21.6 {
     private void tacz$saveData(ValueOutput output, CallbackInfo ci) {
+    //?} else {
+    /*private void tacz$saveData(CompoundTag tag, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<CompoundTag> cir) {
+        ValueOutput output = new ValueOutput(tag, ((Entity) (Object) this).registryAccess());
+    *///?}
         if (this.tacz$dataHolder == null || !SyncedEntityData.instance().hasSyncedDataKey((Entity) (Object) this)) {
             return;
         }
@@ -49,7 +54,12 @@ public abstract class EntityDataHolderMixin implements DataHolderAccess {
     }
 
     @Inject(method = "load", at = @At("TAIL"))
+    //? if >=1.21.6 {
     private void tacz$loadData(ValueInput input, CallbackInfo ci) {
+    //?} else {
+    /*private void tacz$loadData(CompoundTag tag, CallbackInfo ci) {
+        ValueInput input = new ValueInput(tag, ((Entity) (Object) this).registryAccess());
+    *///?}
         input.read(TACZ_DATA_KEY, CompoundTag.CODEC).ifPresent(wrapper ->
                 DataHolderCapabilityProvider.deserializeNBT(this.tacz$getDataHolder(), wrapper.getListOrEmpty("Data")));
     }

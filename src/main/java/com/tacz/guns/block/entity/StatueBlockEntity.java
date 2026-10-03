@@ -77,14 +77,24 @@ public class StatueBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
+    protected void loadAdditional(/*? if >=1.21.6 {*/ValueInput input/*?} else {*//*net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries*//*?}*/) {
+        //? if >=1.21.6 {
         super.loadAdditional(input);
+        //?} else {
+        /*super.loadAdditional(tag, registries);
+        ValueInput input = new ValueInput(tag, registries);
+        *///?}
         this.gunItem = input.read(ITEM_TAG, ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
+    protected void saveAdditional(/*? if >=1.21.6 {*/ValueOutput output/*?} else {*//*net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries*//*?}*/) {
+        //? if >=1.21.6 {
         super.saveAdditional(output);
+        //?} else {
+        /*super.saveAdditional(tag, registries);
+        ValueOutput output = new ValueOutput(tag, registries);
+        *///?}
         output.store(ITEM_TAG, ItemStack.OPTIONAL_CODEC, gunItem);
     }
 

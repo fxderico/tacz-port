@@ -49,7 +49,7 @@ public final class GunSmithTableSerializer {
             ByteBufCodecs.VAR_INT, GunSmithTableIngredient::getCount,
             GunSmithTableIngredient::new);
 
-    private static final StreamCodec<RegistryFriendlyByteBuf, GunSmithTableRecipe> STREAM_CODEC = StreamCodec.of(
+    public static final StreamCodec<RegistryFriendlyByteBuf, GunSmithTableRecipe> STREAM_CODEC = StreamCodec.of(
             (buffer, recipe) -> {
                 // results that depend on gun pack data are resolved lazily, make sure it happened before syncing
                 recipe.init();

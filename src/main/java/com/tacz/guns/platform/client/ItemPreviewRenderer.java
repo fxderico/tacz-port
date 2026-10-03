@@ -1,5 +1,6 @@
 package com.tacz.guns.platform.client;
 
+//? if >=1.21.6 {
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
@@ -62,3 +63,4 @@ public class ItemPreviewRenderer extends PictureInPictureRenderer<ItemPreviewRen
         return "tacz item preview";
     }
 }
+//?}

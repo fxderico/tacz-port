@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemMode
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+//? if >=1.21.9
 import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +42,7 @@ public final class AmmoBoxModelProperties {
         public static final MapCodec<Statue> MAP_CODEC = MapCodec.unit(new Statue());
 
         @Override
-        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner owner, int seed) {
+        public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable /*? if >=1.21.9 {*/ItemOwner/*?} else {*//*LivingEntity*//*?}*/ owner, int seed) {
             return AmmoBoxItem.getStatue(stack, level, null, seed);
         }
 

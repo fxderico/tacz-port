@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+//? if >=1.21.9
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
@@ -44,6 +45,7 @@ public abstract class LegacyEntityRenderer<T extends Entity> extends EntityRende
         state.yaw = entity.getYRot(partialTick);
     }
 
+    //? if >=1.21.9 {
     @Override
     public void submit(State<T> state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         super.submit(state, poseStack, collector, camera);
@@ -51,4 +53,13 @@ public abstract class LegacyEntityRenderer<T extends Entity> extends EntityRende
             SubmitScope.run(collector, () -> render(state.entity, state.yaw, state.partialTick, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), state.lightCoords));
         }
     }
+    //?} else {
+    /*@Override
+    public void render(State<T> state, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        super.render(state, poseStack, buffer, packedLight);
+        if (state.entity != null) {
+            render(state.entity, state.yaw, state.partialTick, poseStack, buffer, packedLight);
+        }
+    }
+    *///?}
 }

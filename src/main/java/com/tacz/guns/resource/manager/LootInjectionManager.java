@@ -36,12 +36,12 @@ public class LootInjectionManager extends SimplePreparableReloadListener<Map<Ide
      */
     public static HolderLookup.Provider reloadRegistries;
 
-    //? if fabric {
+    //? if fabric && >=1.21.9 {
     @Override
     public void prepareSharedState(SharedState sharedState) {
         this.registries = sharedState.get(net.fabricmc.fabric.api.resource.v1.ResourceLoader.RELOADER_REGISTRY_LOOKUP_KEY);
     }
-    //?} else {
+    //?} else if >=1.21.9 {
     /*@Override
     public void prepareSharedState(SharedState sharedState) {
         this.registries = reloadRegistries;
@@ -50,6 +50,8 @@ public class LootInjectionManager extends SimplePreparableReloadListener<Map<Ide
 
     @Override
     protected @NotNull Map<Identifier, List<JsonElement>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+        //? if <1.21.9
+        /*this.registries = reloadRegistries;*/
         return ResourceScanner.scanDirectoryAll(resourceManager, fileToIdConverter, gson);
     }
 

@@ -36,7 +36,7 @@ public class ItemInHandRendererMixin implements KeepingItemRenderer {
     // 26.3: posted from ItemInHandRendererEventMixin, the renderer is a separate class there
     //? if <26.3 {
     @Inject(method = /*? if >=26.2 {*//*"submitHandsWithItems"*//*?} else {*/"renderHandsWithItems"/*?}*/, at = @At("HEAD"))
-    public void beforeHandRender(float pPartialTicks, PoseStack pMatrixStack, net.minecraft.client.renderer.SubmitNodeCollector collector, LocalPlayer pPlayerEntity, int pCombinedLight, CallbackInfo ci) {
+    public void beforeHandRender(CallbackInfo ci, @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) PoseStack pMatrixStack) {
         MinecraftForge.EVENT_BUS.post(new BeforeRenderHandEvent(pMatrixStack));
     }
     //?}

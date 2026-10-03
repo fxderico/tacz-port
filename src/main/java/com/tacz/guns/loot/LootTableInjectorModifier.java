@@ -20,11 +20,47 @@ public final class LootTableInjectorModifier {
     }
 
     public static void register() {
-        //? if fabric {
+        //? if fabric && >=1.21.6 {
         net.fabricmc.fabric.api.loot.v3.LootTableEvents.MODIFY_DROPS.register((table, context, drops) ->
                 apply(table.unwrapKey().map(key -> key.identifier()).orElse(null), context, drops));
-        //?}
+        //?} else if fabric {
+        /*// no drop event yet: every table gets a pool whose entry asks the gun packs at roll time
+        net.minecraft.core.Registry.register(net.minecraft.core.registries.BuiltInRegistries.LOOT_POOL_ENTRY_TYPE,
+                Identifier.fromNamespaceAndPath("tacz", "loot_table_injection"), InjectionEntry.TYPE);
+        net.fabricmc.fabric.api.loot.v3.LootTableEvents.MODIFY.register((key, builder, source, registries) ->
+                builder.withPool(net.minecraft.world.level.storage.loot.LootPool.lootPool().add(InjectionEntry.entry(key.identifier()))));
+        *///?}
     }
+
+    //? if fabric && <1.21.6 {
+    /*static final class InjectionEntry extends net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer {
+        static final com.mojang.serialization.MapCodec<InjectionEntry> CODEC = Identifier.CODEC.fieldOf("table").xmap(InjectionEntry::new, entry -> entry.table);
+        static final net.minecraft.world.level.storage.loot.entries.LootPoolEntryType TYPE = new net.minecraft.world.level.storage.loot.entries.LootPoolEntryType(CODEC);
+
+        private final Identifier table;
+
+        private InjectionEntry(Identifier table) {
+            super(DEFAULT_WEIGHT, DEFAULT_QUALITY, List.of(), List.of());
+            this.table = table;
+        }
+
+        static Builder<?> entry(Identifier table) {
+            return simpleBuilder((weight, quality, conditions, functions) -> new InjectionEntry(table));
+        }
+
+        @Override
+        public net.minecraft.world.level.storage.loot.entries.LootPoolEntryType getType() {
+            return TYPE;
+        }
+
+        @Override
+        protected void createItemStack(java.util.function.Consumer<ItemStack> output, LootContext context) {
+            List<ItemStack> drops = new java.util.ArrayList<>();
+            apply(table, context, drops);
+            drops.forEach(output);
+        }
+    }
+    *///?}
 
     static void apply(Identifier lootTableId, LootContext context, List<ItemStack> drops) {
         CommonAssetsManager manager = CommonAssetsManager.getInstance();

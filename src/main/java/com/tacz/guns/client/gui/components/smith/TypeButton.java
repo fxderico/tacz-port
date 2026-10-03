@@ -21,7 +21,15 @@ public class TypeButton extends Button {
         this.stack = stack;
     }
 
-    @Override
+    // 1.21.11 split AbstractButton#renderWidget into renderContents
+    //? if <1.21.11 {
+    /*@Override
+    protected void renderWidget(GuiGraphics gui, int pMouseX, int pMouseY, float pPartialTick) {
+        renderContents(gui, pMouseX, pMouseY, pPartialTick);
+    }
+    *///?}
+
+    /*? if >=1.21.11 {*/@Override/*?}*/
     protected void renderContents(GuiGraphics gui, int pMouseX, int pMouseY, float pPartialTick) {
 
         int vOffset = isHoveredOrFocused() ? 204 + this.height : 204;

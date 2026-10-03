@@ -13,7 +13,11 @@ public class AbstractButtonMixin {
      * 记录点击按钮的时间，后续方便给予射击冷却，防止点击按钮后误触开火
      */
     @Inject(method = "onClick", at = @At("HEAD"))
+    //? if >=1.21.9 {
     public void onClickHead(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick, CallbackInfo ci) {
+    //?} else {
+    /*public void onClickHead(double mouseX, double mouseY, CallbackInfo ci) {
+    *///?}
         LocalPlayerDataHolder.clientClickButtonTimestamp = System.currentTimeMillis();
     }
 }

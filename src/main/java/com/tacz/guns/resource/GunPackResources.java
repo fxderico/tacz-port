@@ -8,6 +8,7 @@ import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
+//? if >=1.21.9
 import net.minecraft.server.packs.metadata.pack.PackFormat;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.resources.IoSupplier;
@@ -177,10 +178,17 @@ public class GunPackResources implements PackResources {
     @Override
     @SuppressWarnings("unchecked")
     public <T> @Nullable T getMetadataSection(MetadataSectionType<T> type) {
+        //? if >=1.21.9 {
         if (type == PackMetadataSection.forPackType(packType) || type == PackMetadataSection.FALLBACK_TYPE) {
             PackFormat format = SharedConstants.getCurrentVersion().packVersion(packType);
             return (T) new PackMetadataSection(Component.translatable("tacz.resources.modresources"), new InclusiveRange<>(format));
         }
+        //?} else {
+        /*if (type == PackMetadataSection.TYPE) {
+            int format = SharedConstants.getCurrentVersion().getPackVersion(packType);
+            return (T) new PackMetadataSection(Component.translatable("tacz.resources.modresources"), format, java.util.Optional.empty());
+        }
+        *///?}
         return null;
     }
 

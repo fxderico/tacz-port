@@ -1,5 +1,6 @@
 package com.tacz.guns.platform.client;
 
+//? if >=1.21.6 {
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -17,3 +18,4 @@ public record ItemPreviewRenderState(ItemStack stack, float pitch, float yaw, in
         this(stack, pitch, yaw, x0, y0, x1, y1, scale, null, PictureInPictureRenderState.getBounds(x0, y0, x1, y1, null));
     }
 }
+//?}

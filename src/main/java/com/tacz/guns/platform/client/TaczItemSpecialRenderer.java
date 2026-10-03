@@ -39,10 +39,14 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
     /*public void submit(@Nullable ItemStack stack, PoseStack poseStack, SubmitNodeCollector collector,
                        int light, int overlay, boolean foil, int outlineColor) {
         ItemDisplayContext displayContext = this.bakedContext;
-    *///?} else {
+    *///?} else if >=1.21.9 {
     public void submit(@Nullable ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, SubmitNodeCollector collector,
                        int light, int overlay, boolean foil, int outlineColor) {
-    //?}
+    //?} else {
+    /*public void render(@Nullable ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource buffer,
+                       int light, int overlay, boolean foil) {
+        SubmitNodeCollector collector = new SubmitNodeCollector(buffer);
+    *///?}
         if (stack == null || stack.isEmpty()) {
             return;
         }
@@ -50,7 +54,11 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
         if (renderer == null) {
             return;
         }
+        //? if >=1.21.9 {
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        //?} else {
+        /*MultiBufferSource bufferSource = buffer;
+        *///?}
         // the old ItemRenderer translated by -0.5 before handing over to a BEWLR, ItemTransform#apply does that now
         SubmitScope.run(collector, () -> renderer.renderByItem(stack, displayContext, poseStack, bufferSource, light, overlay));
     }
@@ -61,7 +69,7 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
         consumer.accept(new Vector3f(-0.5F, -0.5F, -0.5F));
         consumer.accept(new Vector3f(1.5F, 1.5F, 1.5F));
     }
-    //?} else {
+    //?} else if >=1.21.6 {
     /*@Override
     public void getExtents(java.util.Set<Vector3f> extents) {
         extents.add(new Vector3f(-0.5F, -0.5F, -0.5F));
@@ -80,7 +88,7 @@ public final class TaczItemSpecialRenderer implements SpecialModelRenderer<ItemS
                 .xmap(Unbaked::new, Unbaked::displayContext);
 
         @Override
-        public SpecialModelRenderer<ItemStack> bake(SpecialModelRenderer.BakingContext context) {
+        public SpecialModelRenderer<ItemStack> bake(/*? if >=1.21.9 {*/SpecialModelRenderer.BakingContext/*?} else {*//*net.minecraft.client.model.geom.EntityModelSet*//*?}*/ context) {
             return new TaczItemSpecialRenderer(this.displayContext);
         }
 

@@ -34,9 +34,12 @@ public abstract class ItemInHandRendererEventMixin {
     *///?} else {
     @Inject(method = /*? if >=26.2 {*//*"submitArmWithItem"*//*?} else {*/"renderArmWithItem"/*?}*/, at = @At("HEAD"), cancellable = true)
     private void tacz$renderHand(AbstractClientPlayer player, float partialTick, float pitch, InteractionHand hand, float swingProgress,
-                                 ItemStack stack, float equipProgress, PoseStack poseStack, SubmitNodeCollector collector, int light, CallbackInfo ci) {
+                                 ItemStack stack, float equipProgress, PoseStack poseStack, /*? if >=1.21.9 {*/SubmitNodeCollector collector/*?} else {*//*net.minecraft.client.renderer.MultiBufferSource buffer*//*?}*/, int light, CallbackInfo ci) {
     //?}
-        RenderHandEvent event = new RenderHandEvent(hand, poseStack, Minecraft.getInstance().renderBuffers().bufferSource(), light,
+        //? if <1.21.9 {
+        /*SubmitNodeCollector collector = new SubmitNodeCollector(buffer);
+        *///?}
+        RenderHandEvent event = new RenderHandEvent(hand, poseStack, /*? if >=1.21.9 {*/Minecraft.getInstance().renderBuffers().bufferSource()/*?} else {*//*buffer*//*?}*/, light,
                 partialTick, pitch, swingProgress, equipProgress, stack);
         boolean[] cancelled = new boolean[1];
         com.tacz.guns.platform.client.SubmitScope.run(collector, () -> cancelled[0] = MinecraftForge.EVENT_BUS.post(event));

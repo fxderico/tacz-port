@@ -10,6 +10,45 @@ stonecutter parameters {
     constants.match(loader, "fabric", "neoforge", "forge")
 
     replacements {
+        // before 1.21.6 NBT was read and written as CompoundTags, TACZ's stand-ins mimic the new value API over them
+        string(current.parsed < "1.21.6") {
+            replace("net.minecraft.world.level.storage.ValueInput", "com.tacz.guns.platform.compat.ValueInput")
+            replace("net.minecraft.world.level.storage.ValueOutput", "com.tacz.guns.platform.compat.ValueOutput")
+            // GUI drawing was immediate: a PoseStack instead of the 2D matrix stack, render type functions instead of pipelines
+            replace("import org.joml.Matrix3x2fStack;", "import com.tacz.guns.platform.client.compat.Matrix3x2fStack;")
+            replace("Matrix3x2fStack poseStack = graphics.pose();", "Matrix3x2fStack poseStack = new Matrix3x2fStack(graphics.pose());")
+            replace("Matrix3x2fStack poseStack = gui.pose();", "Matrix3x2fStack poseStack = new Matrix3x2fStack(gui.pose());")
+            replace("graphics.blit(RenderPipelines.GUI_TEXTURED,", "graphics.blit(net.minecraft.client.renderer.RenderType::guiTextured,")
+            replace("setComponentTooltipForNextFrame(", "renderComponentTooltip(")
+            replace("graphics.setTooltipForNextFrame(", "graphics.renderTooltip(")
+            replace("SharedConstants.getCurrentVersion().name()", "SharedConstants.getCurrentVersion().getName()")
+            // uniforms were declared one by one before the 1.21.6 uniform blocks
+            replace("RenderPipelines.MATRICES_PROJECTION_SNIPPET", "RenderPipelines.MATRICES_COLOR_SNIPPET")
+            replace("TextureStateShard(texture, false)", "TextureStateShard(texture, net.minecraft.util.TriState.FALSE, false)")
+            // textures had no usage flags or layers before 1.21.6
+            replace("createTexture(Ljava/lang/String;ILcom/mojang/blaze3d/textures/TextureFormat;IIII)", "createTexture(Ljava/lang/String;Lcom/mojang/blaze3d/textures/TextureFormat;III)")
+        }
+        // before 1.21.9: no submit pass, TACZ's stand-in collector carries the buffer source (platform.client.compat)
+        string(current.parsed < "1.21.9") {
+            replace("net.minecraft.client.renderer.SubmitNodeCollector", "com.tacz.guns.platform.client.compat.SubmitNodeCollector")
+            // players and mannequins share AvatarRenderer since 1.21.9
+            // (full names: rules also run backwards on newer versions, a bare "PlayerRenderer" would hit getPlayerRenderer)
+            replace("AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer>", "net.minecraft.client.renderer.entity.player.PlayerRenderer")
+            replace("import net.minecraft.client.renderer.entity.player.AvatarRenderer;", "import net.minecraft.client.renderer.entity.player.PlayerRenderer;")
+            // before the 1.21.9 KeyEvent/MouseButtonEvent input records: raw key codes and argumentless button presses
+            replace(".matches(event.getKeyEvent())", ".matches(event.getKey(), event.getScanCode())")
+            replace(".matchesMouse(event.getMouseButtonEvent())", ".matchesMouse(event.getButton())")
+            replace("onPress(net.minecraft.client.input.InputWithModifiers input)", "onPress()")
+            replace("super.onPress(input);", "super.onPress();")
+            replace("net.minecraft.client.Minecraft.getInstance().hasShiftDown()", "net.minecraft.client.gui.screens.Screen.hasShiftDown()")
+            replace(".sendToTrackingPlayers(entity,", ".broadcast(entity,")
+            replace("minecraft.playerSkinRenderCache().getOrDefault(blockEntity.getOwner()).playerSkin().body().texturePath()", "minecraft.getSkinManager().getInsecureSkin(blockEntity.getOwner().gameProfile()).texture()")
+            // what GameRenderer#bobView used before the 1.21.9 avatar state
+            replace("acp.avatarState().getBackwardsInterpolatedWalkDistance(partialTicks)", "(acp.walkDist + (acp.walkDist - acp.walkDistO) * partialTicks)")
+            replace("ResolvableProfile.createUnresolved(stack.getHoverName().getString())", "new ResolvableProfile(java.util.Optional.of(stack.getHoverName().getString()), java.util.Optional.empty(), new com.mojang.authlib.properties.PropertyMap())")
+            replace(".requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))", ".requires(source -> source.hasPermission(Commands.LEVEL_GAMEMASTERS))")
+            replace(".sendToTrackingPlayersAndSelf(entity,", ".broadcastAndSend(entity,")
+        }
         // 1.21.10 and older: ResourceLocation before its 1.21.11 rename to Identifier, render types before the rendertype package
         regex(current.parsed < "1.21.11") {
             replace("\\bIdentifier\\b", "ResourceLocation", "\\bResourceLocation\\b", "Identifier")
@@ -31,8 +70,6 @@ stonecutter parameters {
             replace("mainCamera.xRot()", "mainCamera.getXRot()")
             replace("getCamera().entity()", "getCamera().getEntity()")
             replace("ARGB.srgbLerp(", "ARGB.lerp(")
-            // 1.21.11 split AbstractButton#renderWidget into renderContents
-            replace("protected void renderContents(GuiGraphics", "protected void renderWidget(GuiGraphics")
             replace("net.minecraft.world.entity.boss.enderdragon.EnderDragonPart", "net.minecraft.world.entity.boss.EnderDragonPart")
             replace("net.minecraft.world.entity.monster.zombie.Husk", "net.minecraft.world.entity.monster.Husk")
             replace("net.minecraft.world.level.gamerules.GameRules", "net.minecraft.world.level.GameRules")

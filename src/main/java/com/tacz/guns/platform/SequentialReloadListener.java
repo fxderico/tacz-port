@@ -32,6 +32,7 @@ public class SequentialReloadListener implements PreparableReloadListener {
     }
 
     @Override
+    //? if >=1.21.9 {
     public CompletableFuture<Void> reload(SharedState sharedState, Executor prepareExecutor, PreparationBarrier barrier, Executor applyExecutor) {
         List<PreparableReloadListener> listeners = listenerFactory.get();
         listeners.forEach(listener -> listener.prepareSharedState(sharedState));
@@ -41,6 +42,16 @@ public class SequentialReloadListener implements PreparableReloadListener {
         }
         return chain.thenCompose(ignored -> barrier.wait(null));
     }
+    //?} else {
+    /*public CompletableFuture<Void> reload(PreparationBarrier barrier, net.minecraft.server.packs.resources.ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
+        List<PreparableReloadListener> listeners = listenerFactory.get();
+        CompletableFuture<Void> chain = CompletableFuture.completedFuture(null);
+        for (PreparableReloadListener listener : listeners) {
+            chain = chain.thenCompose(ignored -> listener.reload(IMMEDIATE, manager, prepareExecutor, applyExecutor));
+        }
+        return chain.thenCompose(ignored -> barrier.wait(null));
+    }
+    *///?}
 
     @Override
     public String getName() {

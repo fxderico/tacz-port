@@ -7,8 +7,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+//? if >=1.21.9
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+//? if >=1.21.9
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+//? if >=1.21.9
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * from the block entity, so the state just carries it along and the drawing goes to the main buffer source
  * (flushed by LevelRenderer after the submit pass).
  */
+//? if >=1.21.9 {
 @Environment(EnvType.CLIENT)
 public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T, LegacyBlockEntityRenderer.State<T>> {
     public static class State<T> extends BlockEntityRenderState {
@@ -48,3 +52,24 @@ public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implement
         }
     }
 }
+//?} else {
+/*@Environment(EnvType.CLIENT)
+public abstract class LegacyBlockEntityRenderer<T extends BlockEntity> implements BlockEntityRenderer<T> {
+    public abstract void render(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay);
+
+    @Override
+    public void render(T blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay, Vec3 cameraPos) {
+        render(blockEntity, partialTick, poseStack, buffer, packedLight, packedOverlay);
+    }
+
+    // the argumentless form came with 1.21.9
+    public boolean shouldRenderOffScreen() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen(T blockEntity) {
+        return shouldRenderOffScreen();
+    }
+}
+*///?}

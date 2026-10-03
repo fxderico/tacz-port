@@ -5,6 +5,12 @@ mod.group = "com.tacz"
 deps.fabric_loader = "0.19.5"
 loomx.loom_version = "1.18-SNAPSHOT"
 
+["1.21.5"]
+mod.mc_compat = "1.21.5"
+mod.mc_releases = ["1.21.5"]
+deps.fabric_api = "0.128.2+1.21.5"
+deps.forge_config_api_port = "21.5.3"
+
 ["1.21.10"]
 mod.mc_compat = ">=1.21.9 <1.21.11"
 mod.mc_releases = ["1.21.9", "1.21.10"]

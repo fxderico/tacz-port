@@ -32,8 +32,10 @@ public final class SubmitScope {
             throw new IllegalStateException("No TACZ submit scope active");
         }
         return collector;
-        *///?} else {
+        *///?} else if >=1.21.9 {
         return Minecraft.getInstance().gameRenderer.getSubmitNodeStorage();
-        //?}
+        //?} else {
+        /*return new SubmitNodeCollector(Minecraft.getInstance().renderBuffers().bufferSource());
+        *///?}
     }
 }

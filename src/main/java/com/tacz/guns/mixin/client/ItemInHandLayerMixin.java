@@ -22,8 +22,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemInHandLayer.class)
 public class ItemInHandLayerMixin {
-    @Inject(method = "submit(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;ILnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;FF)V", at = @At(value = "TAIL"))
-    private void render(PoseStack matrixStack, SubmitNodeCollector collector, int packedLight, ArmedEntityRenderState state, float yRot, float xRot, CallbackInfo ci) {
+    // arguments by type: 1.21.9 turned render(.., MultiBufferSource, ..) into submit(.., SubmitNodeCollector, ..)
+    @Inject(method = /*? if >=1.21.9 {*/"submit"/*?} else {*//*"render"*//*?}*/, at = @At(value = "TAIL"))
+    private void render(CallbackInfo ci, @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) PoseStack matrixStack,
+                        @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) int packedLight,
+                        @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) ArmedEntityRenderState state) {
         MuzzleFlashRender.isSelf = false;
         ShellRender.isSelf = false;
         if (state instanceof RenderStateEntity access && access.tacz$getEntity() != null) {
@@ -31,8 +34,9 @@ public class ItemInHandLayerMixin {
         }
     }
 
-    @Inject(method = "submitArmWithItem", at = @At(value = "HEAD"), cancellable = true)
-    private void renderArmWithItemHead(ArmedEntityRenderState state, ItemStackRenderState itemState, /*? if >=1.21.11 {*/ItemStack itemStack, /*?}*/HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    @Inject(method = /*? if >=1.21.9 {*/"submitArmWithItem"/*?} else {*//*"renderArmWithItem"*//*?}*/, at = @At(value = "HEAD"), cancellable = true)
+    private void renderArmWithItemHead(CallbackInfo ci, @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) ArmedEntityRenderState state,
+                                       @com.llamalad7.mixinextras.sugar.Local(argsOnly = true) HumanoidArm arm) {
         LivingEntity livingEntity = state instanceof RenderStateEntity access ? access.tacz$getEntity() : null;
         if (livingEntity == null) {
             return;
@@ -47,8 +51,8 @@ public class ItemInHandLayerMixin {
         }
     }
 
-    @Inject(method = "submitArmWithItem", at = @At(value = "TAIL"))
-    private void renderArmWithItemTail(ArmedEntityRenderState state, ItemStackRenderState itemState, /*? if >=1.21.11 {*/ItemStack itemStack, /*?}*/HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector collector, int packedLight, CallbackInfo ci) {
+    @Inject(method = /*? if >=1.21.9 {*/"submitArmWithItem"/*?} else {*//*"renderArmWithItem"*//*?}*/, at = @At(value = "TAIL"))
+    private void renderArmWithItemTail(CallbackInfo ci) {
         MuzzleFlashRender.isSelf = false;
         ShellRender.isSelf = false;
     }

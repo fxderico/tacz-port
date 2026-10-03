@@ -69,9 +69,16 @@ public class GunMod /*? if fabric {*/implements net.fabricmc.api.ModInitializer/
         commonInit();
 
         // gun pack data (indexes, gun data, scripts...) reloads with the server data packs
+        //? if >=1.21.9 {
         net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(PackType.SERVER_DATA).registerReloader(Identifier.fromNamespaceAndPath(MOD_ID, "common_assets"), CommonAssetsManager.RELOAD_LISTENER);
         // the smith table screen needs the recipes on the client
         net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization.synchronizeRecipeSerializer(ModRecipe.GUN_SMITH_TABLE_RECIPE_SERIALIZER.get());
+        //?} else {
+        /*com.tacz.guns.platform.FabricReloadListeners.registerServer(Identifier.fromNamespaceAndPath(MOD_ID, "common_assets"), CommonAssetsManager.RELOAD_LISTENER);
+        // the smith table screen needs the recipes on the client, sent on join and after /reload
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) ->
+                com.tacz.guns.network.NetworkHandler.sendToClientPlayer(com.tacz.guns.network.message.ServerMessageSyncRecipes.of(player.level().getServer()), player));
+        *///?}
 
         net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> RootCommand.register(dispatcher));
         LootTableInjectorModifier.register();

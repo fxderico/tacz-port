@@ -36,7 +36,7 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
         return Math.max(font.width(ammoName), font.width(count)) + 22;
     }
 
-    @Override
+    /*? if >=1.21.6 {*/@Override/*?}*/
     public void renderText(GuiGraphics textGraphics, Font font, int pX, int pY) {
         textGraphics.drawString(font, ammoName, pX + 20, pY + 4, 0xFF000000 | 0xffaa00, false);
         textGraphics.drawString(font, count, pX + 20, pY + 15, 0xFF000000 | 0x666666, false);
@@ -44,6 +44,9 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderImage(Font pFont, int pX, int pY, int tooltipWidth, int tooltipHeight, GuiGraphics pGraphics) {
+        // before 1.21.6 the text pass had no GuiGraphics
+        //? if <1.21.6
+        /*renderText(pGraphics, pFont, pX, pY);*/
         pGraphics.renderItem(ammo, pX, pY + 5);
     }
 }

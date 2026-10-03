@@ -41,7 +41,15 @@ public class FlatColorButton extends Button {
         }
     }
 
-    @Override
+    // 1.21.11 split AbstractButton#renderWidget into renderContents
+    //? if <1.21.11 {
+    /*@Override
+    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
+        renderContents(graphics, mouseX, mouseY, pPartialTick);
+    }
+    *///?}
+
+    /*? if >=1.21.11 {*/@Override/*?}*/
     protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;

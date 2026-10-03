@@ -82,14 +82,23 @@ public final class RenderHelper {
 
     public static void renderFirstPersonArm(LocalPlayer player, HumanoidArm hand, PoseStack matrixStack, int combinedLight) {
         Minecraft mc = Minecraft.getInstance();
-        AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer> renderer = /*? if >=26.3 {*//*(AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer>) mc.getEntityRenderDispatcher().getRenderer(player)*//*?} else {*/mc.getEntityRenderDispatcher().getPlayerRenderer(player)/*?}*/;
+        AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer> renderer = /*? if >=26.3 || <1.21.9 {*//*(AvatarRenderer<net.minecraft.client.player.AbstractClientPlayer>) mc.getEntityRenderDispatcher().getRenderer(player)*//*?} else {*/mc.getEntityRenderDispatcher().getPlayerRenderer(player)/*?}*/;
         // queued on the game renderer, ItemInHandRenderer flushes the queue right after the hands are done
         SubmitNodeCollector collector = com.tacz.guns.platform.client.SubmitScope.current();
+        //? if >=1.21.9 {
         Identifier skin = player.getSkin().body().texturePath();
         if (hand == HumanoidArm.RIGHT) {
             renderer.renderRightHand(matrixStack, collector, combinedLight, skin, player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE));
         } else {
             renderer.renderLeftHand(matrixStack, collector, combinedLight, skin, player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
         }
+        //?} else {
+        /*Identifier skin = player.getSkin().texture();
+        if (hand == HumanoidArm.RIGHT) {
+            renderer.renderRightHand(matrixStack, collector.bufferSource(), combinedLight, skin, player.isModelPartShown(PlayerModelPart.RIGHT_SLEEVE));
+        } else {
+            renderer.renderLeftHand(matrixStack, collector.bufferSource(), combinedLight, skin, player.isModelPartShown(PlayerModelPart.LEFT_SLEEVE));
+        }
+        *///?}
     }
 }

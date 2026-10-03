@@ -75,10 +75,18 @@ public class GunModClient /*? if fabric {*/implements net.fabricmc.api.ClientMod
         net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback.EVENT.register(GunModClient::tooltip);
 
         // 注册 HUD
+        //? if >=1.21.6 {
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(id("tac_gun_hud_overlay"), hud(new GunHudOverlay()));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(id("tac_heat_bar"), hud(new HeatBarOverlay()));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(id("tac_kill_amount_overlay"), hud(new KillAmountOverlay()));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.attachElementAfter(net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements.CROSSHAIR, id("tac_interact_key_overlay"), hud(new InteractKeyTextOverlay()));
+        //?} else {
+        /*net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback.EVENT.register(drawer -> drawer
+                .addLayer(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.of(id("tac_gun_hud_overlay"), hud(new GunHudOverlay())))
+                .addLayer(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.of(id("tac_heat_bar"), hud(new HeatBarOverlay())))
+                .addLayer(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.of(id("tac_kill_amount_overlay"), hud(new KillAmountOverlay())))
+                .attachLayerAfter(net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer.CROSSHAIR, id("tac_interact_key_overlay"), hud(new InteractKeyTextOverlay())));
+        *///?}
 
         MenuScreens.register(GunSmithTableMenu.TYPE, GunSmithTableScreen::new);
 
@@ -90,13 +98,20 @@ public class GunModClient /*? if fabric {*/implements net.fabricmc.api.ClientMod
         net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.getInstance().register(ModParticles.BULLET_HOLE.get(), new BulletHoleParticle.Provider());
 
         // gun pack display/model/animation loaders, then the old TextureStitchEvent work once the atlas is rebuilt
+        //? if >=1.21.9 {
         net.fabricmc.fabric.api.resource.v1.ResourceLoader clientResources = net.fabricmc.fabric.api.resource.v1.ResourceLoader.get(PackType.CLIENT_RESOURCES);
         clientResources.registerReloader(id("client_assets"), clientAssetsListener());
         clientResources.registerReloader(id("internal_assets"), internalAssetsListener());
         // the internal default models/animations have to be there before the gun packs reference them
         clientResources.addReloaderOrdering(id("internal_assets"), id("client_assets"));
+        //?} else {
+        /*// internal default models/animations first, the gun packs reference them
+        com.tacz.guns.platform.FabricReloadListeners.registerClient(id("client_assets"), clientAssetsListener(true));
+        *///?}
 
-        //? if >=26.2 {
+        //? if <1.21.6 {
+        /*// no picture-in-picture GUI elements yet, the smith table preview draws directly (platform.client.compat.ItemPreview)
+        *///?} else if >=26.2 {
         /*net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry.register(ctx -> new com.tacz.guns.platform.client.ItemPreviewRenderer());
         *///?} else {
         net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry.register(ctx -> new com.tacz.guns.platform.client.ItemPreviewRenderer(ctx.vertexConsumers()));
@@ -181,7 +196,7 @@ public class GunModClient /*? if fabric {*/implements net.fabricmc.api.ClientMod
     }
 
     //? if fabric {
-    private static net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement hud(IGuiOverlay overlay) {
+    private static /*? if >=1.21.6 {*/net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement/*?} else {*//*net.minecraft.client.gui.LayeredDraw.Layer*//*?}*/ hud(IGuiOverlay overlay) {
         return (graphics, deltaTracker) -> {
             Minecraft mc = Minecraft.getInstance();
             overlay.render(mc.gui, graphics, deltaTracker.getGameTimeDeltaPartialTick(false),

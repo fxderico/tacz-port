@@ -1,6 +1,7 @@
 package com.tacz.guns.client.gui;
 
 import com.tacz.guns.crafting.TaczRecipes;
+//? if >=1.21.6
 import com.tacz.guns.platform.client.ItemPreviewRenderState;
 import com.tacz.guns.platform.client.TexturedButton;
 
@@ -304,7 +305,13 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             this.filterList.setByHandSelected(this.shouldFilterByMainHand());
             this.autoByHandFilterApplied = true;
         }
+        //? if >=1.21.9 {
         this.filterList.updateSizeAndPosition(134, this.imageHeight, leftPos, topPos);
+        //?} else {
+        /*this.filterList.setSize(134, this.imageHeight);
+        this.filterList.setPosition(leftPos, topPos);
+        this.filterList.refreshScrollAmount();
+        *///?}
 
         this.classifyRecipes();
         this.updateSelectedRecipeAfterFiltering();
@@ -670,9 +677,14 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         int height = 99;
         float rotPitch = 15;
         float rot = (System.currentTimeMillis() % (int) (rotationPeriod * 1000)) * (360f / (rotationPeriod * 1000));
+        //? if >=1.21.6 {
         // drawn through a picture-in-picture texture, see ItemPreviewRenderer
         graphics.guiRenderState.submitPicturesInPictureState(new ItemPreviewRenderState(recipe.getOutput(), rotPitch, rot,
                 startX, startY, startX + width, startY + height, scale));
+        //?} else {
+        /*com.tacz.guns.platform.client.compat.ItemPreview.render(graphics, recipe.getOutput(), rotPitch, rot,
+                startX, startY, startX + width, startY + height, scale);
+        *///?}
     }
 
     @Override

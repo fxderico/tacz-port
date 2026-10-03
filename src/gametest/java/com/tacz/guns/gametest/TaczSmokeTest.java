@@ -13,8 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+//? if >=1.21.9 {
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+//?}
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -222,7 +224,7 @@ public final class TaczSmokeTest {
     private int shot(String name) {
         Minecraft mc = Minecraft.getInstance();
         String file = String.format("%04d_%s.png", screenshot++, name);
-        Screenshot.grab(mc.gameDirectory, file, Minecraft.getInstance().getMainRenderTarget(), 1, message -> LOGGER.info("Screenshot {}", file));
+        Screenshot.grab(mc.gameDirectory, file, Minecraft.getInstance().getMainRenderTarget(), /*? if >=1.21.6 {*/1, /*?}*/message -> LOGGER.info("Screenshot {}", file));
         return 2;
     }
 
@@ -257,14 +259,24 @@ public final class TaczSmokeTest {
     // the private input entry points GLFW (or SDL) calls
     private static void mouse(int button, int action) {
         Minecraft mc = Minecraft.getInstance();
+        //? if >=1.21.9 {
         invoke(mc.mouseHandler, "onButton", new Class<?>[]{long.class, MouseButtonInfo.class, int.class},
                 mc.getWindow().handle(), new MouseButtonInfo(button, 0), action);
+        //?} else {
+        /*invoke(mc.mouseHandler, "onPress", new Class<?>[]{long.class, int.class, int.class, int.class},
+                mc.getWindow().getWindow(), button, action, 0);
+        *///?}
     }
 
     private static void key(int key, int action) {
         Minecraft mc = Minecraft.getInstance();
+        //? if >=1.21.9 {
         invoke(mc.keyboardHandler, "keyPress", new Class<?>[]{long.class, int.class, KeyEvent.class},
                 mc.getWindow().handle(), action, new KeyEvent(key, 0, 0));
+        //?} else {
+        /*invoke(mc.keyboardHandler, "keyPress", new Class<?>[]{long.class, int.class, int.class, int.class, int.class},
+                mc.getWindow().getWindow(), key, 0, action, 0);
+        *///?}
     }
 
     private static void invoke(Object target, String name, Class<?>[] types, Object... args) {

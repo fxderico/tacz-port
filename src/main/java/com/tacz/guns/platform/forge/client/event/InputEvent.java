@@ -3,9 +3,11 @@ package com.tacz.guns.platform.forge.client.event;
 import com.tacz.guns.platform.forge.eventbus.api.Event;
 import com.tacz.guns.platform.forge.eventbus.api.Cancelable;
 import net.minecraft.client.KeyMapping;
+//? if >=1.21.9 {
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+//?}
 import net.minecraft.world.InteractionHand;
 
 public class InputEvent extends Event {
@@ -35,9 +37,11 @@ public class InputEvent extends Event {
             return modifiers;
         }
 
+        //? if >=1.21.9 {
         public KeyEvent getKeyEvent() {
             return new KeyEvent(key, scanCode, modifiers);
         }
+        //?}
     }
 
     public static class MouseButton extends InputEvent {
@@ -61,9 +65,11 @@ public class InputEvent extends Event {
             return modifiers;
         }
 
+        //? if >=1.21.9 {
         public MouseButtonEvent getMouseButtonEvent() {
             return new MouseButtonEvent(0, 0, new MouseButtonInfo(button, modifiers));
         }
+        //?}
 
         @Cancelable
         public static class Pre extends MouseButton {

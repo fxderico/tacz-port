@@ -96,6 +96,11 @@ public class NetworkHandler {
         // extra spawn data for bullets, bundled with the vanilla spawn packet
         CHANNEL.registerMessage(ID_COUNT.getAndIncrement(), ServerMessageBulletSpawnData.class, ServerMessageBulletSpawnData::encode, ServerMessageBulletSpawnData::decode, ServerMessageBulletSpawnData::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        //? if fabric && <1.21.9 {
+        /*// the smith table recipes, Fabric API syncs them itself from 1.21.9
+        CHANNEL.registerMessage(ID_COUNT.getAndIncrement(), com.tacz.guns.network.message.ServerMessageSyncRecipes.class, com.tacz.guns.network.message.ServerMessageSyncRecipes::encode, com.tacz.guns.network.message.ServerMessageSyncRecipes::decode, com.tacz.guns.network.message.ServerMessageSyncRecipes::handle,
+                Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        *///?}
     }
 
     public static void sendToClientPlayer(Object message, Player player) {

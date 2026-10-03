@@ -15,11 +15,12 @@ import java.util.Optional;
 
 /**
  * Gun smith table recipe lookups for both sides. Since 1.21.2 the client only knows recipes that are
- * explicitly synced: Fabric's recipe synchronization on Fabric, OnDatapackSyncEvent#sendRecipes on NeoForge.
+ * explicitly synced: Fabric's recipe synchronization on Fabric (TACZ's own packet before 1.21.9),
+ * OnDatapackSyncEvent#sendRecipes on NeoForge.
  */
 public final class TaczRecipes {
     /**
-     * Recipes the server sent, NeoForge hands them over in RecipesReceivedEvent.
+     * Recipes the server sent, NeoForge hands them over in RecipesReceivedEvent, Fabric before 1.21.9 in ServerMessageSyncRecipes.
      */
     public static net.minecraft.world.item.crafting.RecipeMap clientRecipes = net.minecraft.world.item.crafting.RecipeMap.EMPTY;
 
@@ -27,7 +28,7 @@ public final class TaczRecipes {
     }
 
     private static Collection<RecipeHolder<GunSmithTableRecipe>> syncedRecipes(Level level) {
-        //? if neoforge {
+        //? if neoforge || <1.21.9 {
         /*return clientRecipes.byType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
         *///?} else {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().getAllOfType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
@@ -35,7 +36,7 @@ public final class TaczRecipes {
     }
 
     private static RecipeHolder<?> syncedRecipe(Level level, ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> key) {
-        //? if neoforge {
+        //? if neoforge || <1.21.9 {
         /*return clientRecipes.byKey(key);
         *///?} else {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().get(key);
