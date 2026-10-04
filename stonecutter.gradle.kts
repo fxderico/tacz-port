@@ -222,6 +222,8 @@ stonecutter parameters {
             replace("playS2C()", "clientboundPlay()")
             replace("playC2S()", "serverboundPlay()")
             replace("getClientWorld()", "getClientLevel()")
+            // the client recipe container only implements the synced recipe part
+            replace("(net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager)", "(net.fabricmc.fabric.api.recipe.v1.FabricRecipeAccess)")
             replace("@Inject(method = \"pickBlock\"", "@Inject(method = \"pickBlockOrEntity\"")
             replace("@Inject(method = \"renderCrosshair\"", "@Inject(method = \"extractCrosshair\"")
         }
