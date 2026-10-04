@@ -47,8 +47,16 @@ jobs:
           - "26.1.2-neoforge"
           - "26.2-neoforge"
           - "26.3-neoforge"
+          - "1.21.1-forge"
+          - "1.21.3-forge"
+          - "1.21.4-forge"
+          - "1.21.5-forge"
+          - "1.21.8-forge"
           - "1.21.10-forge"
           - "1.21.11-forge"
+          - "26.1.2-forge"
+          - "26.2-forge"
+          - "26.3-forge"
     steps:
       - name: Free disk space
         run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost
