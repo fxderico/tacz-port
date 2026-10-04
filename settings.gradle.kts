@@ -29,7 +29,11 @@ stonecutter {
             version("$mc-neoforge", mc).buildscript("build.neoforge.gradle.kts")
         }
         // Forge builds, `//? if forge`
-        for (mc in listOf("1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.8", "1.21.10", "1.21.11", "26.1.2", "26.2", "26.3")) {
+        // ForgeGradle sets up Minecraft for every Forge version while configuring, TACZ_PROJECT (set per CI job) keeps
+        // only the Forge version that job builds, or none for the other jobs
+        val ciProject = System.getenv("TACZ_PROJECT")
+        val forgeVersions = listOf("1.21.1", "1.21.3", "1.21.4", "1.21.5", "1.21.8", "1.21.10", "1.21.11", "26.1.2", "26.2", "26.3")
+        for (mc in forgeVersions.filter { ciProject == null || ciProject == "$it-forge" }) {
             version("$mc-forge", mc).buildscript("build.forge.gradle.kts")
         }
         // the version the code in src/ is written for when committed

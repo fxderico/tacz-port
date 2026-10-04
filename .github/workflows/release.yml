@@ -72,6 +72,8 @@ jobs:
         with:
           cache-disabled: true
       - run: chmod +x gradlew && ./gradlew --no-daemon -x test ":${{ matrix.project }}:build"
+        env:
+          TACZ_PROJECT: ${{ matrix.project }}
       - uses: actions/upload-artifact@v4
         with:
           name: jar-${{ matrix.project }}
