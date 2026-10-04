@@ -45,9 +45,16 @@ public abstract class GlDeviceStencilMixin {
 
     // Forge allocates depth + stencil when asked (RenderTarget#enableStencil), asked here for every depth texture
     //? if >=1.21.5 && <26.2 && forge {
-    /*@org.spongepowered.asm.mixin.injection.ModifyVariable(
+    /*//? if >=1.21.6 {
+    @org.spongepowered.asm.mixin.injection.ModifyVariable(
             method = "createTexture(Ljava/lang/String;ILcom/mojang/blaze3d/textures/TextureFormat;IIIIZ)Lcom/mojang/blaze3d/textures/GpuTexture;",
             at = @At("HEAD"), argsOnly = true)
+    //?} else {
+    /^// no texture usage flags before 1.21.6
+    @org.spongepowered.asm.mixin.injection.ModifyVariable(
+            method = "createTexture(Ljava/lang/String;Lcom/mojang/blaze3d/textures/TextureFormat;IIIZ)Lcom/mojang/blaze3d/textures/GpuTexture;",
+            at = @At("HEAD"), argsOnly = true)
+    ^///?}
     private boolean tacz$alwaysStencil(boolean stencil) {
         return true;
     }

@@ -99,11 +99,12 @@ public final class GunModForgeClient {
         modBus.addListener(GunModForgeClient::renderers);
         modBus.addListener(GunModForgeClient::particles);
         modBus.addListener(GunModForgeClient::reloadListeners);
-        modBus.addListener((net.minecraftforge.client.event.RegisterGuiOverlaysEvent event) -> {
-            event.registerAboveAll("tac_gun_hud_overlay", overlay(new GunHudOverlay()));
-            event.registerAboveAll("tac_heat_bar", overlay(new HeatBarOverlay()));
-            event.registerAboveAll("tac_kill_amount_overlay", overlay(new KillAmountOverlay()));
-            event.registerAboveAll("tac_interact_key_overlay", overlay(new InteractKeyTextOverlay()));
+        modBus.addListener((net.minecraftforge.client.event.AddGuiOverlayLayersEvent event) -> {
+            var layers = event.getLayeredDraw();
+            layers.add(id("tac_gun_hud_overlay"), layer(new GunHudOverlay()));
+            layers.add(id("tac_heat_bar"), layer(new HeatBarOverlay()));
+            layers.add(id("tac_kill_amount_overlay"), layer(new KillAmountOverlay()));
+            layers.add(id("tac_interact_key_overlay"), layer(new InteractKeyTextOverlay()));
         });
 
         net.minecraftforge.eventbus.api.IEventBus bus = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
@@ -168,8 +169,13 @@ public final class GunModForgeClient {
         };
     }
     //?} else {
-    /^private static net.minecraftforge.client.gui.overlay.IGuiOverlay overlay(IGuiOverlay overlay) {
-        return (gui, graphics, partialTick, width, height) -> overlay.render(Minecraft.getInstance().gui, graphics, partialTick, width, height);
+    /^private static net.minecraft.client.gui.LayeredDraw.Layer layer(IGuiOverlay overlay) {
+        return (graphics, deltaTracker) -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (!mc.options.hideGui) {
+                overlay.render(mc.gui, graphics, deltaTracker.getGameTimeDeltaPartialTick(false), graphics.guiWidth(), graphics.guiHeight());
+            }
+        };
     }
     ^///?}
 }
