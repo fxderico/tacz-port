@@ -171,7 +171,8 @@ public final class GunModForgeClient {
     private static net.minecraftforge.client.gui.overlay.ForgeLayer layer(IGuiOverlay overlay) {
         return (graphics, deltaTracker) -> {
             Minecraft mc = Minecraft.getInstance();
-            if (!mc.options.hideGui) {
+            net.minecraft.client.Options options = mc.options;
+            if (!options.hideGui) {
                 overlay.render(mc.gui, graphics, deltaTracker.getGameTimeDeltaPartialTick(false), graphics.guiWidth(), graphics.guiHeight());
             }
         };
@@ -180,7 +181,8 @@ public final class GunModForgeClient {
     /^private static net.minecraft.client.gui.LayeredDraw.Layer layer(IGuiOverlay overlay) {
         return (graphics, deltaTracker) -> {
             Minecraft mc = Minecraft.getInstance();
-            if (!mc.options.hideGui) {
+            net.minecraft.client.Options options = mc.options;
+            if (!options.hideGui) {
                 overlay.render(mc.gui, graphics, deltaTracker.getGameTimeDeltaPartialTick(false), graphics.guiWidth(), graphics.guiHeight());
             }
         };
