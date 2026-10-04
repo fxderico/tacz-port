@@ -197,7 +197,8 @@ tasks {
         )
         inputs.properties(props)
         filesMatching("META-INF/mods.toml") { expand(props) }
-        val mixinJava = mapOf("java" to "JAVA_${requiredJava.majorVersion}")
+        // Forge ships Mixin 0.8.7, which knows no level above Java 21
+        val mixinJava = mapOf("java" to "JAVA_21")
         inputs.properties(mixinJava)
         filesMatching("*.mixins.json") { expand(mixinJava) }
         // Fabric and NeoForge only
