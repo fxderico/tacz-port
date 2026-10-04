@@ -29,7 +29,7 @@ stonecutter {
             version("$mc-neoforge", mc).buildscript("build.neoforge.gradle.kts")
         }
         // Forge builds, `//? if forge`
-        for (mc in listOf("1.21.5", "1.21.8", "1.21.10", "1.21.11")) {
+        for (mc in listOf("1.21.4", "1.21.5", "1.21.8", "1.21.10", "1.21.11")) {
             version("$mc-forge", mc).buildscript("build.forge.gradle.kts")
         }
         // the version the code in src/ is written for when committed

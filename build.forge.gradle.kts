@@ -35,6 +35,10 @@ run {
     val extra = buildList {
         if (sc.current.parsed >= "26.1") add("public net.minecraft.client.gui.GuiGraphicsExtractor guiRenderState")
         else if (sc.current.parsed >= "1.21.6") add("public net.minecraft.client.gui.GuiGraphics guiRenderState")
+        // render state shards the scope render types reuse before 1.21.5's pipelines (NeoForge opens these up)
+        if (sc.current.parsed < "1.21.5") {
+            for (shard in listOf("LEQUAL_DEPTH_TEST", "NO_DEPTH_TEST", "COLOR_WRITE")) add("public net.minecraft.client.renderer.RenderStateShard $shard")
+        }
         // item model registries Fabric fills directly, NeoForge through events
         if (sc.current.parsed >= "1.21.4") {
             add("public net.minecraft.client.renderer.special.SpecialModelRenderers ID_MAPPER")
