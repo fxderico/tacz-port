@@ -22,7 +22,8 @@ jobs:
   # one job per jar: every NeoForge/Forge version sets up its own Minecraft, all of them at once fill a runner's disk
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # Forge 26.x sets up Minecraft slowly on hosted runners (26.2 took over 90 minutes)
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix:
