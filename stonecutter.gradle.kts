@@ -180,8 +180,17 @@ stonecutter parameters {
         // here would overlap the NeoForge one above)
         // (Fabric and NeoForge read NeoForge's ModConfig, from Forge Config API Port on Fabric)
         string(loader == "forge") {
+            // the mod list became static in Forge 26.1
+            replace("net.neoforged.fml.ModList.get().", if (current.parsed >= "26.1") "net.minecraftforge.fml.ModList." else "net.minecraftforge.fml.ModList.get().")
             replace("net.neoforged.fml.", "net.minecraftforge.fml.")
             replace("net.neoforged.neoforge.common.loot.", "net.minecraftforge.common.loot.")
+        }
+        // Forge 26.1+: the client registration events left the mod bus, only their own BUS is left
+        string(loader == "forge" && current.parsed >= "26.1") {
+            for (event in listOf("RegisterKeyMappingsEvent", "RegisterClientTooltipComponentFactoriesEvent", "EntityRenderersEvent.RegisterRenderers",
+                    "RegisterParticleProvidersEvent", "RegisterClientReloadListenersEvent", "AddGuiOverlayLayersEvent")) {
+                replace("$event.getBus(modBus)", "$event.BUS")
+            }
         }
         string(loader == "neoforge") {
             replace("import net.minecraftforge.common.ForgeConfigSpec;", "import net.neoforged.neoforge.common.ModConfigSpec;")
