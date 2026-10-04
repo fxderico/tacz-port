@@ -15,4 +15,6 @@ Pick the jar for your loader whose name covers your Minecraft version: `tacz-<lo
 | 26.2 | `tacz-fabric-26.2.jar` | `tacz-neoforge-26.2.jar` | `tacz-forge-26.2.jar` |
 | 26.3 | `tacz-fabric-26.3.jar` | `tacz-neoforge-26.3.jar` | `tacz-forge-26.3.jar` |
 
-Fabric needs Fabric API and Forge Config API Port; Quilt loads the Fabric jars.
+Fabric needs Fabric API and Forge Config API Port. Quilt loads the Fabric jars (tested on Quilt Loader 0.30.1).
+
+Fixed since v1.1.8-hotfix.3: on Fabric 26.x, opening a gun smith table disconnected the player.
