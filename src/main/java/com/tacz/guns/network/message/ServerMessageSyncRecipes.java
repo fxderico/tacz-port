@@ -12,7 +12,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +63,7 @@ public class ServerMessageSyncRecipes {
     public static void handle(ServerMessageSyncRecipes message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         if (context.getDirection().getReceptionSide().isClient()) {
-            context.enqueueWork(() -> TaczRecipes.clientRecipes = RecipeMap.create(message.recipes));
+            context.enqueueWork(() -> TaczRecipes.packetRecipes = List.copyOf(message.recipes));
         }
         context.setPacketHandled(true);
     }

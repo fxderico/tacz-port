@@ -24,15 +24,29 @@ public final class TaczRecipes {
      * Recipes the server sent, NeoForge hands them over in RecipesReceivedEvent, Fabric before 1.21.9 in ServerMessageSyncRecipes.
      */
     public static net.minecraft.world.item.crafting.RecipeMap clientRecipes = net.minecraft.world.item.crafting.RecipeMap.EMPTY;
+    /**
+     * Recipes TACZ's own packet (ServerMessageSyncRecipes) brought, read before {@link #clientRecipes} when present.
+     */
+    public static java.util.List<RecipeHolder<?>> packetRecipes = java.util.List.of();
     //?}
 
     private TaczRecipes() {
     }
 
     //? if >=1.21.2 {
+    @SuppressWarnings("unchecked")
     private static Collection<RecipeHolder<GunSmithTableRecipe>> syncedRecipes(Level level) {
         //? if !fabric || <1.21.9 {
-        /*return clientRecipes.byType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
+        /*if (!packetRecipes.isEmpty()) {
+            List<RecipeHolder<GunSmithTableRecipe>> recipes = new ArrayList<>();
+            for (RecipeHolder<?> holder : packetRecipes) {
+                if (holder.value() instanceof GunSmithTableRecipe) {
+                    recipes.add((RecipeHolder<GunSmithTableRecipe>) holder);
+                }
+            }
+            return recipes;
+        }
+        return clientRecipes.byType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
         *///?} else {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().getAllOfType(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
         //?}
@@ -40,7 +54,12 @@ public final class TaczRecipes {
 
     private static RecipeHolder<?> syncedRecipe(Level level, ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> key) {
         //? if !fabric || <1.21.9 {
-        /*return clientRecipes.byKey(key);
+        /*for (RecipeHolder<?> holder : packetRecipes) {
+            if (holder.id().equals(key)) {
+                return holder;
+            }
+        }
+        return clientRecipes.byKey(key);
         *///?} else {
         return ((net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager) level.recipeAccess()).getSynchronizedRecipes().get(key);
         //?}
