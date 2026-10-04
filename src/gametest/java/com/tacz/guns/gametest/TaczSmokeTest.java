@@ -183,8 +183,61 @@ public final class TaczSmokeTest {
             return 5;
         });
         steps.add(() -> shot("tacz_inventory"));
+        // ammo box variants: iron, gold and diamond level, filled, dyed and creative
         steps.add(() -> {
             Minecraft.getInstance().setScreen(null);
+            onServer(TaczSmokeTest::giveAmmoBoxes);
+            return 10;
+        });
+        steps.add(() -> {
+            float empty = com.tacz.guns.item.AmmoBoxItem.getStatue(mc.player.getInventory().getItem(2), mc.level, mc.player, 0);
+            float filled = com.tacz.guns.item.AmmoBoxItem.getStatue(mc.player.getInventory().getItem(5), mc.level, mc.player, 0);
+            check(empty != filled, "An empty and a filled ammo box use the same model variant " + empty);
+            Minecraft.getInstance().setScreen(new InventoryScreen(mc.player));
+            return 10;
+        });
+        steps.add(() -> shot("tacz_ammo_boxes"));
+        // the gun smith table, opened the way a player does: a right click on the block
+        steps.add(() -> {
+            Minecraft.getInstance().setScreen(null);
+            command("execute as @p at @s run setblock ~ ~ ~2 tacz:workbench_a");
+            return 20;
+        });
+        // with an empty hand the "by hand" filter is off and every recipe shows
+        steps.add(() -> {
+            key(InputConstants.KEY_9, InputConstants.PRESS);
+            key(InputConstants.KEY_9, InputConstants.RELEASE);
+            return 5;
+        });
+        steps.add(() -> openTable(mc, 0, 2));
+        steps.add(() -> {
+            if (tableTabs(mc) == 0) {
+                throw new AssertionError("The gun smith table shows no recipes with an empty hand (" + tableState(mc) + ")");
+            }
+            return 2;
+        });
+        steps.add(() -> shot("tacz_gun_smith_table"));
+        // an attachment workbench, holding the gun: the "by hand" filter turns on and only the gun's attachments show
+        // (the gun smith table itself only makes guns, so it is empty with a gun in hand, like upstream TACZ)
+        steps.add(() -> {
+            mc.player.closeContainer();
+            command("execute as @p at @s run setblock ~2 ~ ~ tacz:workbench_a{BlockId:\"tacz:attachment_workbench\"}");
+            key(InputConstants.KEY_1, InputConstants.PRESS);
+            key(InputConstants.KEY_1, InputConstants.RELEASE);
+            return 20;
+        });
+        steps.add(() -> openTable(mc, 2, 0));
+        steps.add(() -> {
+            if (tableTabs(mc) == 0) {
+                throw new AssertionError("Holding the AK-47, the attachment workbench shows none of its attachments (" + tableState(mc) + ")");
+            }
+            check(((com.tacz.guns.client.gui.components.GunPackList) field(mc.screen, "filterList")).isByHandSelected(),
+                    "Holding a gun did not turn on the by hand filter");
+            return 2;
+        });
+        steps.add(() -> shot("tacz_attachment_workbench_by_hand"));
+        steps.add(() -> {
+            mc.player.closeContainer();
             finish(null);
             return 0;
         });
@@ -299,6 +352,56 @@ public final class TaczSmokeTest {
         player.getInventory().setItem(1, ammo);
         player.getInventory()./*? if >=1.21.5 {*/setSelectedSlot(0)/*?} else {*//*selected = 0*//*?}*/;
         return magazine;
+    }
+
+    private static int openTable(Minecraft mc, int x, int z) {
+        net.minecraft.core.BlockPos table = mc.player.blockPosition().offset(x, 0, z);
+        mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.phys.BlockHitResult(
+                net.minecraft.world.phys.Vec3.atCenterOf(table), net.minecraft.core.Direction.NORTH, table, false));
+        return 40;
+    }
+
+    private static int tableTabs(Minecraft mc) {
+        check(mc.screen instanceof com.tacz.guns.client.gui.GunSmithTableScreen, "Right clicking the gun smith table opened " + mc.screen);
+        return ((java.util.Map<?, ?>) field(mc.screen, "recipeKeys")).size();
+    }
+
+    private static String tableState(Minecraft mc) {
+        Object list = field(mc.screen, "filterList");
+        return "the client knows " + com.tacz.guns.crafting.TaczRecipes.getAll(mc.level).size() + " recipes, by hand "
+                + (list == null ? "-" : ((com.tacz.guns.client.gui.components.GunPackList) list).isByHandSelected())
+                + ", holding " + mc.player.getMainHandItem();
+    }
+
+    private static int giveAmmoBoxes(MinecraftServer server) {
+        ServerPlayer player = player(server);
+        Identifier ammoId = TimelessAPI.getCommonGunIndex(AK47).orElseThrow().getGunData().getAmmoId();
+        com.tacz.guns.api.item.IAmmoBox box = (com.tacz.guns.api.item.IAmmoBox) com.tacz.guns.init.ModItems.AMMO_BOX.get();
+        ItemStack base = com.tacz.guns.init.ModItems.AMMO_BOX.get().getDefaultInstance();
+        player.getInventory().setItem(2, box.setAmmoLevel(base.copy(), com.tacz.guns.item.AmmoBoxItem.IRON_LEVEL));
+        player.getInventory().setItem(3, box.setAmmoLevel(base.copy(), com.tacz.guns.item.AmmoBoxItem.GOLD_LEVEL));
+        player.getInventory().setItem(4, box.setAmmoLevel(base.copy(), com.tacz.guns.item.AmmoBoxItem.DIAMOND_LEVEL));
+        ItemStack filled = box.setAmmoLevel(base.copy(), com.tacz.guns.item.AmmoBoxItem.IRON_LEVEL);
+        box.setAmmoId(filled, ammoId);
+        box.setAmmoCount(filled, 60);
+        player.getInventory().setItem(5, filled);
+        ItemStack dyed = filled.copy();
+        dyed.set(net.minecraft.core.component.DataComponents.DYED_COLOR,
+                new net.minecraft.world.item.component.DyedItemColor(0xC03030/*? if <1.21.5 {*//*, true*//*?}*/));
+        player.getInventory().setItem(6, dyed);
+        player.getInventory().setItem(7, box.setCreative(base.copy(), false));
+        return 0;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T field(Object target, String name) {
+        try {
+            java.lang.reflect.Field field = target.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            return (T) field.get(target);
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Cannot read " + name, e);
+        }
     }
 
     private static void mountScope(MinecraftServer server) {
