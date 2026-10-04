@@ -1,56 +1,67 @@
-# TACZ Fabric
+# TACZ Port
 
-Unofficial port of [Timeless & Classics Guns: Zero](https://github.com/MCModderAnchor/TACZ) (Forge 1.20.1) to Fabric, one jar per Minecraft version.
+[Timeless & Classics Guns: Zero](https://github.com/MCModderAnchor/TACZ) (TaCZ) 1.1.8, ported from Forge 1.20.1 to **Fabric, NeoForge and Forge for every Minecraft version from 1.21 to 26.3**. Quilt runs the Fabric jars.
 
-Code is GPL-3.0 like upstream. Assets are CC BY-NC-ND 4.0 and belong to the original authors, so don't publish builds of this.
+This is an unofficial port, published and distributed with the permission of the TaCZ owner. All credit for the mod, its guns, models, sounds and gun packs goes to the original authors, **Serene Wave Studio | Timeless Squad** and the [TaCZ team](https://github.com/MCModderAnchor/TACZ). Please report problems with this port here, not to the TaCZ authors.
 
-## Status
+## Download
 
-| Minecraft | Jar | State |
-|---|---|---|
-| 1.21.11 | `tacz-fabric-1.21.11-*.jar` | works, client gametest passes |
-| 26.1 - 26.1.2 | `tacz-fabric-26.1.2-*.jar` | works, client gametest passes |
-| 26.2 | `tacz-fabric-26.2-*.jar` | works, client gametest passes on OpenGL and Vulkan |
-| 26.3 | `tacz-fabric-26.3-*.jar` | works, client gametest passes on OpenGL and Vulkan |
+Get the jars from the [Releases](https://github.com/fxderico/tacz-port/releases) page. Pick your loader, then the jar whose name covers your Minecraft version: `tacz-<loader>-<first>-to-<last>.jar`, or `tacz-<loader>-<version>.jar` for a single version.
 
-Quilt loads the Fabric jars (with Fabric API installed).
+| Minecraft | Fabric / Quilt | NeoForge | Forge |
+|---|---|---|---|
+| 1.21 - 1.21.1 | `tacz-fabric-1.21-to-1.21.1.jar` | `tacz-neoforge-1.21-to-1.21.1.jar` | `tacz-forge-1.21-to-1.21.1.jar` |
+| 1.21.2 - 1.21.3 | `tacz-fabric-1.21.2-to-1.21.3.jar` | `tacz-neoforge-1.21.2-to-1.21.3.jar` | `tacz-forge-1.21.2-to-1.21.3.jar` |
+| 1.21.4 | `tacz-fabric-1.21.4.jar` | `tacz-neoforge-1.21.4.jar` | `tacz-forge-1.21.4.jar` |
+| 1.21.5 | `tacz-fabric-1.21.5.jar` | `tacz-neoforge-1.21.5.jar` | `tacz-forge-1.21.5.jar` |
+| 1.21.6 - 1.21.8 | `tacz-fabric-1.21.6-to-1.21.8.jar` | `tacz-neoforge-1.21.6-to-1.21.8.jar` | `tacz-forge-1.21.6-to-1.21.8.jar` |
+| 1.21.9 - 1.21.10 | `tacz-fabric-1.21.9-to-1.21.10.jar` | `tacz-neoforge-1.21.9-to-1.21.10.jar` | `tacz-forge-1.21.9-to-1.21.10.jar` |
+| 1.21.11 | `tacz-fabric-1.21.11.jar` | `tacz-neoforge-1.21.11.jar` | `tacz-forge-1.21.11.jar` |
+| 26.1 - 26.1.2 | `tacz-fabric-26.1-to-26.1.2.jar` | `tacz-neoforge-26.1-to-26.1.2.jar` | `tacz-forge-26.1-to-26.1.2.jar` |
+| 26.2 | `tacz-fabric-26.2.jar` | `tacz-neoforge-26.2.jar` | `tacz-forge-26.2.jar` |
+| 26.3 | `tacz-fabric-26.3.jar` | `tacz-neoforge-26.3.jar` | `tacz-forge-26.3.jar` |
 
-- Dedicated server boots and loads the default gun pack (54 guns, 24 ammo, 99 attachments, 3 blocks).
-- In game: holding, shooting (bullets hit and hurt mobs), reloading, iron sight and scope ADS, third person hold pose, inventory icons.
-- Not tested yet: multiplayer on a dedicated server, the gun smith table GUI, refit screen, melee, explosives, every gun in the pack.
-- Dropped: all optional mod compat (KubeJS, JEI, Cloth Config, Oculus, Shoulder Surfing, Controllable, Player Animator, Accelerated Rendering, Create), the target minecart.
+### Requirements
+
+- **Fabric / Quilt:** [Fabric API](https://modrinth.com/mod/fabric-api) and [Forge Config API Port](https://modrinth.com/mod/forge-config-api-port) for your Minecraft version.
+- **NeoForge / Forge:** nothing else.
+- Java 21 for 1.21.x, Java 25 for 26.x (the versions Minecraft itself asks for).
+
+Gun packs made for TaCZ 1.1.x go into the `tacz` folder in your game directory, like on the original mod.
+
+## What works
+
+Every jar is started in game and runs a scripted session (`src/gametest`) that fails on any error:
+
+- the default gun pack loads, an AK-47 shoots and hits a target, ammo goes down, reload refills it,
+- aiming down the iron sights, mounting an ACOG scope and aiming through it (scope masking included),
+- third person poses, inventory icons,
+- ammo box variants (iron, gold, diamond, filled, dyed, creative),
+- the gun smith table opened with a right click shows its recipes, the attachment workbench filters its recipes to the gun in hand.
+
+Not tested yet: multiplayer on a dedicated server, the refit screen, melee, explosives and every gun of the pack. Optional compat with other mods (JEI, KubeJS, Shoulder Surfing, shader mods...) is not ported.
 
 ## Building
 
-One codebase for every version through [Stonecutter](https://stonecutter.kikugie.dev/). The code in `src/` is written for the version marked `active` in `stonecutter.gradle.kts` (1.21.11), other versions get it rewritten:
+One codebase builds every jar through [Stonecutter](https://stonecutter.kikugie.dev/). The code in `src/` is written for Fabric 1.21.11 (the `active` version in `stonecutter.gradle.kts`); other versions and loaders get it rewritten:
 
-- simple renames (Mojang or Fabric API renamed a class or method) are string replacements in `stonecutter.gradle.kts`,
-- real differences are `//? if >=26.1 { ... //?} else { ... //?}` blocks in the code, the inactive branch is commented out.
+- renames between versions are string replacements in `stonecutter.gradle.kts`,
+- real differences are `//? if >=26.1 { ... //?} else { ... //?}` and `//? if neoforge` / `forge` / `fabric` blocks, the inactive branch is commented out.
 
 Versions and dependency versions are in `stonecutter.properties.toml`. Gradle needs a Java 25 JDK.
 
-- `./gradlew build` builds every version, jars end up in `versions/<minecraft>/build/libs/`.
-- `./gradlew :26.1.2:build` builds one.
-- `./gradlew "Set active project to 26.1.2"` rewrites `src/` for that version (handy in an IDE), switch back to 1.21.11 before committing.
-
-## How it is put together
-
-- `com.tacz.guns.platform.forge` is a small stand-in for the Forge APIs TACZ used (event bus, DeferredRegister, SimpleChannel, events). Forge events are fired from Fabric callbacks (`platform/FabricEventBridge`, `FabricClientEventBridge`) and mixins (`mixin/forge`, `mixin/client/forge`).
-- Item NBT lives in the `minecraft:custom_data` component with the same keys (`util/ItemNbt`).
-- Item rendering: every TACZ item model is `minecraft:special` -> `tacz:item` (`platform/client/TaczItemSpecialRenderer`), which calls the old BEWLR style renderers and draws into the main buffer source.
-- Gun packs are served as one built-in pack (`resource/GunPackResources`), old 1.20 folder names (`recipes`, `loot_tables`, `tags/items`...) are remapped, Forge tags map to `c:` tags (`util/LegacyJson`).
-- Config uses Forge Config API Port (`forgeconfigapiport`, required at runtime).
-- Scopes mask their eyepiece with the stencil buffer like on Forge. 1.21.5+ render targets have no stencil, so depth textures are allocated as depth + stencil (`mixin/client/GlDeviceStencilMixin`, `DirectStateAccessStencilMixin`) and the stencil state is set with raw GL calls around the scope draws (`util/RenderHelper`, `client/renderer/ScopeRenderTypes`).
-- 26.2 removed `MultiBufferSource` and can run on Vulkan. TACZ's renderers keep writing to a stand-in (`platform/client/compat/MultiBufferSource`) that records vertices and submits them as custom geometry to the collector of the current render (`platform/client/SubmitScope`). Scopes drop the stencil: every scope part discards its own fragments against screen circles in the `tacz:core/scope_entity` shader (`client/renderer/ScopeMask`). Shaders differ per version and live in `src/main/shaders/<version>`.
-- 26.3 swapped GLFW for SDL (key codes are read through `InputConstants`, not GLFW constants), moved the render API to `com.mojang.renderpearl`, compiles shaders with shaderc (`#include`, explicit `layout(location)`), and moved the first person hand state from `ItemInHandRenderer` to `LocalPlayer#firstPersonHandsAndItems` / `FirstPersonHandsAndItemsRenderer`.
+- `./gradlew :1.21.11:build` builds the Fabric 1.21.11 jar, `:1.21.11-neoforge:build` and `:1.21.11-forge:build` the other loaders. Jars end up in `versions/<project>/build/libs/`.
+- Build tools: Fabric Loom, NeoForge ModDevGradle, ForgeGradle 7.
 
 ## Testing
 
-`./gradlew :<minecraft>:runClientGameTest` (for example `:26.1.2:runClientGameTest`) starts the client, makes a world, gives an AK-47, shoots a husk, aims, reloads, mounts an ACOG and checks third person (`src/gametest`). It fails on wrong ammo counts, missed shots or a failed reload, screenshots go to `versions/<minecraft>/build/run/clientGameTest/screenshots`. Needs a display, on a headless box run it under `xvfb-run -a`. Pick the backend with `--args="--graphicsBackend vulkan"` (or `opengl`). 26.3 OpenGL asks SDL for an sRGB framebuffer, which Xvfb's GLX visuals lack, so it falls back to Vulkan there; run it under a headless Wayland compositor instead (`weston --backend=headless --socket=wl-tacz &`, then `WAYLAND_DISPLAY=wl-tacz SDL_VIDEO_DRIVER=wayland`).
+- Fabric: `./gradlew :<version>:runSmokeTest`, screenshots in `versions/<version>/build/run/smokeTest/screenshots`.
+- NeoForge: `./gradlew :<version>-neoforge:runGametest`, screenshots in `versions/<version>-neoforge/run/gametest/screenshots`.
+- Forge: `./gradlew :<version>-forge:runClient -Psmoke`, screenshots in `versions/<version>-forge/run/client/screenshots`.
 
-## Next steps
+The log ends with `TACZ_SMOKE_TEST PASSED` or `FAILED`. On a headless machine run it under `xvfb-run -a`. 26.3 uses SDL and wants a Wayland compositor instead: `weston --backend=headless --socket=wl-tacz &`, then `WAYLAND_DISPLAY=wl-tacz SDL_VIDEO_DRIVER=wayland`.
 
-- More Minecraft versions: back down 1.21.10 to 1.21. Loaders: NeoForge and Forge builds.
-- Join a dedicated server with the client (`TestDedicatedServerContext` in the gametest can do it) to check the networking side.
-- Gun smith table crafting and the refit screen (attachment install/remove over the network).
-- Run through the rest of the default pack: shotguns, RPG/M320 explosions, minigun, burst fire, heat.
+## License
+
+- Code: GPL-3.0, like upstream TaCZ (see `LICENSE`).
+- Assets (models, textures, sounds, the default gun pack): CC BY-NC-ND 4.0, owned by the TaCZ authors. Do not use them commercially or publish modified versions of them.

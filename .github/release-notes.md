@@ -1,4 +1,6 @@
-TACZ (Timeless and Classics Guns: Zero) 1.1.8-hotfix, ported to Fabric, NeoForge and Forge.
+TACZ (Timeless and Classics Guns: Zero) 1.1.8-hotfix, ported to Fabric, NeoForge and Forge for every Minecraft version from 1.21 to 26.3.
+
+Unofficial port, published with the permission of the TaCZ owner. All credit for the mod and its assets goes to Serene Wave Studio | Timeless Squad and the [TaCZ team](https://github.com/MCModderAnchor/TACZ); report problems with this port [here](https://github.com/fxderico/tacz-port/issues), not to them.
 
 Pick the jar for your loader whose name covers your Minecraft version: `tacz-<loader>-<first>-to-<last>.jar`, or `tacz-<loader>-<version>.jar` for a single version.
 
@@ -15,6 +17,8 @@ Pick the jar for your loader whose name covers your Minecraft version: `tacz-<lo
 | 26.2 | `tacz-fabric-26.2.jar` | `tacz-neoforge-26.2.jar` | `tacz-forge-26.2.jar` |
 | 26.3 | `tacz-fabric-26.3.jar` | `tacz-neoforge-26.3.jar` | `tacz-forge-26.3.jar` |
 
-Fabric needs Fabric API and Forge Config API Port. Quilt loads the Fabric jars (tested on Quilt Loader 0.30.1).
+Fabric needs [Fabric API](https://modrinth.com/mod/fabric-api) and [Forge Config API Port](https://modrinth.com/mod/forge-config-api-port). NeoForge and Forge need nothing else. Quilt loads the Fabric jars (tested on Quilt Loader 0.30.1).
 
 Fixed since v1.1.8-hotfix.3: on Fabric 26.x, opening a gun smith table disconnected the player.
+
+Code is GPL-3.0, assets are CC BY-NC-ND 4.0 and belong to the TaCZ authors.
