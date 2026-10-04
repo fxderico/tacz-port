@@ -38,8 +38,13 @@ public final class ForgeEventBridge {
             ServerLifecycleHooks.setCurrentServer(null);
         });
 
+        //? if >=1.21.9 {
         net.minecraftforge.event.TickEvent.ServerTickEvent.Pre.BUS.addListener(event -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, event.server())));
         net.minecraftforge.event.TickEvent.ServerTickEvent.Post.BUS.addListener(event -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, event.server())));
+        //?} else {
+        /^net.minecraftforge.event.TickEvent.ServerTickEvent.Pre.BUS.addListener(event -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.START, event.getServer())));
+        net.minecraftforge.event.TickEvent.ServerTickEvent.Post.BUS.addListener(event -> MinecraftForge.EVENT_BUS.post(new TickEvent.ServerTickEvent(TickEvent.Phase.END, event.getServer())));
+        ^///?}
 
         net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent.BUS.addListener(event -> {
             if (event.getEntity() instanceof ServerPlayer player) {

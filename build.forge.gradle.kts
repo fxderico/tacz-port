@@ -111,6 +111,12 @@ dependencies {
     if (project.hasProperty("smoke")) runtimeOnly(gametest.output)
     // Forge ships maven-artifact itself (FML's version ranges)
     compileOnly("org.apache.maven:maven-artifact:3.9.6")
+    // Forge ships MixinExtras itself from 1.21.9, older versions get it bundled (it is a mod of its own)
+    if (sc.current.parsed < "1.21.9") {
+        compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.5")!!)
+        implementation("io.github.llamalad7:mixinextras-forge:0.5.5")
+        bundled("io.github.llamalad7:mixinextras-forge:0.5.5")
+    }
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     if (sc.current.parsed >= "1.21.6") {
         annotationProcessor("net.minecraftforge:eventbus-validator:7.0.5")
