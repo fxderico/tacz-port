@@ -99,6 +99,14 @@ public final class GunModForgeClient {
         modBus.addListener(GunModForgeClient::renderers);
         modBus.addListener(GunModForgeClient::particles);
         modBus.addListener(GunModForgeClient::reloadListeners);
+        //? if <1.21.4 {
+        // the ammo box variant from a model predicate (clamped to 0..1, the overrides use index / 8) and its dye from an item color
+        modBus.addListener((net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) -> event.register(
+                (stack, tintIndex) -> net.minecraft.util.ARGB.opaque(com.tacz.guns.item.AmmoBoxItem.getColor(stack, tintIndex)), com.tacz.guns.init.ModItems.AMMO_BOX.get()));
+        modBus.addListener((FMLClientSetupEvent event) -> event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(
+                com.tacz.guns.init.ModItems.AMMO_BOX.get(), AmmoBoxModelProperties.STATUE_ID,
+                (stack, level, entity, seed) -> com.tacz.guns.item.AmmoBoxItem.getStatue(stack, level, entity, seed) / 8.0F)));
+        //?}
         modBus.addListener((net.minecraftforge.client.event.AddGuiOverlayLayersEvent event) -> {
             var layers = event.getLayeredDraw();
             layers.add(id("tac_gun_hud_overlay"), layer(new GunHudOverlay()));

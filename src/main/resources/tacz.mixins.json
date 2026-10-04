@@ -26,6 +26,7 @@
   "client": [
     "client.AbstractButtonMixin",
     "client.DirectStateAccessStencilMixin",
+    "client.ForgeItemExtensionsMixin",
     "client.GlDeviceStencilMixin",
     "client.GameRendererMixin",
     "client.HumanoidModelMixin",
