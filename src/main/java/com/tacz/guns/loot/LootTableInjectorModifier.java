@@ -94,7 +94,7 @@ public final class LootTableInjectorModifier {
         //?}
 
         @Override
-        //? if forge {
+        //? if forge && >=1.21.2 {
         /^protected it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> doApply(net.minecraft.world.level.storage.loot.LootTable table,
                                                                                    it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemStack> loot, LootContext context) {
         ^///?} else {
